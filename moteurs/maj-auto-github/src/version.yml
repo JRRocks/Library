@@ -1,0 +1,229 @@
+name: Version
+
+# Publie une version : compile l'APK release signé de `app-terrain` et l'attache à une
+# balise du dépôt **public** des versions (`DEPOT_VERSIONS`), que l'application interroge
+# à chaque lancement (`fr.popote.terrain.maj.MiseAJour`).
+#
+# Pourquoi un second dépôt : celui-ci est privé — il porte le code et, sous
+# `docs/source/csv/`, les noms réels des membres. L'API GitHub d'un dépôt privé exige un
+# jeton, qu'il faudrait alors embarquer dans l'APK, donc le distribuer. Le dépôt des
+# versions ne contient que des APK ; il peut être public, et l'application l'interroge
+# sans le moindre secret. Mise en place : `docs/publication.md`.
+#
+# Le nom du fichier attaché porte le `versionCode` — `popote-terrain-<nom>-<code>.apk` —
+# parce que c'est le seul entier que l'application puisse comparer à celui qu'elle
+# exécute. Il est fabriqué ici à partir des valeurs lues dans `build.gradle.kts` : les
+# deux bouts ne peuvent pas diverger.
+
+on:
+  # La balise pousse la version. `workflow_dispatch` fait le même travail en posant
+  # d'abord la balise `v<versionName>` sur la référence choisie, pour n'avoir jamais à
+  # taper `git tag` à la main.
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      apercu:
+        # Aperçu : le même APK release signé, attaché à une pré-version `apercu-<nom>` de CE
+        # dépôt (privé) — rien n'est posé ni publié sur le dépôt public, l'application installée
+        # ne le voit donc pas. Sert à essayer une version sur le téléphone avant de la publier ;
+        # la publication se fait ensuite par un second lancement, sans cette case.
+        description: "Aperçu privé seulement (ne publie rien sur le dépôt public)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+env:
+  DEPOT_VERSIONS: JRRocks/Popote-Compagnie
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # `git tag` (chemin `workflow_dispatch`) a besoin de l'historique, pas du seul
+          # commit de tête.
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # Sans cache : le stockage Actions du dépôt privé est plafonné, et un cache Gradle de
+      # plusieurs centaines de Mo pèse plus que les quelques minutes qu'il fait gagner.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+
+      - name: Lire la version dans build.gradle.kts
+        id: version
+        run: |
+          set -euo pipefail
+          fichier=app-terrain/build.gradle.kts
+          code=$(grep -oP 'versionCode\s*=\s*\K[0-9]+' "$fichier")
+          nom=$(grep -oP 'versionName\s*=\s*"\K[^"]+' "$fichier")
+          if [ -z "$code" ] || [ -z "$nom" ]; then
+            echo "::error::versionCode/versionName introuvables dans $fichier"
+            exit 1
+          fi
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "nom=$nom" >> "$GITHUB_OUTPUT"
+          echo "balise=v$nom" >> "$GITHUB_OUTPUT"
+          echo "Version lue : $nom ($code)"
+
+      - name: Vérifier que la balise poussée correspond à la version compilée
+        # Une balise `v13.20` sur un arbre qui déclare `13.21` publierait un APK dont le
+        # nom mentirait sur son contenu. Mieux vaut refuser tout de suite que livrer ça.
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          attendue="${{ steps.version.outputs.balise }}"
+          poussee="${GITHUB_REF#refs/tags/}"
+          if [ "$poussee" != "$attendue" ]; then
+            echo "::error::La balise poussée ($poussee) ne correspond pas à la version du code ($attendue)."
+            exit 1
+          fi
+
+      - name: Restaurer la clé de signature release
+        # `keystore-release/` ne se versionne jamais (docs/decisions.md, « La clé de
+        # signature release ne se versionne jamais »). Sans elle, `assembleRelease` produit
+        # un APK non signé, qu'aucun téléphone n'installe et qui, surtout, ne peut pas
+        # remplacer une version déjà installée : on échoue plutôt que de publier ça.
+        env:
+          KEYSTORE_BASE64: ${{ secrets.SIGNATURE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.SIGNATURE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.SIGNATURE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.SIGNATURE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "${KEYSTORE_BASE64:-}" ]; then
+            echo "::error::Secret SIGNATURE_KEYSTORE_BASE64 absent — cf. docs/publication.md."
+            exit 1
+          fi
+          mkdir -p app-terrain/keystore-release
+          echo "$KEYSTORE_BASE64" | base64 -d > app-terrain/keystore-release/popote-release.jks
+          # `printf '%s\n'` et non `echo` : un mot de passe commençant par « -n » ou
+          # contenant une barre oblique inverse se ferait réécrire par `echo`.
+          {
+            printf '%s\n' "storeFile=popote-release.jks"
+            printf '%s\n' "storePassword=$STORE_PASSWORD"
+            printf '%s\n' "keyAlias=$KEY_ALIAS"
+            printf '%s\n' "keyPassword=$KEY_PASSWORD"
+          } > app-terrain/keystore-release/keystore.properties
+
+      - name: Lancer la suite de tests unitaires
+        # Une version publiée est installée sans relecture sur le téléphone du popotier :
+        # elle ne part pas avant que la suite soit verte.
+        run: ./gradlew :core:testDebugUnitTest :app-terrain:testDebugUnitTest --stacktrace
+
+      - name: Compiler l'APK release
+        env:
+          # Jeton du bouton « Signaler un problème » : portée « issues en écriture » sur le
+          # SEUL dépôt public des versions. Il est compilé dans l'APK (`BuildConfig`), donc
+          # distribué, donc extractable — c'est un choix assumé, documenté dans
+          # docs/decisions.md, « Le signalement part avec un jeton embarqué ». Il n'est pas
+          # exigé : sans lui, l'application ouvre le formulaire GitHub dans le navigateur
+          # plutôt que de poster elle-même.
+          POPOTE_JETON_SIGNALEMENT: ${{ secrets.JETON_SIGNALEMENT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${POPOTE_JETON_SIGNALEMENT:-}" ]; then
+            echo "::warning::Secret JETON_SIGNALEMENT absent — le signalement passera par le navigateur (cf. docs/publication.md)."
+          fi
+          ./gradlew :app-terrain:assembleRelease --stacktrace
+
+      - name: Nommer l'APK avec son versionCode
+        id: apk
+        run: |
+          set -euo pipefail
+          sortie=app-terrain/build/outputs/apk/release
+          if [ -f "$sortie/Popote-compagnie-unsigned.apk" ]; then
+            echo "::error::APK non signé produit — la clé de release n'a pas été prise en compte."
+            exit 1
+          fi
+          source="$sortie/Popote-compagnie.apk"
+          if [ ! -f "$source" ]; then
+            echo "::error::APK introuvable : $source"
+            exit 1
+          fi
+          cible="$sortie/popote-terrain-${{ steps.version.outputs.nom }}-${{ steps.version.outputs.code }}.apk"
+          mv "$source" "$cible"
+          echo "chemin=$cible" >> "$GITHUB_OUTPUT"
+
+      - name: Publier l'aperçu sur ce dépôt privé
+        if: github.event_name == 'workflow_dispatch' && inputs.apercu
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          balise="apercu-${{ steps.version.outputs.nom }}"
+          apk="${{ steps.apk.outputs.chemin }}"
+          if gh release view "$balise" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$balise" "$apk" --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$balise" "$apk" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --prerelease \
+              --title "Aperçu ${{ steps.version.outputs.nom }}" \
+              --notes "APK d'essai, version ${{ steps.version.outputs.nom }} (code ${{ steps.version.outputs.code }}) — non publié sur le dépôt public."
+          fi
+          echo "Lien : https://github.com/$GITHUB_REPOSITORY/releases/download/$balise/$(basename "$apk")" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Poser la balise (lancement manuel)
+        if: github.event_name == 'workflow_dispatch' && !inputs.apercu
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          balise="${{ steps.version.outputs.balise }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$balise" >/dev/null 2>&1; then
+            echo "Balise $balise déjà posée, on la réutilise."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$balise" -m "Version ${{ steps.version.outputs.nom }}"
+          git push origin "$balise"
+
+      - name: Publier la version dans le dépôt public
+        if: github.event_name == 'push' || !inputs.apercu
+        env:
+          # Jeton personnel à portée `contents:write` sur le SEUL dépôt des versions —
+          # `GITHUB_TOKEN` n'a aucun droit hors du dépôt courant. Cf. docs/publication.md.
+          GH_TOKEN: ${{ secrets.JETON_DEPOT_VERSIONS }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::Secret JETON_DEPOT_VERSIONS absent — cf. docs/publication.md."
+            exit 1
+          fi
+          balise="${{ steps.version.outputs.balise }}"
+          apk="${{ steps.apk.outputs.chemin }}"
+          if gh release view "$balise" --repo "$DEPOT_VERSIONS" >/dev/null 2>&1; then
+            # Reprise après un échec en aval : on remplace l'APK plutôt que d'échouer sur
+            # une version déjà créée.
+            gh release upload "$balise" "$apk" --clobber --repo "$DEPOT_VERSIONS"
+          else
+            gh release create "$balise" "$apk" \
+              --repo "$DEPOT_VERSIONS" \
+              --title "Version ${{ steps.version.outputs.nom }}" \
+              --notes "APK de terrain, version ${{ steps.version.outputs.nom }} (code ${{ steps.version.outputs.code }})."
+          fi
+          # `gh release create` publie normalement tout seul une fois l'APK attaché, mais
+          # une erreur transitoire de l'API GitHub pile à cet instant (déjà vécu : un 500
+          # sur POST /releases) peut laisser la version posée en brouillon, invisible pour
+          # `maj/MiseAJour.kt` qui n'interroge que la dernière version publiée. Le forcer
+          # explicitement ici est idempotent et couvre aussi bien la création que la reprise
+          # ci-dessus.
+          gh release edit "$balise" --draft=false --repo "$DEPOT_VERSIONS"
+
+      - name: Effacer la clé de signature
+        # Le runner est jeté après le job, mais une clé de signature ne traîne pas sur
+        # disque une étape de plus que nécessaire — et surtout pas dans un cache Gradle.
+        if: always()
+        run: rm -rf app-terrain/keystore-release

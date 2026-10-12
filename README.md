@@ -1,2 +1,16 @@
 # Library
-La liste de tout les moteurs que j'utilise pour pouvoir les réutiliser sur d'autres app
+
+La liste de tous les moteurs que j'utilise, pour pouvoir les réutiliser dans d'autres apps.
+
+Chaque moteur rangé ici a été construit dans une vraie app, documenté (à quoi il sert,
+comment l'intégrer, quels pièges ont déjà été rencontrés) et classé selon son niveau de
+confiance : ✅ éprouvé en réel, 🟡 testé, 🔬 candidat.
+
+| Je veux… | Fichier |
+|---|---|
+| Trouver un moteur | [`INDEX.md`](INDEX.md) |
+| Comprendre les règles, ajouter ou mettre à jour un moteur, faire un patch | [`AGENTS.md`](AGENTS.md) |
+| Voir ce qui a changé | [`JOURNAL.md`](JOURNAL.md) |
+| Créer une nouvelle fiche | [`moteurs/_modele/README.md`](moteurs/_modele/README.md) |
+
+> ⚠️ Ce dépôt est **public** : jamais de clé, de jeton, de mot de passe ni de donnée personnelle.
