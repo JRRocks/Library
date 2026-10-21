@@ -4,8 +4,6 @@
 > compare les cadres reconnus (design thinking, Double Diamond, design centré utilisateur) et
 > en tire une méthode utilisable seul ou en petite équipe.
 
-![Le Double Diamond du Design Council](../images/Double_Diamond_by_the_Design_Council.png)
-*Figure 3.1 — Le Double Diamond (Design Council). Source de l'image : Wikimedia Commons, voir `images/CREDITS.md`.*
 
 ## 3.1 Le design thinking (NN/g)
 

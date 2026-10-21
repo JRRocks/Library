@@ -14,6 +14,26 @@
 
 ---
 
+## 2026-10-21 — [docs/ui-ux] Dossier UI/UX sourcé
+
+- **Type** : ajout
+- **Quoi** :
+  - Nouveau dossier `docs/ui-ux/` : 41 chapitres en français (processus, recherche, heuristiques,
+    lois de l'UX, Gestalt, typographie, couleur et contraste, composants, mobile et Android,
+    Material Design 3, accessibilité, performance, contenu, design systems, éthique, IA, GOV.UK,
+    modèles mentaux, qualité Android, glossaire, synthèse).
+  - `SOURCES.md` (202 sources avec URL), `images/` (images libres de droits de Wikimedia Commons)
+    et `images/CREDITS.md`.
+  - `INDEX.md` § 7 et `README.md` mis à jour.
+- **Preuve / vérification** : relecture des chapitres contre les pages sources téléchargées ;
+  plusieurs affirmations non étayées corrigées. Toutes les images référencées existent. Pas de
+  code : aucun build ni test. Limites : `m3.material.io` et Apple HIG illisibles
+  automatiquement ; deux images souhaitées non récupérées ; auteur d'une image à confirmer ;
+  volume réel inférieur aux 200 pages visées (voir `docs/ui-ux/README.md`).
+- **Apps à prévenir** : aucune
+
+---
+
 ## 2026-10-12 — [library] Création du catalogue
 
 - **Type** : transverse + ajout + revue de dépôt

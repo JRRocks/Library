@@ -2,7 +2,7 @@
 
 ![Fixations et saccades pendant la lecture](../images/Reading_Fixations_Saccades.jpg)
 *Figure 30.1 — Fixations et saccades pendant la lecture : les yeux ne glissent jamais
-régulièrement sur un texte immobile. Wikimedia Commons. Image ajoutée si le téléchargement a abouti.*
+régulièrement sur un texte immobile. Wikimedia Commons. Voir `images/CREDITS.md`.*
 
 ## 30.1 Ce que révèle le suivi du regard (eye tracking) [S182]
 

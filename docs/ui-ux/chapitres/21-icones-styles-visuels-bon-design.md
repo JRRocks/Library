@@ -2,7 +2,7 @@
 
 ![Icône « Enregistrer » d'OpenOffice : la disquette comme métaphore](../images/Save_Icon_in_Open_Office.png)
 *Figure 21.1 — La disquette de l'icône « Enregistrer » : une métaphore qui survit à son objet.
-Wikimedia Commons. Image ajoutée si le téléchargement a abouti — voir `images/CREDITS.md`.*
+Wikimedia Commons. Voir `images/CREDITS.md`.*
 
 ## 21.1 Les icônes (NN/g) [S147][S148]
 

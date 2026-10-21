@@ -2,7 +2,7 @@
 
 ![Une grille de mise en page](../images/Grid2aib.png)
 *Figure 10.1 — Grille de mise en page : le contenu n'appartient pas à la grille, il s'y applique.
-Wikimedia Commons. Image ajoutée si le téléchargement a abouti — voir `images/CREDITS.md`.*
+Wikimedia Commons. Voir `images/CREDITS.md`.*
 
 ## 10.1 La grille en design graphique
 

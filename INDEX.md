@@ -5,7 +5,7 @@
 >
 > Légende des statuts : ✅ Éprouvé · 🟡 Testé · ⚠️ À patcher · 🔬 Candidat · ⛔ Obsolète
 
-Dernière mise à jour : 2026-10-12
+Dernière mise à jour : 2026-10-21
 
 ---
 
@@ -178,3 +178,14 @@ Chemins relatifs à `app/src/main/java/com/scanlist/app/`.
 | [ToolMap](https://github.com/JRRocks/ToolMap) | privé | `06c80c7` | 2026-10-12 | 10 candidats (jamais testés sur appareil) |
 | [InnovAdapt-CRM](https://github.com/JRRocks/InnovAdapt-CRM) | privé | `42e9534` | 2026-10-12 | 5 candidats |
 | SuivieMAT, RGL13, Sun-tracking | privés | — | — | **Pas encore revus** |
+
+---
+
+## 7. Documentation de référence (hors moteurs)
+
+| Document | Contenu | Statut |
+|---|---|---|
+| [`docs/ui-ux/README.md`](docs/ui-ux/README.md) | Dossier UI/UX : 41 chapitres (principes, heuristiques, lois de l'UX, couleur et contraste, typographie, composants, mobile et Android, accessibilité WCAG 2.2, éthique, glossaire, check-lists), 202 sources avec URL, images libres de droits | 🔬 Rédigé à partir de sources publiques, non éprouvé en réel ; volume réel annoncé dans le README (en deçà des 200 pages visées) |
+
+Mots-clés : UI, UX, ergonomie, heuristiques de Nielsen, WCAG, contraste, Material Design, accessibilité,
+glossaire UX, check-list de conception, navigation Android.

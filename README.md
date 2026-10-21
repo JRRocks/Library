@@ -11,6 +11,7 @@ confiance : ✅ éprouvé en réel, 🟡 testé, 🔬 candidat.
 | Trouver un moteur | [`INDEX.md`](INDEX.md) |
 | Comprendre les règles, ajouter ou mettre à jour un moteur, faire un patch | [`AGENTS.md`](AGENTS.md) |
 | Voir ce qui a changé | [`JOURNAL.md`](JOURNAL.md) |
+| Concevoir une interface (règles UI/UX, sources, check-lists) | [`docs/ui-ux/README.md`](docs/ui-ux/README.md) |
 | Créer une nouvelle fiche | [`moteurs/_modele/README.md`](moteurs/_modele/README.md) |
 
 > ⚠️ Ce dépôt est **public** : jamais de clé, de jeton, de mot de passe ni de donnée personnelle.

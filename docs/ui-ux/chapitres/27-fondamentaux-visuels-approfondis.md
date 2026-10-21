@@ -39,9 +39,8 @@ lisibilité sur mobile, aide à retrouver le début de ligne dans les longues li
 
 ## 27.2 Couleur : compléments
 
-![Étoile des couleurs primaires, secondaires et tertiaires](../images/Color_star-en_(tertiary_names).png)
-*Figure 27.1 — Primaires, secondaires et tertiaires. Wikimedia Commons. Image ajoutée si le
-téléchargement a abouti.*
+![Étoile des couleurs primaires, secondaires et tertiaires](../images/Color_star-en__tertiary_names_.png)
+*Figure 27.1 — Primaires, secondaires et tertiaires. Wikimedia Commons, voir `images/CREDITS.md`.*
 
 ### Fondamentaux [S176]
 - Isaac Newton a établi la théorie des couleurs en inventant le **cercle chromatique en 1666**,

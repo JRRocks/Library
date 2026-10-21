@@ -5,8 +5,7 @@
 > méthodes d'évaluation complémentaires du chapitre 4.
 
 ![Exemple de wireframe (profil)](../images/Profilewireframe.png)
-*Figure 18.1 — Un wireframe : structure et fonctions, pas le style. Wikimedia Commons. Image
-ajoutée si le téléchargement a abouti — voir `images/CREDITS.md`.*
+*Figure 18.1 — Un wireframe : structure et fonctions, pas le style. Wikimedia Commons, voir `images/CREDITS.md`.*
 
 ## 18.1 Les wireframes (IxDF) [S123]
 

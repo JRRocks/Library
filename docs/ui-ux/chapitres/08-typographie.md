@@ -5,7 +5,7 @@
 
 ![Spécimen de William Caslon](../images/A_Specimen_by_William_Caslon.jpg)
 *Figure 8.1 — Spécimen de caractères de William Caslon (XVIIIᵉ siècle). Wikimedia Commons
-(domaine public). Image ajoutée si le téléchargement a abouti — voir `images/CREDITS.md`.*
+(domaine public). Voir `images/CREDITS.md`.*
 
 ## 8.1 Vocabulaire minimal
 
@@ -27,9 +27,13 @@ Quatre sous-groupes, par ordre d'apparition : **old-style, transitional, didone,
 [S40]. Les empattements viennent probablement des inscriptions romaines gravées (hypothèse du
 Père Catich, 1968, « largement mais non universellement acceptée ») [S40].
 
-> **Serif ou sans-serif à l'écran ?** Wikipédia rapporte l'ancienne idée que les sans-serif
-> sont peu lisibles en longs textes [S38] ; les usages numériques courants (Roboto sur Android, par exemple) sont des sans-serif. Le
-> dossier ne tranche pas : **tester sur l'appareil cible, à la taille réelle**.
+> **Serif ou sans-serif à l'écran ?** Avant l'ère numérique, les polices à empattements étaient jugées
+> plus lisibles ; **aujourd'hui, les sans-serif ont une légibilité comparable, parfois meilleure
+> sur écran** (les empattements se rendent moins bien en basse résolution), selon le glossaire NN/g
+> de 2024 [S200]. Le ton diffère : les sans-serif paraissent souvent **modernes, froides,
+> impersonnelles** ; les serif **traditionnelles, chaleureuses, onéreuses, démodées** [S200].
+> Wikipédia rapporte l'ancienne idée contraire [S38]. Dans tous les cas : **tester sur l'appareil
+> cible, à la taille réelle**.
 
 ## 8.3 L'interlignage
 

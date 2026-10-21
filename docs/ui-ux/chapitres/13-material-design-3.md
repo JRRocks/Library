@@ -6,9 +6,6 @@
 > `m3.material.io` est rendu côté client et n'a pas pu être lu automatiquement ; ses guides
 > sont donc cités par lien, pas paraphrasés [S91].
 
-![Widgets dessinés dans le style Material Design](../images/Flat_widgets.png)
-*Figure 13.1 — Widgets d'interface dans le style Material (Wikimedia Commons). Image ajoutée si le
-téléchargement a abouti — voir `images/CREDITS.md`.*
 
 ## 13.1 Les trois sous-systèmes du thème
 
