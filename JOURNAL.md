@@ -14,6 +14,21 @@
 
 ---
 
+## 2026-10-26 — [google-drive-appdata] Jeton révoqué gardé en cache (suspecté)
+
+- **Type** : patch (proposé, hors `src/`)
+- **Quoi** : point de vigilance ⚠️ sur la fiche. Après un retrait d'accès depuis le compte
+  Google, Play Services rend encore le jeton en cache, et « reconnecter » boucle jusqu'à son
+  expiration. Patch proposé : `GoogleAuthUtil.clearToken` sur tout `AutorisationRevoquee`
+  (code de référence : `DriveCarnet.avecJeton`, JRRocks/Carnet-de-recette).
+- **Preuve / vérification** : seconde relecture adversariale du Carnet, contre-vérifiée sur
+  la documentation Android (« Clear the token cache »). Le code du Carnet compile et passe
+  ses tests. Non reporté dans `src/` (restructuration de cinq fonctions, Library non
+  compilable ici). Aucun essai sur appareil.
+- **Apps à prévenir** : Popote Compagnie.
+
+---
+
 ## 2026-10-26 — [google-drive-appdata][maj-auto-github] Utilisés dans Carnet de recette, deux patchs
 
 - **Type** : patch + intégration dans une nouvelle app

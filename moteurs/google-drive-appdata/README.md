@@ -3,7 +3,7 @@
 | Champ | Valeur |
 |---|---|
 | **Identifiant** | `google-drive-appdata` |
-| **Statut** | ✅ **Éprouvé.** Connexion Google et dépôt sur Drive confirmés sur appareil réel, debug **et** release signée, en production chez les utilisateurs de Popote Compagnie. Les parties pures sont couvertes par `DriveAppDataTest`. ⚠️ Lecture des refus 403 : **patch proposé le 2026-10-26** (tests JVM), non vérifié sur appareil, pas encore reporté dans Popote (voir les points de vigilance) |
+| **Statut** | ✅ **Éprouvé.** Connexion Google et dépôt sur Drive confirmés sur appareil réel, debug **et** release signée, en production chez les utilisateurs de Popote Compagnie. Les parties pures sont couvertes par `DriveAppDataTest`. ⚠️ Lecture des refus 403 : **patch proposé le 2026-10-26** (tests JVM), non vérifié sur appareil, pas encore reporté dans Popote. ⚠️ Jeton révoqué gardé en cache (suspecté, patch proposé dans le Carnet, non reporté dans `src/`). Voir les points de vigilance |
 | **Plateforme** | Android natif, Kotlin, minSdk 26 |
 | **Dépendances** | `com.google.android.gms:play-services-auth:21.3.0` (API `Identity.getAuthorizationClient`), `kotlinx-serialization-json` 1.7.3, coroutines. **Pas** de SDK Drive Java ni de Google API Client : du REST pur via `HttpURLConnection` |
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé), commit `08c211a` (2026-10-12) |
@@ -154,6 +154,15 @@ Délais : 15 s pour la connexion et 15 s pour la lecture.
   seuls un 401 ou un 403 `insufficientPermissions`/`authError` donnent
   `AutorisationRevoquee`. Couvert par `DriveAppDataTest`. Relevé par une relecture du Carnet
   de recette ; **Popote porte encore le défaut**.
+- **⚠️ Jeton révoqué gardé en cache (suspecté, relevé le 2026-10-26).** Si l'utilisateur
+  retire l'accès depuis son compte Google, Play Services rend encore le jeton en cache :
+  `authorize()` ne présente pas l'écran de consentement, Drive répond 401, et « reconnecter »
+  boucle jusqu'à l'expiration du jeton (jusqu'à une heure). La documentation Android
+  (« Clear the token cache ») demande de vider ce cache. **Patch proposé** dans la variante du
+  Carnet : `DriveCarnet.avecJeton` appelle `GoogleAuthUtil.clearToken(contexte, jeton)` (déjà
+  présent avec `play-services-auth` 21.3.0) sur tout `AutorisationRevoquee`, y compris au
+  point `userinfo`. **Non reporté dans `src/`** : il faut restructurer cinq fonctions, et la
+  Library ne se compile pas ici. Non vérifié sur appareil.
 
 - **Paginer, toujours.** La première version demandait 100 fichiers sans suivre
   `nextPageToken`. Au-delà, des fichiers étaient **silencieusement invisibles** et une clé
@@ -174,4 +183,5 @@ Délais : 15 s pour la connexion et 15 s pour la lecture.
 | Première release signée | Popote, appareil réel | `UNREGISTERED_ON_API_CONSOLE` | Second SHA-1 sur le même client (prérequis 4) |
 | Plus tard | Popote | Archives invisibles au-delà de 100 fichiers | Pagination complète |
 | 2026-10-12 | Catalogage Library | En production | Statut ✅ |
+| 2026-10-26 | Carnet de recette, seconde relecture | Défaut suspecté : jeton révoqué gardé en cache par Play Services | Point de vigilance ⚠️, patch proposé côté Carnet, non reporté dans `src/` |
 | 2026-10-26 | Carnet de recette, intégration et relecture | Variante `drive.file` et dossier visible. Défaut : tout 403 lu comme une révocation. Faille si clé debug publique déclarée au client OAuth | Section « Variante » ; patch des 403 dans `src/` et quatre tests (composant ⚠️ jusqu'à un essai sur appareil) ; avertissement « dépôt public » dans les prérequis ; Popote à prévenir pour les 403 |
