@@ -221,13 +221,23 @@ object DriveAppData {
     }
 
     /**
-     * Drive a répondu 401/403 : le jeton n'a plus les droits, réessayer ne changera rien
-     * tant que quelqu'un ne rouvre pas l'écran d'autorisation. Distincte d'[IOException] —
-     * dont elle hérite pour rester attrapable là où seul le cas générique importe — afin que
-     * [TravailSauvegarde] puisse la traiter en échec **définitif** plutôt que de laisser
-     * `WorkManager` réessayer indéfiniment un refus qui ne se résoudra jamais tout seul.
+     * Drive refuse le jeton (401, ou 403 de raison [RAISONS_AUTORISATION]) : le jeton n'a
+     * plus les droits, réessayer ne changera rien tant que quelqu'un ne rouvre pas l'écran
+     * d'autorisation. Distincte d'[IOException] — dont elle hérite pour rester attrapable là
+     * où seul le cas générique importe — afin que [TravailSauvegarde] puisse la traiter en
+     * échec **définitif** plutôt que de laisser `WorkManager` réessayer indéfiniment un refus
+     * qui ne se résoudra jamais tout seul.
+     *
+     * **Patch Library du 2026-10-26** (relevé dans Carnet de recette, pas encore reporté dans
+     * Popote) : la version d'origine rangeait ici **tout** 403. Or Drive rend aussi un 403
+     * pour « API non activée » (`accessNotConfigured`), une limite de débit
+     * (`rateLimitExceeded`) ou un quota plein (`storageQuotaExceeded`) : on annonçait une
+     * autorisation retirée, et un refus transitoire devenait définitif. Voir [exceptionPour].
      */
     class AutorisationRevoquee(message: String) : IOException(message)
+
+    /** Les raisons d'un 403 qui disent vraiment « ce jeton n'a pas les droits ». */
+    private val RAISONS_AUTORISATION = setOf("insufficientPermissions", "authError")
 
     private const val DELAI_CONNEXION_MS = 15_000
     private const val DELAI_LECTURE_MS = 15_000
@@ -481,10 +491,7 @@ object DriveAppData {
         }
         try {
             val code = connexion.responseCode
-            if (code == 401 || code == 403) {
-                throw AutorisationRevoquee("Drive a refusé l'appel GET : HTTP $code (autorisation révoquée).")
-            }
-            if (code !in 200..299) throw IOException("Drive a refusé l'appel GET : HTTP $code.")
+            if (code !in 200..299) throw exceptionPour(code, "GET", lireCorpsErreur(connexion))
             val total = connexion.contentLengthLong.coerceAtLeast(0L)
             lireAvecProgression(connexion.inputStream, total, progression)
         } finally {
@@ -520,6 +527,39 @@ object DriveAppData {
     }
 
     // ── Parts pures, testables sans réseau ni compte ───────────────────────────
+
+    /** Ce que Drive dit de son refus : `error.errors[0].reason` et `error.message`. */
+    internal data class ErreurDrive(val raison: String?, val message: String?)
+
+    /** Lit le corps d'erreur JSON de Drive ; `null` s'il est absent ou illisible. */
+    internal fun lireErreurDrive(corps: String?): ErreurDrive? {
+        val erreur = corps
+            ?.let { runCatching { json.parseToJsonElement(it).jsonObject["error"]?.jsonObject }.getOrNull() }
+            ?: return null
+        val raison = runCatching {
+            erreur["errors"]?.jsonArray?.firstOrNull()?.jsonObject?.get("reason")?.jsonPrimitive?.content
+        }.getOrNull()
+        val message = runCatching { erreur["message"]?.jsonPrimitive?.content }.getOrNull()
+        return ErreurDrive(raison, message)
+    }
+
+    /**
+     * L'exception d'une réponse hors 2xx. Seul un vrai refus du jeton devient
+     * [AutorisationRevoquee] (définitif) ; le reste est une [IOException] (transitoire, à
+     * réessayer) qui porte le message de Google, pour que la vraie cause se lise.
+     */
+    internal fun exceptionPour(code: Int, methode: String, corps: String?): IOException {
+        val erreur = lireErreurDrive(corps)
+        val raison = erreur?.raison
+        if (code == 401 || (code == 403 && raison in RAISONS_AUTORISATION)) {
+            return AutorisationRevoquee("Drive a refusé l'appel $methode : HTTP $code (autorisation révoquée).")
+        }
+        if (raison == "accessNotConfigured" || raison == "SERVICE_DISABLED") {
+            return IOException("L'API Google Drive n'est pas activée dans le projet Google Cloud.")
+        }
+        val detail = listOfNotNull(erreur?.message, raison?.let { "($it)" }).joinToString(" ")
+        return IOException("Drive a refusé l'appel $methode : HTTP $code" + if (detail.isBlank()) "." else " — $detail")
+    }
 
     /** `popote-2026-08-26.enc` — ou `gestion-2026-08-26.enc` pour [Espace.GESTION]. */
     fun nomQuotidien(jour: LocalDate, espace: Espace = Espace.POPOTE): String =
@@ -743,8 +783,8 @@ object DriveAppData {
     /**
      * Un appel à l'API Drive. Toute réponse hors 2xx devient une [IOException] : du point de
      * vue de la sauvegarde, un refus de Drive est transitoire — quota, panne — et se réessaie.
-     * Exception : 401/403 devient une [AutorisationRevoquee], définitive — un jeton révoqué
-     * ne se répare pas en réessayant la nuit suivante, il faut quelqu'un devant l'écran.
+     * Exception : un refus du jeton devient une [AutorisationRevoquee], définitive — un jeton
+     * révoqué ne se répare pas en réessayant la nuit suivante ([exceptionPour]).
      */
     private fun appel(
         url: String,
@@ -801,15 +841,14 @@ object DriveAppData {
         }
     }
 
-    /** Toute réponse hors 2xx devient une [IOException], sauf 401/403 → [AutorisationRevoquee]. */
+    /** Toute réponse hors 2xx devient l'exception d'[exceptionPour]. */
     private fun lireReponse(connexion: HttpURLConnection, methode: String): ByteArray {
         val code = connexion.responseCode
-        if (code == 401 || code == 403) {
-            throw AutorisationRevoquee("Drive a refusé l'appel $methode : HTTP $code (autorisation révoquée).")
-        }
-        if (code !in 200..299) {
-            throw IOException("Drive a refusé l'appel $methode : HTTP $code.")
-        }
+        if (code !in 200..299) throw exceptionPour(code, methode, lireCorpsErreur(connexion))
         return if (methode == "DELETE") ByteArray(0) else connexion.inputStream.use { it.readBytes() }
     }
+
+    /** Le corps d'une réponse d'erreur, s'il y en a un : c'est lui qui dit la vraie cause. */
+    private fun lireCorpsErreur(connexion: HttpURLConnection): String? =
+        runCatching { connexion.errorStream?.use { String(it.readBytes(), StandardCharsets.UTF_8) } }.getOrNull()
 }

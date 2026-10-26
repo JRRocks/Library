@@ -126,6 +126,49 @@ class DriveAppDataTest {
         assertNull(DriveAppData.lireJetonPage("""{"nextPageToken":"","files":[]}"""))
     }
 
+    /** Corps d'erreur tel que Drive v3 le rend. */
+    private fun erreur(code: Int, raison: String, message: String) =
+        """{"error":{"code":$code,"message":"$message","errors":[{"domain":"usageLimits","reason":"$raison","message":"$message"}]}}"""
+
+    @Test
+    fun `le corps d erreur de Drive se lit en raison et message`() {
+        assertEquals(
+            DriveAppData.ErreurDrive("rateLimitExceeded", "Rate Limit Exceeded"),
+            DriveAppData.lireErreurDrive(erreur(403, "rateLimitExceeded", "Rate Limit Exceeded")),
+        )
+        assertNull(DriveAppData.lireErreurDrive(null))
+        assertNull(DriveAppData.lireErreurDrive("<html>Erreur</html>"))
+    }
+
+    /** Patch du 2026-10-26 : un 403 « API non activée » n'est pas une autorisation retirée. */
+    @Test
+    fun `un 403 API non activee n est pas une autorisation revoquee`() {
+        val exception = DriveAppData.exceptionPour(403, "GET", erreur(403, "accessNotConfigured", "Drive API has not been used"))
+
+        assertFalse(exception is DriveAppData.AutorisationRevoquee)
+        assertTrue(exception.message!!.contains("n'est pas activée"))
+    }
+
+    /** Une limite de débit reste transitoire : `TravailSauvegarde` la réessaiera. */
+    @Test
+    fun `une limite de debit reste une erreur transitoire qui porte le message de Google`() {
+        val exception = DriveAppData.exceptionPour(403, "POST", erreur(403, "rateLimitExceeded", "Rate Limit Exceeded"))
+
+        assertFalse(exception is DriveAppData.AutorisationRevoquee)
+        assertTrue(exception.message!!.contains("Rate Limit Exceeded"))
+    }
+
+    @Test
+    fun `seul un vrai refus du jeton est une autorisation revoquee`() {
+        assertTrue(DriveAppData.exceptionPour(401, "GET", null) is DriveAppData.AutorisationRevoquee)
+        assertTrue(
+            DriveAppData.exceptionPour(403, "GET", erreur(403, "insufficientPermissions", "Insufficient Permission"))
+                is DriveAppData.AutorisationRevoquee,
+        )
+        assertFalse(DriveAppData.exceptionPour(403, "GET", null) is DriveAppData.AutorisationRevoquee)
+        assertFalse(DriveAppData.exceptionPour(500, "GET", null) is DriveAppData.AutorisationRevoquee)
+    }
+
     @Test
     fun `la reponse userinfo se lit en adresse`() {
         val reponse = """{"sub":"1234567890","email":"popotier@gmail.com","email_verified":true}"""

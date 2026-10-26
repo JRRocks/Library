@@ -1,6 +1,10 @@
 package fr.popote.terrain
 
 import fr.popote.terrain.maj.MiseAJour
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -129,5 +133,46 @@ class MiseAJourTest {
         assertEquals(105L, MiseAJour.versionCodeDuNom("popote-terrain-14.0-105.apk"))
         assertNull(MiseAJour.versionCodeDuNom("popote-terrain-13.21.apk"))
         assertNull(MiseAJour.versionCodeDuNom("autre-appli-13.21-22.apk"))
+    }
+
+    /**
+     * Patch du 2026-10-26 : un écran recréé pendant la requête annule l'interrogation. Avant,
+     * l'annulation était avalée et la réponse vide retenue pour tout le processus. Ce test
+     * échoue sur la version d'origine (vérifié dans Carnet de recette).
+     */
+    @Test
+    fun `une interrogation annulee n empeche pas la suivante de proposer la mise a jour`() = runBlocking {
+        MiseAJour.oublier()
+        val publication = MiseAJour.lirePublication(reponse(actif("popote-terrain-13.21-maj-en-ligne-22.apk")))
+        val commencee = CompletableDeferred<Unit>()
+
+        val premiere = launch {
+            MiseAJour.publicationDuLancement(
+                interrogation = { commencee.complete(Unit); awaitCancellation() },
+                installee = { 21L },
+            )
+        }
+        commencee.await()
+        premiere.cancel()
+        premiere.join()
+
+        val seconde = MiseAJour.publicationDuLancement(interrogation = { publication }, installee = { 21L })
+
+        assertEquals(22L, seconde?.versionCode)
+        MiseAJour.oublier()
+    }
+
+    /** Une panne (réseau, GitHub) reste retenue : on ne réinterroge pas à chaque écran. */
+    @Test
+    fun `un echec d interrogation est retenu jusqu au prochain processus`() = runBlocking {
+        MiseAJour.oublier()
+        val publication = MiseAJour.lirePublication(reponse(actif("popote-terrain-13.21-maj-en-ligne-22.apk")))
+
+        val premiere = MiseAJour.publicationDuLancement(interrogation = { error("GitHub en panne") }, installee = { 21L })
+        val seconde = MiseAJour.publicationDuLancement(interrogation = { publication }, installee = { 21L })
+
+        assertNull(premiere)
+        assertNull("la réponse est retenue pour tout le processus", seconde)
+        MiseAJour.oublier()
     }
 }

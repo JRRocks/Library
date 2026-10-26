@@ -14,6 +14,30 @@
 
 ---
 
+## 2026-10-26 — [google-drive-appdata][maj-auto-github] Utilisés dans Carnet de recette, deux patchs
+
+- **Type** : patch + intégration dans une nouvelle app
+- **Quoi** :
+  - Les deux moteurs sont intégrés dans [Carnet de recette](https://github.com/JRRocks/Carnet-de-recette)
+    (dépôt public) : ligne « Utilisé dans » et section « Variante » de chaque fiche
+    (`drive.file` et dossier visible ; Releases du dépôt de code public, sans second dépôt).
+  - **Patch `maj-auto-github`** : `publicationDuLancement` avalait l'annulation (`runCatching`)
+    et ne proposait plus aucune mise à jour du processus après un écran recréé pendant la
+    requête. `try`/`catch` qui relance l'annulation ; deux tests.
+  - **Patch `google-drive-appdata`** : tout 403 devenait `AutorisationRevoquee`, y compris
+    « API non activée » ou une limite de débit. Le corps d'erreur est maintenant lu
+    (`exceptionPour`) ; quatre tests.
+  - Avertissement dans les prérequis de `google-drive-appdata` : dans un dépôt public, ne
+    jamais déclarer au client OAuth le SHA-1 de la clé debug versionnée.
+- **Preuve / vérification** : défauts relevés par une relecture adversariale du lot 1 du
+  Carnet, chacun contre-vérifié par un second relecteur. Les correctifs y sont compilés et
+  testés : 32 tests JVM verts, et le test d'annulation échoue sur l'ancien code. Ici, la
+  Library ne se compile pas ; le code reporté est le même, au package près. **Aucun essai sur
+  appareil** : composants concernés passés à ⚠️.
+- **Apps à prévenir** : Popote Compagnie (porte encore les deux défauts).
+
+---
+
 ## 2026-10-21 — [docs/ui-ux] Dossier UI/UX sourcé
 
 - **Type** : ajout

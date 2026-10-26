@@ -10,6 +10,7 @@ import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -111,12 +112,39 @@ object MiseAJour {
      * comptoir n'a rien à faire d'un message d'erreur sur une mise à jour qu'elle n'a pas
      * demandée.
      */
-    suspend fun publicationDuLancement(contexte: Context): Publication? = verrou.withLock {
+    suspend fun publicationDuLancement(contexte: Context): Publication? =
+        publicationDuLancement(interrogation = { interroger() }, installee = { versionInstallee(contexte) })
+
+    /**
+     * Le cœur de [publicationDuLancement], sans réseau ni `PackageManager`, pour les tests.
+     *
+     * **Patch Library du 2026-10-26** (relevé dans Carnet de recette, non encore reporté dans
+     * Popote) : la version d'origine enveloppait l'appel dans `runCatching`, qui attrape aussi
+     * l'**annulation**. Un écran quitté ou recréé pendant la requête laissait `interrogee` à
+     * `true` et `retenue` à `null` : plus aucune mise à jour proposée jusqu'à la mort du
+     * processus. Une annulation rend maintenant la main sans rien retenir.
+     */
+    internal suspend fun publicationDuLancement(
+        interrogation: suspend () -> Publication?,
+        installee: () -> Long,
+    ): Publication? = verrou.withLock {
         if (!interrogee) {
+            retenue = try {
+                aProposer(interrogation(), installee())
+            } catch (annulation: CancellationException) {
+                throw annulation
+            } catch (echec: Exception) {
+                null
+            }
             interrogee = true
-            retenue = runCatching { aProposer(interroger(), versionInstallee(contexte)) }.getOrNull()
         }
         retenue
+    }
+
+    /** Pour les tests seulement : oublie la réponse retenue, comme un nouveau processus. */
+    internal suspend fun oublier() = verrou.withLock {
+        interrogee = false
+        retenue = null
     }
 
     /** Le `versionCode` de l'APK en train de tourner. */

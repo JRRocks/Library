@@ -5,7 +5,7 @@
 >
 > Légende des statuts : ✅ Éprouvé · 🟡 Testé · ⚠️ À patcher · 🔬 Candidat · ⛔ Obsolète
 
-Dernière mise à jour : 2026-10-21
+Dernière mise à jour : 2026-10-26
 
 ---
 
@@ -15,8 +15,8 @@ Dernière mise à jour : 2026-10-21
 |---|---|---|---|---|---|
 | [`scan-multimode`](moteurs/scan-multimode/README.md) | Scan à la chaîne QR/2D, code-barres, OCR filtré par regex, NFC/RFID, **validé par consensus de N lectures identiques** | ✅ OCR et code-barres · 🟡 2D étendu · ⚠️ NFC (NDEF suspecté non lu) | Android, CameraX, ML Kit | ScanList | ScanList |
 | [`paiement-sumup`](moteurs/paiement-sumup/README.md) | Encaissement carte sur lecteur SumUp Bluetooth, connexion native du SDK, sans secret embarqué | 🟡 (connexion OK sur appareil, encaissement réel non encore validé) | Android, SDK SumUp 6.0.0 | Popote Compagnie | Popote Compagnie |
-| [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur | ✅ | Android, Play Services Auth | Popote Compagnie | Popote Compagnie |
-| [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ | Android et GitHub Actions | Popote Compagnie | Popote Compagnie |
+| [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur ; variante dossier visible en `drive.file` | ✅ · ⚠️ lecture des 403 (patch proposé) | Android, Play Services Auth | Popote Compagnie | Popote Compagnie, Carnet de recette |
+| [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`astro-soleil-lune`](moteurs/astro-soleil-lune/README.md) | Lever, coucher et midi solaire, jour et nuit polaires, phase, illumination et lever de la lune, hors-ligne | 🟡 | Kotlin pur | Android-Suntrack | Sun Track |
 
 ---
@@ -36,7 +36,9 @@ Dernière mise à jour : 2026-10-21
 | Encaisser un paiement par carte bancaire | `paiement-sumup` |
 | Se connecter avec un compte Google sans secret dans l'APK | `google-drive-appdata` |
 | Sauvegarder des données de l'app sur le Google Drive de l'utilisateur | `google-drive-appdata` |
+| Déposer sur le Drive des fichiers qu'un autre outil (Claude Cowork, l'utilisateur) doit lire | `google-drive-appdata` (variante dossier visible en `drive.file`) |
 | Distribuer et mettre à jour une app sans Play Store | `maj-auto-github` |
+| Publier les APK d'une app dont le code est déjà public, sans second dépôt ni jeton | `maj-auto-github` (variante « dépôt de code public ») |
 | Publier un APK signé depuis GitHub Actions | `maj-auto-github` (`src/version.yml`) |
 | Connaître l'heure du lever ou du coucher du soleil, ou la phase de la lune | `astro-soleil-lune` |
 | Lire un fichier Excel `.xlsx` sans bibliothèque | 🔬 candidat InnovAdapt (§ 5) ou Popote `ImportBase` |

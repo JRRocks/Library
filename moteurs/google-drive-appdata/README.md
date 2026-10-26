@@ -3,13 +3,13 @@
 | Champ | Valeur |
 |---|---|
 | **Identifiant** | `google-drive-appdata` |
-| **Statut** | ✅ **Éprouvé.** Connexion Google et dépôt sur Drive confirmés sur appareil réel, debug **et** release signée, en production chez les utilisateurs de Popote Compagnie. Les parties pures sont couvertes par `DriveAppDataTest` |
+| **Statut** | ✅ **Éprouvé.** Connexion Google et dépôt sur Drive confirmés sur appareil réel, debug **et** release signée, en production chez les utilisateurs de Popote Compagnie. Les parties pures sont couvertes par `DriveAppDataTest`. ⚠️ Lecture des refus 403 : **patch proposé le 2026-10-26** (tests JVM), non vérifié sur appareil, pas encore reporté dans Popote (voir les points de vigilance) |
 | **Plateforme** | Android natif, Kotlin, minSdk 26 |
 | **Dépendances** | `com.google.android.gms:play-services-auth:21.3.0` (API `Identity.getAuthorizationClient`), `kotlinx-serialization-json` 1.7.3, coroutines. **Pas** de SDK Drive Java ni de Google API Client : du REST pur via `HttpURLConnection` |
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé), commit `08c211a` (2026-10-12) |
-| **Utilisé dans** | Popote Compagnie (sauvegardes chiffrées, photos de passation) |
+| **Utilisé dans** | Popote Compagnie (sauvegardes chiffrées, photos de passation) · Carnet de recette (intégré le 2026-10-26, variante « dossier visible en `drive.file` », pas encore essayé sur appareil) |
 | **Fichiers d'origine** | `core/src/main/kotlin/fr/popote/core/sauvegarde/DriveAppData.kt`, `app-terrain/.../ui/Sauvegarde.kt` (lanceurs Compose), `core/.../sauvegarde/TravailSauvegarde.kt` (WorkManager), `docs/decisions.md` (section « La clé de signature debug se versionne… ») |
-| **Dernière mise à jour de la fiche** | 2026-10-12 |
+| **Dernière mise à jour de la fiche** | 2026-10-26 |
 
 ## À quoi ça sert
 
@@ -41,6 +41,13 @@ applicatif caché** du Google Drive de l'utilisateur :
    qu'aucun code n'ait changé ». La clé de **release**, elle, ne se versionne **jamais**.
 6. Si la clé release change un jour, ajoutez la nouvelle empreinte au même client **avant**
    de publier.
+
+> ⚠️ **Dépôt public : ne combinez jamais les points 4 et 5.** Une clé de debug versionnée
+> dans un dépôt **public** est publique. Si son SHA-1 est déclaré au client OAuth, n'importe
+> qui peut signer avec elle un APK du même package, que Google prendra pour l'app (avec
+> `drive.file`, il verrait tous les fichiers de l'app sur le compte de qui l'installe). Dans
+> un dépôt public, on ne déclare **que** le SHA-1 release, et les essais sur téléphone se
+> font avec des APK signés de la clé release (relevé dans Carnet de recette, 2026-10-26).
 
 ## Flux d'autorisation (API moderne `AuthorizationClient`, pas l'ancien `GoogleSignIn`)
 
@@ -82,6 +89,31 @@ l'écran) et `IOException` pour le transitoire (à **réessayer**). Un HTTP 401 
 devient `AutorisationRevoquee`, à traiter aussi comme définitif pour éviter des réessais
 infinis.
 
+## Variante : un dossier visible, en portée `drive.file` (Carnet de recette)
+
+Quand un **autre outil** doit lire ce que l'app dépose (Claude Cowork, un script, la personne
+elle-même dans son Drive), `appDataFolder` ne convient pas : il est caché à tous sauf à
+l'app. La variante du Carnet :
+
+- portée `https://www.googleapis.com/auth/drive.file` au lieu de `drive.appdata`. Elle reste
+  **non sensible** : publication sans validation Google ;
+- un **dossier visible**, retrouvé par son nom ou créé :
+  `q = name = '<nom>' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+  le plus ancien d'abord (`orderBy=createdTime`), pour que deux téléphones convergent ;
+- `lister` par `'<id>' in parents and trashed = false`, `parents = [<id>]` à la création ;
+- métadonnées construites par la bibliothèque JSON (un nom avec guillemets restait sinon un
+  JSON invalide) ;
+- erreurs lues dans le corps de la réponse (même patch que ci-dessous).
+
+**Limite structurante** : avec `drive.file`, l'app ne voit **que les fichiers qu'elle a
+créés**. Un fichier déposé par un autre outil dans le même dossier lui est invisible : le
+chemin retour passe par autre chose (dans le Carnet, le sélecteur de fichiers d'Android). Le
+déplacement du dossier par l'utilisateur, lui, ne retire pas l'accès.
+
+Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette)
+(public), `app/src/main/kotlin/fr/jrrocks/carnetderecette/drive/DriveCarnet.kt` et
+`DriveCarnetTest.kt`.
+
 ## Appels REST Drive v3 (dans `DriveAppData`)
 
 | Fonction | Requête |
@@ -114,6 +146,15 @@ Délais : 15 s pour la connexion et 15 s pour la lecture.
 
 ## Points de vigilance
 
+- **⚠️ Tout 403 était lu comme une autorisation révoquée (patch proposé le 2026-10-26).**
+  Drive rend aussi un 403 pour « API non activée » (`accessNotConfigured`), une limite de
+  débit (`rateLimitExceeded`) ou un quota plein (`storageQuotaExceeded`). Effets : message
+  faux (« reconnectez le compte ») et, dans `TravailSauvegarde`, un refus transitoire traité
+  en échec définitif. Correctif dans `src/` : le corps d'erreur est lu (`exceptionPour`) et
+  seuls un 401 ou un 403 `insufficientPermissions`/`authError` donnent
+  `AutorisationRevoquee`. Couvert par `DriveAppDataTest`. Relevé par une relecture du Carnet
+  de recette ; **Popote porte encore le défaut**.
+
 - **Paginer, toujours.** La première version demandait 100 fichiers sans suivre
   `nextPageToken`. Au-delà, des fichiers étaient **silencieusement invisibles** et une clé
   présente se lisait comme absente.
@@ -133,3 +174,4 @@ Délais : 15 s pour la connexion et 15 s pour la lecture.
 | Première release signée | Popote, appareil réel | `UNREGISTERED_ON_API_CONSOLE` | Second SHA-1 sur le même client (prérequis 4) |
 | Plus tard | Popote | Archives invisibles au-delà de 100 fichiers | Pagination complète |
 | 2026-10-12 | Catalogage Library | En production | Statut ✅ |
+| 2026-10-26 | Carnet de recette, intégration et relecture | Variante `drive.file` et dossier visible. Défaut : tout 403 lu comme une révocation. Faille si clé debug publique déclarée au client OAuth | Section « Variante » ; patch des 403 dans `src/` et quatre tests (composant ⚠️ jusqu'à un essai sur appareil) ; avertissement « dépôt public » dans les prérequis ; Popote à prévenir pour les 403 |

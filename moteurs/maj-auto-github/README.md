@@ -3,13 +3,13 @@
 | Champ | Valeur |
 |---|---|
 | **Identifiant** | `maj-auto-github` |
-| **Statut** | ✅ **Éprouvé.** En production depuis la v13.22 de Popote Compagnie : des dizaines de versions publiées (balises `v13.22` à `v13.125` sur le dépôt public), reçues par les téléphones des clients sans câble ni Play Store. Parties pures couvertes par `MiseAJourTest` |
+| **Statut** | ✅ **Éprouvé.** En production depuis la v13.22 de Popote Compagnie : des dizaines de versions publiées (balises `v13.22` à `v13.125` sur le dépôt public), reçues par les téléphones des clients sans câble ni Play Store. Parties pures couvertes par `MiseAJourTest`. ⚠️ `publicationDuLancement` : annulation avalée, **patch proposé le 2026-10-26** (test JVM qui échoue avant et passe après), non vérifié sur appareil, pas encore reporté dans Popote (voir les points de vigilance) |
 | **Plateforme** | Android natif, Kotlin, minSdk 26, et GitHub Actions |
 | **Dépendances** | `kotlinx-serialization-json` (accès `JsonObject`, sans plugin), `androidx.core` (`FileProvider`, `PackageInfoCompat`), coroutines |
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé), commit `08c211a` (2026-10-12). Dépôt public des versions : [JRRocks/Popote-Compagnie](https://github.com/JRRocks/Popote-Compagnie) |
-| **Utilisé dans** | Popote Compagnie |
+| **Utilisé dans** | Popote Compagnie · Carnet de recette (intégré le 2026-10-26, variante « dépôt de code public », aucune version publiée pour l'instant) |
 | **Fichiers d'origine** | `app-terrain/src/main/kotlin/fr/popote/terrain/maj/MiseAJour.kt`, `ui/MiseAJour.kt` (boîte de dialogue), `.github/workflows/version.yml`, `docs/publication.md` |
-| **Dernière mise à jour de la fiche** | 2026-10-12 |
+| **Dernière mise à jour de la fiche** | 2026-10-26 |
 
 ## À quoi ça sert
 
@@ -29,6 +29,24 @@ seule. À chaque lancement :
   de portée GitHub « lire seulement les releases » d'un dépôt privé.
 - La CI publie dans le dépôt public avec un **PAT fine-grained** limité à `contents: write`
   sur ce seul dépôt. Même s'il fuit, il n'ouvre pas le code.
+
+## Variante : le dépôt de code est déjà public (Carnet de recette)
+
+Quand le code n'a rien de privé, le second dépôt n'a plus de raison d'être :
+
+- les APK sont publiés dans les **Releases du dépôt de code** lui-même ;
+- `GITHUB_TOKEN` suffit (`permissions: contents: write`) : **aucun jeton personnel** ;
+- les aperçus sont des **pré-versions** du même dépôt (`apercu-<versionName>`), que
+  `/releases/latest` ignore : l'app ne les propose jamais. Ils sont produits par un workflow
+  séparé, `apercu.yml`, à chaque push qui touche l'app sur une branche de travail ;
+  `version.yml` ne sert plus qu'à publier ;
+- un aperçu est **toujours signé de la clé release**. Dans un dépôt public, la clé debug
+  versionnée est publique : un APK de debug ne doit pas pouvoir se connecter à un service
+  qui reconnaît l'app par sa signature (Google, voir la fiche `google-drive-appdata`). Sans
+  les secrets, `apercu.yml` lance les tests et ne publie rien.
+
+Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette)
+(public), `.github/workflows/apercu.yml` et `version.yml`, `docs/publication.md`.
 
 ## Conventions qui font marcher le tout
 
@@ -93,6 +111,17 @@ seule. À chaque lancement :
 
 ## Points de vigilance
 
+- **⚠️ Annulation avalée par `publicationDuLancement` (patch proposé le 2026-10-26).**
+  Symptôme : si l'écran qui interroge est quitté ou recréé (rotation, thème) pendant la
+  requête GitHub, plus aucune mise à jour n'est proposée jusqu'à la mort du processus. Cause :
+  `runCatching` attrape aussi la `CancellationException`, et `interrogee` était posé avant la
+  requête. Correctif dans `src/` : `try`/`catch` qui relance l'annulation, `interrogee` posé
+  après la réponse. Couvert par `MiseAJourTest` (le test échoue sur l'ancien code). Relevé
+  par une relecture du Carnet de recette ; **Popote porte encore le défaut**.
+- Dans Popote, la boîte de dialogue garde aussi son état dans des `remember` : après « Plus
+  tard », une rotation la fait réapparaître. Le Carnet met cet état dans un ViewModel
+  (`AccueilViewModel`), ce qui règle aussi les téléchargements perdus à la rotation.
+
 - **Rotation de la clé release = rupture de la chaîne** : les téléphones existants ne
   pourront plus installer. Gardez la clé (et sa sauvegarde) comme un bien précieux.
 - Le dépôt de versions étant public, n'y mettez **aucune donnée** (seed vide, aucun nom).
@@ -106,3 +135,4 @@ seule. À chaque lancement :
 | v13.22 | Popote | Mise en service (motivée par les correctifs SumUp à livrer sans câble) | — |
 | v13.22 → v13.125 | Popote, production | Chaîne utilisée à chaque version | Statut ✅ |
 | 2026-10-12 | Catalogage Library | — | Entrée en bibliothèque |
+| 2026-10-26 | Carnet de recette, intégration et relecture | Défaut : annulation avalée par `publicationDuLancement`. Variante « dépôt de code public » mise en place | Patch dans `src/` et deux tests ; composant ⚠️ jusqu'à un essai sur appareil ; section « Variante » ; Popote à prévenir |
