@@ -45,6 +45,7 @@ Dernière mise à jour : 2026-10-26
 | Lire ou écrire du GPX ou du KML, convertir UTM, MGRS ou Lambert 93 | 🔬 candidats ToolMap (§ 5) |
 | Appeler un LLM avec une sortie JSON structurée | 🔬 candidats Activity-track (§ 5) |
 | Récupérer un rapport de plantage sans `adb logcat` | 🔬 candidat Popote, capteur de plantage (§ 5) |
+| Coloriser des pages de manga en noir et blanc | 🔬 candidat Mihon-edited-, modèle externe (§ 5) |
 
 ---
 
@@ -165,6 +166,16 @@ Chemins relatifs à `app/src/main/java/com/scanlist/app/`.
 | Export CSV pour Excel FR | `downloadCSV` (~l. 1960) | BOM, `;`, repli sur la capacité de téléchargement des Artifacts | — |
 | Normalisation de dates d'import | `normalizeImportDate` | ISO, JJ/MM/AAAA, numéro de série Excel | — |
 | Synchro Google Drive en Rust (mobile) | branche `claude/android-rust-mobile` (non fusionnée) | Connexion Google en un bouton | Non fusionné, à revoir plus tard |
+
+### Mihon-edited-, [JRRocks/Mihon-edited-](https://github.com/JRRocks/Mihon-edited-) (fork public de Mihon) @ `d001e6f`
+
+> Le `main` public est identique à l'amont Mihon (derniers commits du 2026-10-20) : aucun code
+> propre au fork n'y est publié. Le serveur `tools/colorizer-server` cité par la branche Library
+> `ccr-be4abd50-9zo09e` (2026-10-21) **ne se trouve pas dans le dépôt**.
+
+| Candidat | Chemin | Intérêt | Ce qui manque |
+|---|---|---|---|
+| Colorisation IA de manga | Modèle externe [qweasdd/manga-colorization-v2](https://github.com/qweasdd/manga-colorization-v2) @ `a0d0e44` (Python : `torch`, `torchvision`, `opencv-python`, poids à télécharger depuis Google Drive) ; serveur HTTP `GET /health`, `POST /colorize` annoncé dans `tools/colorizer-server` | Colorisation locale et gratuite de pages noir et blanc : environ 1 s par page sur GPU NVIDIA, 15 à 20 s sur CPU, ou Google Colab (chiffres de la note d'origine, non mesurés ici). Astuce notée : ne garder que les couleurs du modèle et les poser sous le trait d'origine (canal L en Lab) pour garder la page nette | Code du serveur introuvable sur GitHub. **Aucune licence** dans le dépôt du modèle : droits réservés par défaut, à vérifier avant toute redistribution. Pas de test ni de retour d'usage consigné |
 
 ---
 

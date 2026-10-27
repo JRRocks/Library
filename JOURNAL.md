@@ -14,6 +14,24 @@
 
 ---
 
+## 2026-10-27 — [library] Branches d'autres sessions intégrées
+
+- **Type** : transverse
+- **Quoi** :
+  - Branche `claude/recipe-app-planner-92zsww` (session Carnet de recette, commits `fa90649`
+    et `9391ed9`) intégrée par avance rapide : ses deux entrées sont juste en dessous.
+  - Branche `ccr-be4abd50-9zo09e` (2026-10-21) fusionnée. Elle partait du commit initial du
+    dépôt et ajoutait au README une note sur le modèle de colorisation manga-colorization-v2.
+    La note est déplacée dans l'INDEX : candidat « Colorisation IA de manga » (§ 5,
+    Mihon-edited-) et ligne « Je cherche à… ». Le README garde la structure du catalogue.
+- **Preuve / vérification** : dépôt du modèle cloné (`a0d0e44`, 2025-03-31) : aucun fichier
+  de licence, dépendances PyTorch, poids sur Google Drive. Mihon-edited- `main` @ `d001e6f`
+  = amont Mihon, sans `tools/colorizer-server`. Les temps de calcul de la note d'origine ne
+  sont pas mesurés ici.
+- **Apps à prévenir** : aucune
+
+---
+
 ## 2026-10-26 — [google-drive-appdata] Jeton révoqué gardé en cache (suspecté)
 
 - **Type** : patch (proposé, hors `src/`)
