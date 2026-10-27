@@ -14,6 +14,42 @@
 
 ---
 
+## 2026-10-27 — [library] Relecture à froid : corrections de cohérence et d'exactitude
+
+- **Type** : transverse + patch (statut)
+- **Quoi** : corrections issues d'une relecture indépendante de tous les changements du jour.
+  - INDEX § 1 : une seule formule pour l'état d'un correctif, « patch dans `src/` » ou « patch
+    hors `src/` » (au lieu de « proposé » ou « appliqué » employés pour les deux cas).
+  - `paiement-sumup` : le `Reussi` perdu après une recréation de l'activité est un défaut
+    suspecté de `src/` (bus sans relecture), pas du SDK ; composant `CheckoutSumUp.kt` passé à ⚠️
+    comme les autres défauts suspectés (lampe, jeton). L'entrée de revue de ce jour disait « pas
+    de ⚠️ » : elle est ainsi corrigée.
+  - `scan-multimode` : contradiction signalée entre le ✅ déclaré par l'utilisateur et la
+    documentation de ScanList (seuils du consensus vérifiés en test unitaire seulement) ; lampe
+    ajoutée au statut de l'en-tête ; commits de la variante Carnet cités (`afccb60`, `25b24e4`,
+    `6c60ef0`).
+  - `maj-auto-github` : effet de bord du patch d'annulation (une `Error` n'est plus avalée),
+    parade de Popote aux minutes épuisées (runner auto-hébergé, `2bd6298`), section « Réglages
+    éprouvés ». Pointe Popote `93e5d5b` : le code des moteurs est inchangé mais `version.yml` a
+    changé (l'entrée de revue de ce jour disait « moteurs inchangés »).
+  - ToolMap : section de l'INDEX distinguant l'état revu (`eee8c6b`) de l'état public
+    (`a37dcab`, où P24.1 est corrigé et `:debugkit` retiré du build). La provenance de
+    `rapport-plantage` et de `docs/methodes/android-en-session-cloud.md` a été complétée au commit
+    précédent (republication de ToolMap) : la consigne « garder ou baliser la branche `ccr` » de
+    l'entrée `rapport-plantage` est remplacée par l'archive privée `ToolMap-Archive`.
+  - `rapport-plantage` : en-tête aligné (saut de l'initialisation 🟡) ; correctif Popote de la
+    base illisible dit « vérifié dans le code seulement ». `astro-soleil-lune` : section
+    « Réglages éprouvés ». Fiche méthode : SuivieMAT public, runner auto-hébergé.
+  - INDEX : BOM littéral invisible remplacé par `\uFEFF` écrit en clair ; ligne Python du § 4
+    complétée ; faiblesses de sécurité d'une app privée (InnovAdapt) décrites sans détail
+    exploitable. AGENTS § 3 : exemple de statuts mis à jour.
+- **Preuve / vérification** : relecture en deux angles (cohérence et règles ; exactitude sur plus
+  de 40 affirmations vérifiées dans les dépôts sources, copies et patchs relus, tests purs
+  relancés : 91, 13 et 7 verts). Historique des fiches : lignes ajoutées seulement.
+- **Apps à prévenir** : Popote Compagnie (`Reussi` perdu, suspecté).
+
+---
+
 ## 2026-10-27 — [library] Revue des dépôts : candidats et dépôts revus mis à jour
 
 - **Type** : revue de dépôt

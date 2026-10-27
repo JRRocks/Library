@@ -196,6 +196,13 @@ Commits `f5f8baf` (ligne d'état à la place de la boîte de dialogue) et `8dc48
 tard » = `Ecartee`, causes d'échec en français). `EtatsUi.kt`, `AccueilViewModel.kt` et le
 test sont inchangés jusqu'à `797fae7` (2026-10-27).
 
+## Réglages éprouvés
+
+| Paramètre | Valeur | Pourquoi |
+|---|---|---|
+| Décision de proposer | `versionCode` publié strictement supérieur au `versionCode` installé | Ne jamais faire régresser un téléphone en service ; en production chez Popote de la v13.22 à la v13.125 |
+| Fréquence | Une interrogation par processus, silencieuse en cas d'échec | Pas de message d'erreur pour une mise à jour que personne n'a demandée ; en production chez Popote |
+
 ## API exposée (`MiseAJour`)
 
 | Membre | Rôle |
@@ -217,6 +224,11 @@ test sont inchangés jusqu'à `797fae7` (2026-10-27).
   après la réponse. Couvert par `MiseAJourTest` (le test échoue sur l'ancien code). Relevé
   par une relecture du Carnet de recette ; **Popote porte encore le défaut** (vérifié à
   `6149a81` : `maj/MiseAJour.kt` l. 114-117).
+  Effet de bord du correctif : il attrape `Exception` là où `runCatching` attrapait tout
+  `Throwable`. Une `Error` levée pendant l'interrogation (`NoClassDefFoundError` après R8,
+  `ExceptionInInitializerError`, manque de mémoire) n'est plus avalée et fait planter l'app au
+  lancement, au lieu de rester silencieuse. Choix assumé du Carnet (même code) ; une app qui
+  préfère le silence attrape `Throwable` après la clause qui relance l'annulation.
 - Dans Popote, la boîte de dialogue garde aussi son état dans des `remember` : après « Plus
   tard », une rotation la fait réapparaître. Le Carnet met cet état dans un ViewModel
   (`AccueilViewModel`), ce qui règle aussi les téléchargements perdus à la rotation.
@@ -255,7 +267,7 @@ test sont inchangés jusqu'à `797fae7` (2026-10-27).
 | `android-actions/setup-android@v3` | Échoue avant toute étape Gradle : « Failed to find package 'tools' » | `src/version.yml` n'en dépend pas (le SDK du runner `ubuntu-latest` suffit). Ne pas l'ajouter ; au besoin, localiser `sdkmanager` sous `$ANDROID_SDK_ROOT/cmdline-tools/*/bin` | SuivieMAT `f8f3eaf`, `consignes/outils.md` § 6 bis (depuis 2026-09) ; Android-Suntrack, runs `38064480807`, `38075724619` et `38075805926` (octobre 2026) |
 | Lancement manuel | `workflow_dispatch` (bouton *Run workflow*, `actions_run_trigger`) n'existe que si le fichier du workflow est sur la **branche par défaut** | Fusionner `version.yml` dans la branche par défaut avant la première publication ; le run lit ensuite le fichier de la référence choisie | Carnet `8dc4820`, `docs/publication.md` (note finale) ; SuivieMAT `f8f3eaf`, `consignes/outils.md` § 6 bis |
 | Balise poussée depuis une session cloud Claude | Refusée (HTTP 403) par la politique réseau | Faire poser la balise par le workflow, avec le jeton de l'Action (étape « Poser la balise ») | Popote `CLAUDE.md` ; Carnet `.github/workflows/version.yml` l. 108-110 |
-| Minutes Actions épuisées ou plafond de dépense atteint | Les runs sont refusés en quelques secondes, sans machine (`runner_id` 0), sans étape ni journal | Ce n'est pas le code : vérifier la facturation du compte. Pas de publication d'ici là, puisque la signature release n'a lieu qu'en CI | SuivieMAT `f8f3eaf`, `consignes/outils.md` § 6 bis (2026-10-26) ; ToolMap `eee8c6b`, `CLAUDE.md` (« spending limit », 2026-10-16) |
+| Minutes Actions épuisées ou plafond de dépense atteint | Les runs sont refusés en quelques secondes, sans machine (`runner_id` 0), sans étape ni journal | Ce n'est pas le code : vérifier la facturation du compte. Pas de publication d'ici là, puisque la signature release n'a lieu qu'en CI. Parade de Popote : un runner auto-hébergé sur le PC de l'utilisateur (WSL2, `runs-on: [self-hosted, linux]`) ; la clé release y est décodée dans un dossier qui survit au job, d'où une étape d'effacement en `if: always()` à garder | SuivieMAT `f8f3eaf`, `consignes/outils.md` § 6 bis (2026-10-26) ; ToolMap `eee8c6b`, `CLAUDE.md` (« spending limit », 2026-10-16) ; runner du PC : Popote `2bd6298` (2026-10-27), `docs/runner-pc.md` |
 | Création de la clé | `keytool` récent (PKCS12) ne demande qu'**un** mot de passe ; Android Studio ignore son second champ | Mettre la même valeur dans `SIGNATURE_STORE_PASSWORD` et `SIGNATURE_KEY_PASSWORD` | Carnet `8dc4820`, `docs/publication.md` § 1 |
 
 ## Historique des retours d'usage
@@ -271,3 +283,4 @@ test sont inchangés jusqu'à `797fae7` (2026-10-27).
 | 2026-10-27 | Library, patch CI | Défaut latent de `src/version.yml` : mots de passe écrits dans `keystore.properties` puis relus par `Properties.load`. Relevé par la revue de Carnet (corrigé dans Carnet en `f198fd3`). Démonstration JDK 21 : vraie clé PKCS12, blocs `run` de l'ancien et du nouveau `version.yml`, lecture comme `build.gradle.kts`. Avant : `ab\cd123`, `␣␣espace12` (deux espaces de tête) et `fin1234\` échouent (« keystore password was incorrect » ; le dernier avale `keyAlias`). Après : les trois signent ; deux témoins signent dans les deux cas. `MiseAJour.kt` et `MiseAJourTest.kt` non modifiés (9/9 verts en JVM) | `src/version.yml` patché, commentaire corrigé ; extrait `signingConfigs.release` dans « Intégration » ; composant CI ⚠️ (patch appliqué, jamais exercé par une vraie publication) ; Popote porte le défaut (`version.yml` l. 113-115, `build.gradle.kts` l. 56-58 à `6149a81`), à prévenir sans urgence ; Carnet a déjà le correctif |
 | 2026-10-27 | Revue Carnet de recette (`8dc4820`, distant `797fae7`) | Aucune balise sur le dépôt au 2026-10-27 (ni `v*` ni `apercu-*`) : aucune version publiée, aucun APK installé depuis la CI. `maj/MiseAJour.kt` et les workflows inchangés de `f198fd3` à `797fae7`. Interface passée en ligne d'état (`f5f8baf`, `8dc4820`) | Section « Exemple d'interface » (non éprouvé) ; commit de provenance ajouté à la « Variante » ; statut inchangé |
 | 2026-10-27 | Revues InnovAdapt, Activity-track, SuivieMAT, Android-Suntrack, ToolMap | Pièges de CI vécus ailleurs : clé vérifiée trop tard et secrets interpolés (InnovAdapt `c5aba61`), quota d'artefacts (InnovAdapt `02dd5cd`, Activity-track run `38150625547`), `setup-android` cassé, minutes épuisées. Aucun de ces dépôts n'utilise le moteur | Tableau « Pièges de CI » ; `src/` inchangé pour ces points |
+| 2026-10-27 | Relecture de la Library | Effet de bord du patch d'annulation (une `Error` n'est plus avalée) ; parade de Popote aux minutes épuisées : runner auto-hébergé sur le PC (`2bd6298`, après la revue de `6149a81`) | Points de vigilance et « Pièges de CI » complétés ; section « Réglages éprouvés » ajoutée (gabarit) |

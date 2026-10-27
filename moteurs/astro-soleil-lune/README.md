@@ -57,6 +57,12 @@ Sur Android en minSdk 26, `java.time` est natif ; en dessous, il faut le désucr
 
 Les tests purs se lancent sans Gradle ni Android (méthode : `docs/methodes/android-en-session-cloud.md`).
 
+## Réglages éprouvés
+
+Aucun : le pas d'échantillonnage de la lune (10 min), la marge de 2 h autour du jour et
+l'altitude de l'horizon lunaire (0,125°) sont des choix de l'app, jamais ajustés après un retour
+terrain.
+
 ## Points de vigilance
 
 - **Piège classique évité** : le jour julien est calculé à partir de la date UTC qui

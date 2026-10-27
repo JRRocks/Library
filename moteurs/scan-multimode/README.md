@@ -3,7 +3,7 @@
 | Champ | Valeur |
 |---|---|
 | **Identifiant** | `scan-multimode` |
-| **Statut global** | ✅ **Éprouvé** pour l'OCR et le code-barres (déclaré éprouvé par l'utilisateur après des tests en réel). 🟡 pour l'élargissement 2D et le générateur de formules `RegexSuggester`. ⚠️ pour le NFC : patch NDEF appliqué ici le 2026-10-27, **non vérifié sur appareil**. Détail dans le tableau des composants |
+| **Statut global** | ✅ **Éprouvé** pour l'OCR et le code-barres (déclaré éprouvé par l'utilisateur après des tests en réel). 🟡 pour l'élargissement 2D et le générateur de formules `RegexSuggester`. ⚠️ pour le NFC : patch NDEF appliqué ici le 2026-10-27, **non vérifié sur appareil**. ⚠️ lampe éteinte après un passage en arrière-plan (suspecté, patch hors `src/`, dans le Carnet). Détail dans le tableau des composants |
 | **Plateforme** | Android natif, Kotlin, minSdk 26 |
 | **Dépendances** | CameraX 1.3.4, ML Kit `barcode-scanning` 17.3.0 et `text-recognition` 16.0.1 (modèles **embarqués**, donc hors-ligne), `android.nfc` |
 | **Provenance** | [JRRocks/ScanList](https://github.com/JRRocks/ScanList) (privé), commit `1368027` (2026-09-22), pour tout `src/` et `tests/` sauf `RegexSuggester`. `RegexSuggester.kt` et son test : [JRRocks/SuivieMAT](https://github.com/JRRocks/SuivieMAT) (public depuis le 2026-10-27), commit d'origine `5c81d3c` (2026-10-26), identiques à la pointe revue `5eb5198` (2026-10-27). `NfcScanSurface.kt` est **patché dans la Library** (2026-10-27, voir les points de vigilance) |
@@ -200,7 +200,8 @@ Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Car
 `GeometrieImage`, `Reticule`, `CameraPreview`, `ScanFeedback`) et
 `core/src/main/kotlin/fr/jrrocks/carnetderecette/core/scan/` (`ReconnaissanceEtiquette`,
 `SuiviEtiquettes`, copies de `ScanConsensus`, `ScanDebouncer`, `ScanValue`), avec leurs tests
-(consensus et anti-rebond repris, géométrie de l'image en JVM).
+(consensus et anti-rebond repris, géométrie de l'image en JVM). Commits : `afccb60` (introduction),
+`25b24e4` et `6c60ef0` (correctifs de relecture), tous du 2026-10-27, à jour à la pointe `797fae7`.
 
 ## Intégration dans une nouvelle app
 
@@ -264,6 +265,10 @@ Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Car
    désarme la capture OCR).
 
 ## Réglages éprouvés
+
+> Les trois réglages du consensus reposent sur la déclaration de l'utilisateur (2026-10-12) ; la
+> documentation de ScanList (`CLAUDE.md` à `1368027`) dit encore qu'ils ne sont couverts qu'en
+> test unitaire, la phase 10 (test terrain) étant ⬜. Voir l'historique du 2026-10-27.
 
 | Paramètre | Valeur | Pourquoi |
 |---|---|---|
@@ -388,3 +393,4 @@ Appareil de référence : Samsung Galaxy S25.
 | 2026-10-27 | SuivieMAT `5c81d3c` (décision 25) | Générateur de formules regex à partir d'exemples, sans IA, Kotlin pur, 27 tests. Aucun usage réel consigné (« Générateur de formules à l'écran ⬜ Non vérifié ») | Ajout de `RegexSuggester` (🟡) dans `src/` et `tests/`, sans modification ; fichiers identiques de `5c81d3c` à `5eb5198` |
 | 2026-10-27 | ToolMap (`c620a38`), relecture de la fiche | ICU d'Android plus strict que le JDK des tests ; descriptions d'erreur ICU différentes de celles que `frenchMessage` attend | Points de vigilance ICU, UID et aperçu OCR ajoutés ; ligne `ScanValue` corrigée (`normalize` garde la casse, c'est `key` qui passe en majuscules) |
 | 2026-10-27 | Tests exécutés dans la Library | `ktest.sh` (Kotlin 2.0.21, JUnit 4.13.2, sans Gradle) sur `RegexSuggesterTest`, `RegexRuleEngineTest`, `ScanConsensusTest`, `ScanDebouncerTest` et `NfcValueTest` : `OK (91 tests)` | Composants purs confirmés en JVM ; statuts inchangés (un test JVM ne vaut pas un usage réel) |
+| 2026-10-27 | Relecture de la Library | Le ✅ de l'OCR et du code-barres repose sur la déclaration de l'utilisateur du 2026-10-12 ; la documentation de ScanList (`CLAUDE.md` et `consignes/workflow.md` à `1368027`) dit toujours que le décodage réel et les seuils du consensus n'ont été vérifiés qu'en test unitaire (phase 10 ⬜). Contradiction signalée, à faire trancher par l'utilisateur. Provenance de la variante Carnet complétée (`afccb60`, `25b24e4`, `6c60ef0`) | Statut inchangé ; note ajoutée aux réglages du consensus |

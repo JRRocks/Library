@@ -3,7 +3,7 @@
 | Champ | Valeur |
 |---|---|
 | **Identifiant** | `paiement-sumup` |
-| **Statut** | 🟡 **Testé.** Sur appareil réel, l'appel au SDK atteint l'écran de connexion SumUp (v13.19, après le correctif du piège 1), qui plante aussitôt (piège 2) ; le correctif de ce second plantage (v13.20) n'a jamais été confirmé sur l'appareil. **Aucun encaissement réel n'a encore abouti** (toujours vrai au 2026-10-27, essai sur terminal physique en attente). La logique de résultat est couverte par des tests Robolectric. Limite du SDK connue par décompilation, non vérifiée sur matériel : un `Echec` ou un `Annule` ne prouve pas que la carte n'a pas été débitée (voir « Points de vigilance ») |
+| **Statut** | 🟡 **Testé.** Sur appareil réel, l'appel au SDK atteint l'écran de connexion SumUp (v13.19, après le correctif du piège 1), qui plante aussitôt (piège 2) ; le correctif de ce second plantage (v13.20) n'a jamais été confirmé sur l'appareil. **Aucun encaissement réel n'a encore abouti** (toujours vrai au 2026-10-27, essai sur terminal physique en attente). La logique de résultat est couverte par des tests Robolectric. Limite du SDK connue par décompilation, non vérifiée sur matériel : un `Echec` ou un `Annule` ne prouve pas que la carte n'a pas été débitée (voir « Points de vigilance »). ⚠️ Défaut suspecté dans `src/` : un `Reussi` émis pendant la recréation de l'activité peut être perdu (voir « Points de vigilance ») |
 | **Plateforme** | Android natif, Kotlin, minSdk 26, AGP 8.8.0, Kotlin 2.0.21, Java 17 |
 | **Dépendances** | `com.sumup:merchant-sdk:6.0.0` (dépôt `https://maven.sumup.com/releases`), `com.google.android.gms:play-services-location:21.3.0` (**obligatoire**, voir plus bas), `com.android.tools:desugar_jdk_libs:2.1.5` |
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé, code source de [Popote-Compagnie](https://github.com/JRRocks/Popote-Compagnie)), commit `08c211a` (2026-10-12) ; `CheckoutSumUp.kt` et `CheckoutSumUpTest.kt` identiques à `6149a81` (2026-10-26), hors gabarit `<AFFILIATE_KEY>`. Les numéros de ligne de Popote cités dans cette fiche renvoient à `6149a81` |
@@ -45,7 +45,7 @@ l'`applicationId`. Dans `src/CheckoutSumUp.kt`, la valeur est remplacée par le 
 
 | Fichier (`src/`) | Rôle | Dépend d'Android ? | Tests (`tests/`) | Statut |
 |---|---|---|---|---|
-| `CheckoutSumUp.kt` | Connexion native, encaissement (`SumUpAPI.checkout`), nouvel identifiant de transaction à chaque tentative, pont `onActivityResult` → Compose, correspondance des résultats | Oui (SDK SumUp, `Activity`, `Intent`) | `CheckoutSumUpTest.kt`, 9 tests Robolectric, SDK substitué | 🟡 connexion lancée sur appareil réel ; ni connexion aboutie ni encaissement réel consignés |
+| `CheckoutSumUp.kt` | Connexion native, encaissement (`SumUpAPI.checkout`), nouvel identifiant de transaction à chaque tentative, pont `onActivityResult` → Compose, correspondance des résultats | Oui (SDK SumUp, `Activity`, `Intent`) | `CheckoutSumUpTest.kt`, 9 tests Robolectric, SDK substitué | 🟡 connexion lancée sur appareil réel ; ni connexion aboutie ni encaissement réel consignés · ⚠️ `Reussi` perdu si l'activité est recréée pendant le paiement (suspecté, non vérifié ; patch possible : garder le dernier résultat jusqu'à sa lecture) |
 | *(hors `src/`)* amorçage et relais | `SumUpState.init` dans `Application.onCreate()`, `MainActivity.onActivityResult` qui relaie vers `onResultat` | Oui | Aucun : le SDK ne tourne pas sous Robolectric | 🟡 piège 1 corrigé, confirmé sur appareil (v13.19) ; piège 2 corrigé (v13.20), jamais confirmé sur l'appareil |
 | *(hors `src/`)* interface Popote | `FeuilleCarteSumUp`, `avertirDebitEventuel`, délai de garde de 3 min (`ui/Comptoir.kt`), réutilisés par `ui/Comptes.kt` et `ui/Cotisation.kt` ; vente en attente sauvée dans un `rememberSaveable` | Oui (Compose) | Dans Popote, non repris : `EcransTest` (délai de garde, vente en attente qui survit à une restauration d'état) | 🟡 jamais exercée avec un vrai terminal |
 
@@ -190,8 +190,8 @@ terrain : SDK `6.0.0` (étape 2) et délai de garde de 3 min (étape 8).
   l'avertissement n'est vérifié par aucun test.
 - **Le SDK peut ne jamais répondre.** Sans délai de garde, la feuille de paiement reste
   bloquée. Popote : 3 min, puis échec avec avertissement (« Intégration », étape 8).
-- **Recréation de l'activité : le `Reussi` risque d'être perdu.** Hypothèse de revue, tirée
-  du code et du cycle de vie Android, **non vérifiée** (ni test, ni appareil).
+- **⚠️ Recréation de l'activité : le `Reussi` risque d'être perdu (suspecté).** Défaut de
+  `src/`, tiré du code et du cycle de vie Android, **non vérifié** (ni test, ni appareil).
   `evenements` ne rejoue rien (`MutableSharedFlow(extraBufferCapacity = 1)`,
   `src/CheckoutSumUp.kt` l. 73) : un résultat émis sans abonné est perdu, et c'est voulu
   (test `un evenement emis sans collecteur actif n est pas rejoue a un collecteur ulterieur`,
@@ -202,7 +202,9 @@ terrain : SDK `6.0.0` (étape 2) et délai de garde de 3 min (étape 8).
   que la carte est débitée, et rien n'avertirait l'opérateur : `etatCarte` repart à `Repos`
   (l. 134-141). `EcransTest` ne couvre pas ce cas : il simule la réponse après la
   restauration, quand le collecteur écoute déjà. L'essai prévu par Popote
-  (`docs/todo.md` l. 369-383) le confirmerait ou l'infirmerait.
+  (`docs/todo.md` l. 369-383) le confirmerait ou l'infirmerait. Patch possible, à écrire avec
+  un test : garder le dernier résultat non lu (relecture d'une valeur, ou état acquitté par
+  l'écran) au lieu d'un bus sans relecture.
 - **Session native** : aucune doc SumUp ne garantit qu'elle survit aux redémarrages
   (« Points ouverts »). Si elle se perd, l'écran de connexion revient au moment de la vente.
 
@@ -235,3 +237,4 @@ terrain : SDK `6.0.0` (étape 2) et délai de garde de 3 min (étape 8).
 | 2026-10-12 | Catalogage Library | Encaissement réel toujours non validé | Statut 🟡 |
 | 2026-10-27 | Revue Popote (`6149a81`) | `CheckoutSumUp.kt` et `CheckoutSumUpTest.kt` identiques à la Library hors gabarit `<AFFILIATE_KEY>` (l. 48) ; `sumup/` inchangé depuis `08c211a`. Toujours aucun encaissement réel (`docs/todo.md` l. 325 : « Aucun encaissement réel n'a jamais abouti à ce jour »). Correctif du piège 2 (v13.20) jamais confirmé sur l'appareil (`docs/todo.md` l. 328) | Statut 🟡 inchangé ; provenance vérifiée jusqu'à `6149a81` ; statut précisé ; section « Pièges trouvés sur appareil réel » renommée « Pièges connus », avec une colonne « Où constaté » (seuls les pièges 1 et 2 l'ont été sur appareil) ; `src/` et `tests/` non modifiés |
 | 2026-10-27 | Revue Popote, documentation | Point de vigilance du dépôt source non repris au catalogage (déjà à `08c211a`) : d'après la décompilation du SDK, `Echec` ou `Annule` possibles après un vrai débit. Parade `avertirDebitEventuel()` dans `ui/Comptoir.kt`, `ui/Comptes.kt` et `ui/Cotisation.kt`. `forkEvery = 1` : confinement d'une cascade d'échecs inexpliquée, pas une cause démontrée (`docs/decisions.md` l. 3692-3720). Hypothèse de revue, non vérifiée : après une recréation de l'activité, le `Reussi` arriverait avant l'abonnement à `evenements` et serait perdu | Sections « Composants », « Réglages éprouvés » et « Points de vigilance » ajoutées ; piège 3 et exemple Compose mis à jour ; étape 8 (avertissement, délai de garde) ; § « Tests » nuancé ; hypothèse notée en point de vigilance et en point ouvert. Limite du SDK et hypothèse non vérifiée : pas de ⚠️ |
+| 2026-10-27 | Relecture de la Library | Le `Reussi` perdu après une recréation de l'activité vient de `src/CheckoutSumUp.kt` (`MutableSharedFlow` sans relecture, l. 73 ; le test l. 176 confirme qu'une valeur émise sans abonné est perdue), pas du SDK. Fortement suspecté, conséquence financière : traité comme les autres défauts suspectés de la Library (lampe de `scan-multimode`, jeton de `google-drive-appdata`) | Composant `CheckoutSumUp.kt` : ⚠️ (suspecté, non vérifié) ; statut global 🟡 inchangé ; Popote à prévenir |

@@ -73,7 +73,7 @@ l'améliorer. Votre rôle, en tant qu'agent de passage, est de la **faire évolu
                                                  └──── patch validé ◄── ⚠️ À patcher ◄┘ (défaut constaté)
 ```
 
-Un moteur peut avoir des **composants de statuts différents** (ex. le scan : OCR ✅, NFC 🟡).
+Un moteur peut avoir des **composants de statuts différents** (ex. le scan : OCR ✅, `RegexSuggester` 🟡, NFC ⚠️).
 Le tableau « Composants » de la fiche porte alors le détail, et le statut global le résume.
 
 ---
