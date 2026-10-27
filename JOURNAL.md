@@ -14,6 +14,21 @@
 
 ---
 
+## 2026-10-27 — [scan-multimode] Anti-rebond glissant et lampe après l'arrière-plan (Carnet de recette)
+
+- **Type** : retour d'usage (relecture adverse) · patch proposé
+- **Quoi** : variante du Carnet complétée (points 8 à 10 : verrou glissant et voisin écarté,
+  numéro nettement le plus grand, liaison, rotation de capture et lampe de `CameraPreview`).
+  Points de vigilance : ⚠️ lampe éteinte après un passage en arrière-plan (suspecté, patch
+  proposé côté Carnet), verrou à durée fixe de `ScanDebouncer` qui revalide une valeur restée
+  en vue.
+- **Preuve / vérification** : relecture adverse du Carnet, chaque constat contre-vérifié par
+  un second agent ; tests JVM du verrou glissant (`SuiviEtiquettesTest`). Lampe : déduite du
+  code de CameraX, aucun essai sur appareil. Non reporté dans `src/`.
+- **Apps à prévenir** : ScanList (lampe, si le défaut se confirme sur un téléphone).
+
+---
+
 ## 2026-10-27 — [scan-multimode] Utilisé dans Carnet de recette, variante OCR sans regex ; trois candidats
 
 - **Type** : retour d'usage (intégration) · revue de dépôt

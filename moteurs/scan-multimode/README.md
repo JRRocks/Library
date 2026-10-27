@@ -72,7 +72,7 @@ Le NFC n'a pas de bruit optique : il passe par le debouncer seul, sans consensus
 | `BarcodeFormats.kt` | Masques de formats 1D et 2D **disjoints**, noms de symbologie | Constantes ML Kit | `BarcodeFormatsTest` | ✅ 1D · 🟡 PDF417, Data Matrix, Aztec pas encore vus sur un vrai code |
 | `BarcodeAnalyzer.kt` | `ImageAnalysis.Analyzer` ML Kit, filtrage dans les **options** du décodeur | Oui | non (pas testable hors appareil) | ✅ |
 | `OcrAnalyzer.kt` | `ImageAnalysis.Analyzer` qui remonte le texte brut ; la regex est appliquée par l'appelant | Oui | non | ✅ |
-| `CameraPreview.kt` | Composable CameraX : 720p (1D, OCR) ou 1080p (2D), `STRATEGY_KEEP_ONLY_LATEST`, torche, réticule qui se remplit selon l'avancement du consensus | Oui | non | ✅ |
+| `CameraPreview.kt` | Composable CameraX : 720p (1D, OCR) ou 1080p (2D), `STRATEGY_KEEP_ONLY_LATEST`, torche, réticule qui se remplit selon l'avancement du consensus | Oui | non | ✅ · ⚠️ lampe après l'arrière-plan (suspecté) |
 | `ScanFeedback.kt` | Trois signatures sonores et haptiques : succès, doublon, hors liste | Oui | non | ✅ |
 | `NfcValue.kt` | Choix NDEF/UID, décodage RTD_TEXT (UTF-8/UTF-16) | Non | `NfcValueTest` | 🟡 |
 | `NfcTagDecoder.kt` | Pont `Tag` Android vers `NfcValue` | Oui | non | 🟡 ⚠️ voir les points de vigilance |
@@ -113,6 +113,23 @@ la semaine), et le grand numéro se reconnaît à sa **taille**. D'où ces adapt
    garde d'ambiguïté et anti-rebond 1,5 s inchangés. Le nombre de personnes est **voté**
    image par image pendant le consensus ; votes partagés ou absents → « à confirmer ».
 7. `RegexRuleEngine`, `BarcodeAnalyzer`, `BarcodeFormats` et le NFC ne sont pas repris.
+8. **Anti-rebond glissant** (`SuiviEtiquettes`, à la place du verrou à durée fixe de
+   `ScanDebouncer`) : un numéro validé reste verrouillé tant qu'il est relu à moins de 1,5 s
+   d'intervalle ; le verrou ne tombe qu'après 1,5 s sans le lire. Avec le verrou fixe, une
+   étiquette gardée en vue (on corrige le nombre de personnes, téléphone toujours pointé) était
+   revalidée toutes les 1,5 à 2,5 s : « déjà scannée » et double bip en boucle. Un numéro à un
+   chiffre près d'un numéro verrouillé est écarté pendant ce temps : le numéro verrouillé
+   n'étant plus compté, la garde d'ambiguïté du consensus ne le voyait plus (« 201 » mal lu
+   sur l'étiquette « 207 » finissait par se valider). Une valeur retirée par l'utilisateur
+   reçoit le même verrou (`ignorer`) : elle ne revient pas tant qu'elle reste dans le champ.
+9. **Numéro nettement le plus grand** : un numéro du menu n'est retenu que si aucun autre
+   élément du réticule n'atteint 90 % de sa hauteur (sinon un petit numéro imprimé ailleurs
+   sur l'étiquette passait quand le grand était mal lu).
+10. **`CameraPreview`** : la taille de l'aperçu n'est une clé de liaison qu'avec un analyseur
+    (sinon le clavier qui s'anime relie la caméra à chaque image) ; la rotation cible de
+    l'`ImageCapture` suit l'orientation physique du téléphone (`OrientationEventListener`,
+    table de la doc CameraX) ; la lampe est réappliquée après chaque liaison et à `ON_RESUME`
+    (voir les points de vigilance).
 
 Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette)
 (public), `app/src/main/kotlin/fr/jrrocks/carnetderecette/scan/` (`OcrElements`,
@@ -180,6 +197,19 @@ Appareil de référence : Samsung Galaxy S25.
   `ndef.ndefMessage` dans `NfcTagDecoder`. Si un tag NDEF texte remonte quand même son UID
   sur un vrai téléphone, appliquez le patch ici et dans ScanList, puis consignez-le dans
   `JOURNAL.md`.
+- **⚠️ Lampe éteinte après un passage en arrière-plan (suspecté, à confirmer sur appareil).**
+  Quand la caméra n'a plus de cas d'usage actif (`ON_STOP`, ou `unbindAll`), CameraX éteint la
+  lampe et oublie la consigne. `LaunchedEffect(camera, torchEnabled)` ne se relance pas au
+  retour : `bindToLifecycle` rend le même `LifecycleCamera`, et `torchEnabled` n'a pas changé.
+  Le bouton montre la lampe allumée sur une scène sombre. **Patch proposé** (appliqué dans le
+  Carnet, `scan/CameraPreview.kt`) : lire la consigne par `rememberUpdatedState` et rappeler
+  `enableTorch` après chaque liaison et dans un `LifecycleEventEffect(ON_RESUME)`. Non reporté
+  dans `src/` tant qu'il n'est pas vu sur un téléphone.
+- **Verrou de 1,5 s à durée fixe** : `ScanDebouncer` n'écrit l'heure qu'à l'acceptation. Une
+  valeur restée en vue est donc revalidée toutes les 1,5 s environ (signal « doublon » répété
+  dans ScanList, où le dédoublonnage en base empêche toute écriture). Acceptable pour un
+  inventaire ; pour une app qui affiche le dernier résultat et le laisse corriger, préférer
+  le verrou glissant de la variante du Carnet (point 8).
 - **Codes empilés illisibles** : Codablock F, Code 16K, Code 49 et MicroPDF417 ne sont lus ni
   par ML Kit ni par ZXing. On les reconnaît aux **barres horizontales pleines entre les
   rangées** ; un PDF417 a ses rangées collées. Contournement : le mode OCR sur le texte en
@@ -207,4 +237,5 @@ Appareil de référence : Samsung Galaxy S25.
 | 2026-08-24 | ScanList, tests réels | OCR et code-barres imprécis (angle, reflet) | Ajout de `ScanConsensus` et de la garde d'ambiguïté, extension de la regex aux codes |
 | 2026-09-15 | ScanList, terrain | Étiquette à code « en plusieurs étages » illisible | Mode 2D élargi (PDF417, Data Matrix, Aztec) en 1080p ; Codablock F et apparentés documentés comme limite |
 | 2026-10-12 | Catalogage Library | Moteur déclaré éprouvé par l'utilisateur | Entrée en bibliothèque ; NFC signalé ⚠️ |
+| 2026-10-27 | Carnet de recette, relecture adverse | Verrou fixe du debouncer : revalidation en boucle d'une étiquette restée en vue ; lampe non réappliquée après l'arrière-plan (suspecté) | Variante : points 8 à 10 ; vigilance ⚠️ lampe (patch proposé côté Carnet, non reporté dans `src/`) et verrou fixe ; statut inchangé |
 | 2026-10-27 | Carnet de recette, intégration | OCR adapté aux éléments dans le réticule, reconnaissance sans regex par comparaison au menu de la semaine ; écouteurs ML Kit rappelés sur le fil principal | Section « Variante » ; précision sur le fil des écouteurs ; statut inchangé (pas encore essayé sur appareil) |
