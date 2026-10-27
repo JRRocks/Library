@@ -14,6 +14,34 @@
 
 ---
 
+## 2026-10-27 — [docs/methodes] Fiches méthode : captures Compose sans émulateur, Android en session cloud
+
+- **Type** : ajout + transverse
+- **Quoi** : nouveau dossier `docs/methodes/` (outillage déjà mis en œuvre dans les apps, sans
+  `src/`) :
+  - `captures-compose-robolectric.md` : voir un écran Compose réel en PNG depuis une session
+    cloud. Méthode de Popote, extensions du Carnet de recette (sombre, police, largeurs,
+    paysage) et de Popote (plusieurs tailles), gabarit de test complet écrit pour la fiche,
+    pièges (instabilité Robolectric, nom de test accentué, faux imports, photos absentes) ;
+    jamais de PNG rendu sur des données réelles.
+  - `android-en-session-cloud.md` : SDK dans le conteneur ou par hook SessionStart, miroir
+    Maven contre les 429, ordres de grandeur, tests purs sans Gradle (script donné), Rust,
+    Node et Python en session, livraison d'un APK de plus de 30 Mio, clé de debug commune
+    (jamais copiée ici), pièges de CI GitHub Actions, revue de dépôt (clones superficiels).
+  - `README.md` d'index ; INDEX § 2, § 3 et § 7 ; lien depuis le `README.md` racine.
+  Remplace le candidat Popote « Captures d'écran Compose sans émulateur ».
+- **Preuve / vérification** : rendu des captures « constaté fidèle par le propriétaire » le
+  2026-09-29 (Popote `docs/decisions.md`). Le gabarit de la fiche a été exécuté dans un projet
+  minimal en session (AGP 8.8.0, Robolectric 4.13, SDK installé dans le conteneur) : 4 PNG
+  produits et relus, puis relancé par la contre-vérification après retouche. Bloc
+  d'installation du SDK rejoué dans un dossier neuf (20 s). Tests purs sans Gradle rejoués sur
+  `astro-soleil-lune` (13/13). Extensions et livraison par `release/` ou pré-version : 🟡.
+- **Apps à prévenir** : ScanList et SuivieMAT, dont le `CLAUDE.md` affirme encore qu'un build
+  n'est généralement pas possible en session cloud (SuivieMAT compile pourtant en session
+  depuis le 2026-09-24).
+
+---
+
 ## 2026-10-27 — [rapport-plantage] Ajout du moteur Rapport de plantage
 
 - **Type** : ajout

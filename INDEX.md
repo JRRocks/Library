@@ -52,6 +52,9 @@ Dernière mise à jour : 2026-10-26
 | Éviter les pièges GitHub Actions d'une app Android (quota d'artefacts, `setup-android`, minutes épuisées, balise refusée en session) | `maj-auto-github` (« Pièges de CI ») et [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) |
 | Proposer une mise à jour par une ligne d'état, sans boîte de dialogue, qui survit à la rotation | `maj-auto-github` (« Exemple d'interface », Carnet de recette, non éprouvé) |
 | Connaître l'heure du lever ou du coucher du soleil, ou la phase de la lune | `astro-soleil-lune` |
+| Voir un écran Compose sans émulateur ni téléphone (PNG) | [`docs/methodes/captures-compose-robolectric.md`](docs/methodes/captures-compose-robolectric.md) |
+| Compiler ou tester une app Android depuis une session cloud, contourner le 429 de Maven Central, lancer des tests Kotlin purs sans Gradle | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) |
+| Faire arriver sur le téléphone un APK de plus de 30 Mio | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) § 5 |
 | Lire un fichier Excel `.xlsx` sans bibliothèque | 🔬 candidat InnovAdapt (§ 5) ou Popote `ImportBase` |
 | Lire ou écrire du GPX ou du KML, convertir UTM, MGRS ou Lambert 93 | 🔬 candidats ToolMap (§ 5) |
 | Appeler un LLM avec une sortie JSON structurée | 🔬 candidats Activity-track (§ 5) |
@@ -94,6 +97,8 @@ Dernière mise à jour : 2026-10-26
 | Regex, `PatternSyntaxException`, ICU (regex Android) | `scan-multimode` |
 | Générateur de regex, regex par l'exemple | `scan-multimode` (`RegexSuggester`) |
 | Robolectric, injection de dépendance pour un SDK non testable | `paiement-sumup` |
+| Robolectric, `@GraphicsMode(NATIVE)`, capture PNG, `qualifiers`, `fontScale`, `forkEvery` | [`docs/methodes/captures-compose-robolectric.md`](docs/methodes/captures-compose-robolectric.md) |
+| SessionStart, `sdkmanager`, miroir Maven, 429, `--max-workers=1`, `android-all-instrumented`, clé de debug commune, `release/` | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) |
 | `UncaughtExceptionHandler`, plantage, crash, alternative sans réseau à ACRA ou Crashlytics | `rapport-plantage` |
 | SumUp, `SumUpAPI`, `SumUpState.init`, `play-services-location` | `paiement-sumup` |
 | Double débit, « Réessayer », `onBackPressed`, délai de garde | `paiement-sumup` |
@@ -236,6 +241,10 @@ Chemins relatifs à `core/src/main/kotlin/fr/jrrocks/carnetderecette/core/` et
 | Document | Contenu | Statut |
 |---|---|---|
 | [`docs/ui-ux/README.md`](docs/ui-ux/README.md) | Dossier UI/UX : 41 chapitres (principes, heuristiques, lois de l'UX, couleur et contraste, typographie, composants, mobile et Android, accessibilité WCAG 2.2, éthique, glossaire, check-lists), 202 sources avec URL, images libres de droits | 🔬 Rédigé à partir de sources publiques, non éprouvé en réel ; volume réel annoncé dans le README (en deçà des 200 pages visées) |
+| [`docs/methodes/captures-compose-robolectric.md`](docs/methodes/captures-compose-robolectric.md) | Écran Compose réel en PNG sans émulateur (Robolectric en rendu natif) : gabarit de test vérifié en session, variantes sombre, police, largeurs, paysage, pièges de stabilité | ✅ méthode de base (Popote, 2026-09-29) · 🟡 extensions (Carnet de recette, plusieurs tailles de Popote) |
+| [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) | Compiler, tester et livrer une app Android depuis claude.ai/code : SDK, miroir Maven contre les 429, tests purs sans Gradle, Rust, Node, Python, APK de plus de 30 Mio, pièges de CI GitHub Actions, clones superficiels | ✅ compilation et tests en session, APK de CI installé sur téléphone · 🟡 livraison par `release/` ou pré-version |
+
+Index des fiches méthode : [`docs/methodes/README.md`](docs/methodes/README.md).
 
 Mots-clés : UI, UX, ergonomie, heuristiques de Nielsen, WCAG, contraste, Material Design, accessibilité,
 glossaire UX, check-list de conception, navigation Android.
