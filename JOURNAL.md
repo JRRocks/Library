@@ -14,6 +14,36 @@
 
 ---
 
+## 2026-10-27 — [maj-auto-github] Patch CI : mots de passe de signature hors de `Properties.load`
+
+- **Type** : patch + revue de dépôt
+- **Quoi** :
+  - `src/version.yml` écrivait `storePassword` et `keyPassword` dans `keystore.properties`, que
+    `build.gradle.kts` relit par `Properties.load` : un « \ » y est lu comme un échappement, une
+    espace de tête est retirée, un « \ » final avale la ligne `keyAlias`. Correctif repris de
+    Carnet de recette (`f198fd3`) : le fichier ne porte plus que `storeFile` et `keyAlias`, les
+    mots de passe passent par l'environnement de l'étape de compilation
+    (`SIGNATURE_STORE_PASSWORD`, `SIGNATURE_KEY_PASSWORD`) ; commentaire trompeur corrigé.
+    Composant CI ⚠️ (latent, patch appliqué, jamais exercé par une vraie publication).
+  - Fiche : tableau « Composants », extrait `signingConfigs.release` (sans valeur), tableau
+    « Pièges de CI » avec provenance (vérification du `.jks` par `keytool`, `base64 -d
+    --ignore-garbage`, secrets par `env`, quota d'artefacts, `setup-android`, `workflow_dispatch`,
+    balise refusée en session, minutes épuisées, PKCS12), exemple d'interface en ligne d'état du
+    Carnet (non éprouvé), commit de provenance de la variante.
+  - Historique : revue Popote `6149a81` (✅ inchangé ; 4 aperçus 127 à 130 publiés, aucun essai
+    sur téléphone consigné, aucune publication publique nouvelle) et Carnet (aucune balise à
+    `797fae7`). `MiseAJour.kt` et `MiseAJourTest.kt` non modifiés.
+- **Preuve / vérification** : démonstration JDK 21 avec une vraie clé PKCS12 et les blocs `run`
+  de l'ancien et du nouveau `version.yml` : trois mots de passe piégés échouent avant
+  (« keystore password was incorrect ») et signent après ; deux témoins signent dans les deux
+  cas ; refaite indépendamment par la contre-vérification. `MiseAJourTest` 9/9 en JVM (bouchons
+  Android). Aucun run GitHub Actions possible ici.
+- **Apps à prévenir** : Popote Compagnie (défaut latent dans `version.yml` et
+  `app-terrain/build.gradle.kts`, à changer ensemble, sans urgence ; patch d'annulation toujours
+  absent). Carnet de recette a déjà le correctif.
+
+---
+
 ## 2026-10-27 — [scan-multimode] Patch NDEF, ajout de RegexSuggester, SuivieMAT dans « Utilisé dans »
 
 - **Type** : patch + ajout (composant) + revue de dépôt

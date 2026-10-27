@@ -95,9 +95,7 @@ jobs:
         # remplacer une version déjà installée : on échoue plutôt que de publier ça.
         env:
           KEYSTORE_BASE64: ${{ secrets.SIGNATURE_KEYSTORE_BASE64 }}
-          STORE_PASSWORD: ${{ secrets.SIGNATURE_STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.SIGNATURE_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.SIGNATURE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           if [ -z "${KEYSTORE_BASE64:-}" ]; then
@@ -106,13 +104,14 @@ jobs:
           fi
           mkdir -p app-terrain/keystore-release
           echo "$KEYSTORE_BASE64" | base64 -d > app-terrain/keystore-release/popote-release.jks
-          # `printf '%s\n'` et non `echo` : un mot de passe commençant par « -n » ou
-          # contenant une barre oblique inverse se ferait réécrire par `echo`.
+          # Les mots de passe ne passent PAS par ce fichier. `printf '%s\n'` les écrirait
+          # intacts, mais `build.gradle.kts` relit le fichier par `Properties.load`, qui traite
+          # `\` comme un échappement et retire les espaces de tête : un mot de passe qui finit
+          # par `\` avalerait même la ligne suivante. Gradle les lit dans l'environnement de
+          # l'étape de compilation (`SIGNATURE_STORE_PASSWORD`, `SIGNATURE_KEY_PASSWORD`).
           {
             printf '%s\n' "storeFile=popote-release.jks"
-            printf '%s\n' "storePassword=$STORE_PASSWORD"
             printf '%s\n' "keyAlias=$KEY_ALIAS"
-            printf '%s\n' "keyPassword=$KEY_PASSWORD"
           } > app-terrain/keystore-release/keystore.properties
 
       - name: Lancer la suite de tests unitaires
@@ -129,6 +128,10 @@ jobs:
           # exigé : sans lui, l'application ouvre le formulaire GitHub dans le navigateur
           # plutôt que de poster elle-même.
           POPOTE_JETON_SIGNALEMENT: ${{ secrets.JETON_SIGNALEMENT }}
+          # Mots de passe de la clé release, lus par `System.getenv` dans `build.gradle.kts`
+          # (signingConfigs.release) : ils ne transitent par aucun fichier.
+          SIGNATURE_STORE_PASSWORD: ${{ secrets.SIGNATURE_STORE_PASSWORD }}
+          SIGNATURE_KEY_PASSWORD: ${{ secrets.SIGNATURE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           if [ -z "${POPOTE_JETON_SIGNALEMENT:-}" ]; then

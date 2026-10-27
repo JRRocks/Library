@@ -16,7 +16,7 @@ Dernière mise à jour : 2026-10-26
 | [`scan-multimode`](moteurs/scan-multimode/README.md) | Scan à la chaîne QR/2D, code-barres, OCR filtré par regex (formules proposées à partir d'un exemple), NFC/RFID, **validé par consensus de N lectures identiques** | ✅ OCR et code-barres · 🟡 2D étendu · 🟡 `RegexSuggester` · ⚠️ NFC (patch NDEF appliqué, non vérifié sur appareil) · ⚠️ lampe après l'arrière-plan (suspecté) | Android, CameraX, ML Kit | ScanList, SuivieMAT | ScanList, SuivieMAT, Carnet de recette |
 | [`paiement-sumup`](moteurs/paiement-sumup/README.md) | Encaissement carte sur lecteur SumUp Bluetooth, connexion native du SDK, sans secret embarqué | 🟡 (connexion OK sur appareil, encaissement réel non encore validé) | Android, SDK SumUp 6.0.0 | Popote Compagnie | Popote Compagnie |
 | [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur ; variante dossier visible en `drive.file` | ✅ · ⚠️ lecture des 403 (patch proposé) · ⚠️ jeton révoqué en cache (suspecté) | Android, Play Services Auth | Popote Compagnie | Popote Compagnie, Carnet de recette |
-| [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
+| [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) · ⚠️ CI : mots de passe relus par `Properties.load` (latent, patch appliqué) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`astro-soleil-lune`](moteurs/astro-soleil-lune/README.md) | Lever, coucher et midi solaire, jour et nuit polaires, phase, illumination et lever de la lune, hors-ligne | 🟡 (deux défauts du calcul de la lune corrigés dans la Library le 2026-10-27 ; 13 tests verts) | Kotlin pur | Android-Suntrack | Sun Track |
 
 ---
@@ -44,6 +44,9 @@ Dernière mise à jour : 2026-10-26
 | Distribuer et mettre à jour une app sans Play Store | `maj-auto-github` |
 | Publier les APK d'une app dont le code est déjà public, sans second dépôt ni jeton | `maj-auto-github` (variante « dépôt de code public ») |
 | Publier un APK signé depuis GitHub Actions | `maj-auto-github` (`src/version.yml`) |
+| Signer un APK en CI sans que le mot de passe soit corrompu (`\`, espaces de tête) | `maj-auto-github` (`src/version.yml`, extrait `signingConfigs.release`) |
+| Éviter les pièges GitHub Actions d'une app Android (quota d'artefacts, `setup-android`, minutes épuisées, balise refusée en session) | `maj-auto-github` (« Pièges de CI ») et [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) |
+| Proposer une mise à jour par une ligne d'état, sans boîte de dialogue, qui survit à la rotation | `maj-auto-github` (« Exemple d'interface », Carnet de recette, non éprouvé) |
 | Connaître l'heure du lever ou du coucher du soleil, ou la phase de la lune | `astro-soleil-lune` |
 | Lire un fichier Excel `.xlsx` sans bibliothèque | 🔬 candidat InnovAdapt (§ 5) ou Popote `ImportBase` |
 | Lire ou écrire du GPX ou du KML, convertir UTM, MGRS ou Lambert 93 | 🔬 candidats ToolMap (§ 5) |
@@ -71,6 +74,9 @@ Dernière mise à jour : 2026-10-26
 | FileProvider | `maj-auto-github` |
 | GitHub Actions, release signée, keystore en secret | `maj-auto-github` |
 | GitHub API `releases/latest` | `maj-auto-github` |
+| `Properties.load`, `keystore.properties`, `signingConfigs`, mot de passe de signature, `keytool`, PKCS12 | `maj-auto-github` |
+| Quota d'artefacts, `upload-artifact`, `setup-android`, `workflow_dispatch`, `runner_id` 0 | `maj-auto-github` (« Pièges de CI ») |
+| Ligne d'état, `EtatMiseAJour`, « Plus tard » | `maj-auto-github` (exemple d'interface) |
 | ML Kit Barcode, ML Kit Text Recognition | `scan-multimode` |
 | OCR par éléments, réticule, `cropRect`, `ViewPort`, rotation | `scan-multimode` (variante Carnet de recette) |
 | NDEF, RTD_TEXT, UID, `enableReaderMode`, `FLAG_READER_SKIP_NDEF_CHECK` | `scan-multimode` |
