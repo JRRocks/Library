@@ -21,7 +21,8 @@ Extrait de l’application [Learn-UI-UX](https://github.com/JRRocks/Learn-UI-UX)
   35, 90 jours) et une variante de SM-2 pour les fiches (« À revoir », « Difficile »,
   « Bien », « Facile »).
 - **Progression** (`progress.ts`) : XP, jours d’activité, séries, maîtrise par lot
-  d’exercices, éléments à réviser, normalisation d’une sauvegarde importée.
+  d’exercices, éléments à réviser, meilleurs scores des défis chronométrés (`setRecord`),
+  normalisation d’une sauvegarde importée.
 - **Sessions** (`session.ts`) : session du jour (révisions dues + nouveautés réparties sur
   plusieurs modules), par module, par type, par tag, révisions, erreurs, examen stratifié ;
   les types d’exercices sont alternés.
@@ -67,6 +68,6 @@ Le moteur ne stocke rien : l’application garde `state` (un objet JSON) et le p
 
 ```bash
 npm install
-npm test        # 13 tests : correction, dates, Leitner, SM-2, séries, sessions
+npm test        # 14 tests : correction, dates, Leitner, SM-2, séries, sessions
 npm run typecheck
 ```

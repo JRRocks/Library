@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { addDays, dayKey, daysBetween } from './dates';
 import { contrastRatio, grade, grayHex, orderConcordance } from './grade';
-import { emptyProgress, mastery, recordAttempt, recordCard, streak } from './progress';
+import { emptyProgress, mastery, normalizeProgress, recordAttempt, recordCard, setRecord, streak } from './progress';
 import { seeded, shuffleAway } from './random';
 import { buildSession, interleaveTypes } from './session';
 import { scheduleCard, scheduleExercise } from './srs';
@@ -112,6 +112,14 @@ describe('progress', () => {
     expect(streak(s, new Date(2026, 9, 28)).current).toBe(3);
     expect(streak(s, new Date(2026, 9, 30)).current).toBe(0);
     expect(mastery(s, ['m-choice'])).toBeLessThan(0.5);
+  });
+
+  it('keeps only the best record and survives garbage on import', () => {
+    let s = setRecord(emptyProgress(), 'blitz', 120);
+    expect(setRecord(s, 'blitz', 90)).toBe(s);
+    s = setRecord(s, 'blitz', 150);
+    expect(s.records.blitz).toBe(150);
+    expect(normalizeProgress({ xp: 'x', records: [1, 2] })).toMatchObject({ xp: 0, records: {} });
   });
 });
 
