@@ -18,6 +18,7 @@ Dernière mise à jour : 2026-10-26
 | [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur ; variante dossier visible en `drive.file` | ✅ (dépôt manuel ; envoi périodique jamais vérifié) · ⚠️ lecture des 403 (patch proposé) · ⚠️ jeton révoqué en cache (suspecté, correctif seulement dans le Carnet) | Android, Play Services Auth | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) · ⚠️ CI : mots de passe relus par `Properties.load` (latent, patch appliqué) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`astro-soleil-lune`](moteurs/astro-soleil-lune/README.md) | Lever, coucher et midi solaire, jour et nuit polaires, phase, illumination et lever de la lune, hors-ligne | 🟡 (deux défauts du calcul de la lune corrigés dans la Library le 2026-10-27 ; 13 tests verts) | Kotlin pur | Android-Suntrack | Sun Track |
+| [`rapport-plantage`](moteurs/rapport-plantage/README.md) | Rapport de plantage lisible sur le téléphone, à copier ou partager, sans adb, logcat ni réseau : exception Java affichée tout de suite dans un processus `:crash`, plantage natif relu au démarrage suivant | ✅ exceptions Java/Kotlin · 🟡 plantages natifs (Android 11+) et saut de l'initialisation | Android natif | ToolMap | ToolMap, Popote Compagnie (variante minimale) |
 
 ---
 
@@ -54,7 +55,8 @@ Dernière mise à jour : 2026-10-26
 | Lire un fichier Excel `.xlsx` sans bibliothèque | 🔬 candidat InnovAdapt (§ 5) ou Popote `ImportBase` |
 | Lire ou écrire du GPX ou du KML, convertir UTM, MGRS ou Lambert 93 | 🔬 candidats ToolMap (§ 5) |
 | Appeler un LLM avec une sortie JSON structurée | 🔬 candidats Activity-track (§ 5) |
-| Récupérer un rapport de plantage sans `adb logcat` | 🔬 candidat Popote, capteur de plantage (§ 5) |
+| Récupérer un rapport de plantage sans `adb logcat`, savoir pourquoi une app installée hors Play Store se ferme | `rapport-plantage` |
+| Relire au démarrage suivant un plantage natif (signal dans une `.so`) | `rapport-plantage` (`ApplicationExitInfo`, Android 11+, 🟡) |
 | Coloriser des pages de manga en noir et blanc | 🔬 candidat Mihon-edited-, modèle externe (§ 5) |
 | Lire des étapes à voix haute, commander à la voix sans IA | 🔬 candidats Carnet de recette (§ 5) |
 
@@ -65,6 +67,8 @@ Dernière mise à jour : 2026-10-26
 | Mot-clé | Moteurs |
 |---|---|
 | Affiliate Key | `paiement-sumup` |
+| `ApplicationExitInfo`, tombstone, `REASON_CRASH_NATIVE` | `rapport-plantage` |
+| `android:process`, processus séparé | `rapport-plantage` |
 | Almanach, éphémérides, NOAA | `astro-soleil-lune` |
 | APK, sideload, sources inconnues, `REQUEST_INSTALL_PACKAGES` | `maj-auto-github` |
 | `AuthorizationClient`, Identity, OAuth Android, SHA-1 | `google-drive-appdata` |
@@ -90,6 +94,7 @@ Dernière mise à jour : 2026-10-26
 | Regex, `PatternSyntaxException`, ICU (regex Android) | `scan-multimode` |
 | Générateur de regex, regex par l'exemple | `scan-multimode` (`RegexSuggester`) |
 | Robolectric, injection de dépendance pour un SDK non testable | `paiement-sumup` |
+| `UncaughtExceptionHandler`, plantage, crash, alternative sans réseau à ACRA ou Crashlytics | `rapport-plantage` |
 | SumUp, `SumUpAPI`, `SumUpState.init`, `play-services-location` | `paiement-sumup` |
 | Double débit, « Réessayer », `onBackPressed`, délai de garde | `paiement-sumup` |
 | `versionCode`, mise à jour en ligne | `maj-auto-github` |
@@ -104,8 +109,8 @@ Dernière mise à jour : 2026-10-26
 
 | Plateforme | Moteurs |
 |---|---|
-| **Kotlin pur** (réutilisable hors Android) | `astro-soleil-lune` ; dans `scan-multimode` : `ScanConsensus`, `ScanDebouncer`, `ScanValue`, `RegexRuleEngine`, `RegexSuggester`, `NfcValue` |
-| **Android natif** | `scan-multimode`, `paiement-sumup`, `google-drive-appdata`, `maj-auto-github` |
+| **Kotlin pur** (réutilisable hors Android) | `astro-soleil-lune` ; dans `scan-multimode` : `ScanConsensus`, `ScanDebouncer`, `ScanValue`, `RegexRuleEngine`, `RegexSuggester`, `NfcValue` ; dans `rapport-plantage` : `CrashReport.kt` |
+| **Android natif** | `scan-multimode`, `paiement-sumup`, `google-drive-appdata`, `maj-auto-github`, `rapport-plantage` |
 | **CI GitHub Actions** | `maj-auto-github` |
 | **Python** | aucun moteur pour l'instant (candidats Activity-track) |
 | **JS navigateur** | aucun moteur pour l'instant (candidats InnovAdapt) |
@@ -118,7 +123,6 @@ Dernière mise à jour : 2026-10-26
 
 | Candidat | Chemin | Intérêt | Ce qui manque |
 |---|---|---|---|
-| Capteur de plantage | `app-terrain/.../PopoteApplication.kt` (`setDefaultUncaughtExceptionHandler` → fichier), `MainActivity.kt` (`EcranPlantage`) | Rapport de plantage lisible au lancement suivant, texte sélectionnable, sans adb. **A servi en réel** pour diagnostiquer les plantages SumUp | Extraire du code Popote |
 | Grand-livre chaîné par hash et audit | `core/.../ledger/{Chaine,Empreinte,Audit}.kt` + `db/Triggers.kt` | Écritures non retouchables, vérification d'intégrité | Très lié au schéma Popote |
 | Sauvegarde récupérable par trousseau asymétrique | `core/.../sauvegarde/{Trousseau,Enveloppe,Coffre,Contenu}.kt` | L'app chiffre sans pouvoir déchiffrer seule ; restauration avec le mot de passe admin | Fiche + vérification des tests de restauration réels (`docs/tests-restauration.md`) |
 | Base chiffrée SQLCipher + Keystore | `core/.../db/{SqlCipherUtilitaires,ClefBase}.kt`, `administration/CoffreLocal.kt` (AES-256-GCM sous Keystore) | Chiffrement au repos de Room | Dépend de Room ; lire `docs/debogage-sqlcipher.md` |

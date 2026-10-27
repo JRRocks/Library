@@ -14,6 +14,34 @@
 
 ---
 
+## 2026-10-27 — [rapport-plantage] Ajout du moteur Rapport de plantage
+
+- **Type** : ajout
+- **Quoi** : nouveau moteur `rapport-plantage`, repris de ToolMap (branche
+  `ccr-e59b55ac-kt4qb9` @ `2e992e1`, code identique à `fa96a1a`, la version installée sur le
+  téléphone). `src/` : `CrashReporter.kt`, `CrashActivity.kt`, `CrashReport.kt` ; `tests/` :
+  `CrashReportTest`, `CrashReporterTest`, `CrashActivityTest` ; packages d'origine. Fiche
+  complète : gestionnaire posé dans `attachBaseContext`, écran dans un processus `:crash`,
+  plantages natifs relus par `ApplicationExitInfo`, saut de l'initialisation, ADR-029,
+  intégration (manifeste, textes, `GIT_SHA`, couplages à défaire), vie privée (fin du logcat et
+  modèle du téléphone dans le rapport). Variante minimale de Popote décrite sans code, avec sa
+  règle de confidentialité (jamais d'entité ni de donnée personnelle dans un message
+  d'exception). Les évolutions de la branche p16 (`159e9e4`, `3e6677a`) restent hors de `src/`
+  (🟡). Remplace le candidat Popote « Capteur de plantage ».
+- **Preuve / vérification** : ToolMap `docs/JOURNAL.md` (branche p16) l. 1560-1561 : rapport
+  affiché sur un Galaxy S25 (Android 15) le 2026-10-03, transmis par l'utilisateur, correctif
+  `c620a38`. Popote `docs/decisions.md` (v13.18, 2026-09-03) : pile d'un plantage SumUp lue dans
+  le fichier du capteur. Fichiers copiés identiques (`cmp`) à `2e992e1` et à `fa96a1a`.
+  `CrashReportTest` 7/7 en JVM sans Gradle (avec `kotlin-test-junit` 2.0.21) ; tests
+  Robolectric non exécutables ici. Plantages natifs et saut de l'initialisation : aucune preuve
+  réelle, d'où 🟡.
+- **Apps à prévenir** : Carnet de recette (son `docs/cadrage.md` § 11 renvoie encore au
+  candidat Popote). Popote, pour information : sa variante ne lit pas les plantages natifs et
+  son gestionnaire est posé après `SumUpState.init`. ToolMap : `fa96a1a` et `2e992e1` n'existent
+  que sur la branche `ccr-e59b55ac-kt4qb9`, à garder (ou à baliser) pour la provenance.
+
+---
+
 ## 2026-10-27 — [paiement-sumup] Revue Popote : débit possible malgré `Echec` ou `Annule`
 
 - **Type** : revue de dépôt
