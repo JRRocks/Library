@@ -70,6 +70,9 @@ Selon le cône atteint :
 ![Palette de couleurs pour graphique testée pour le daltonisme](../images/Safe_Chart_Colors-F99-FEC-ADD.jpg)
 *Figure 37.6 — Test des couleurs d'un graphique web pour le daltonisme. Wikimedia Commons (CC BY-SA 3.0).*
 
+![Palettes séquentielles adaptées aux déficiences de la vision des couleurs](../images/CVD-friendly_sequential_colormaps.png)
+*Figure 37.7 — Palettes séquentielles lisibles malgré une déficience de la vision des couleurs. Wikimedia Commons, Curran919 (CC BY-SA 4.0).*
+
 ## 37.4 Application à ScanList (exemple)
 
 Le code couleur « rouge = à valider, vert = validé » (décision de l'utilisateur de l'app) est

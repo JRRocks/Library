@@ -14,6 +14,21 @@
 
 ---
 
+## 2026-10-27 — [docs/ui-ux] Crédits d'images complétés
+
+- **Type** : transverse
+- **Quoi** : fin d'un travail laissé non commité le 2026-10-21. Auteur de
+  `Color_star-en__tertiary_names_.png` relevé (Kwamikagami, CC BY-SA 4.0) ; crédit ajouté pour
+  `Double_Diamond_by_the_Design_Council.png` (déjà dans le dépôt, sans ligne de crédit) ; nouvelle
+  figure 37.7 (`CVD-friendly_sequential_colormaps.png`), l'illustration de palettes séquentielles
+  qu'annonçait déjà le texte du chapitre 37. Une spirale de Fibonacci téléchargée mais citée
+  nulle part n'est pas ajoutée.
+- **Preuve / vérification** : auteurs et licences relus sur l'API de Wikimedia Commons
+  (`extmetadata` Artist et LicenseShortName) pour les trois fichiers.
+- **Apps à prévenir** : aucune
+
+---
+
 ## 2026-10-27 — [library] Branches d'autres sessions intégrées
 
 - **Type** : transverse

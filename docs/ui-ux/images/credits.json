@@ -187,5 +187,26 @@
   "author": "William Caslon",
   "license": "Public domain",
   "licurl": ""
+ },
+ {
+  "file": "Color_star-en__tertiary_names_.png",
+  "commons": "https://commons.wikimedia.org/wiki/File:Color_star-en_%28tertiary_names%29.svg",
+  "author": "Kwamikagami",
+  "license": "CC BY-SA 4.0",
+  "licurl": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ {
+  "file": "Double_Diamond_by_the_Design_Council.png",
+  "commons": "https://commons.wikimedia.org/wiki/File:Double_Diamond_by_the_Design_Council.png",
+  "author": "Design Council",
+  "license": "CC BY 4.0",
+  "licurl": "https://creativecommons.org/licenses/by/4.0"
+ },
+ {
+  "file": "CVD-friendly_sequential_colormaps.png",
+  "commons": "https://commons.wikimedia.org/wiki/File:CVD-friendly_sequential_colormaps.png",
+  "author": "Curran919",
+  "license": "CC BY-SA 4.0",
+  "licurl": "https://creativecommons.org/licenses/by-sa/4.0"
  }
 ]

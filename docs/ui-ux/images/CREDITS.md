@@ -32,4 +32,6 @@ Later versions were uploaded by Jacobolus at en.wikipedia. | Public domain |
 | `Tritanopia_sight.jpg` | <https://commons.wikimedia.org/wiki/File:Tritanopia_sight.jpg> | Tohaomg | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
 | `Safe_Chart_Colors-F99-FEC-ADD.jpg` | <https://commons.wikimedia.org/wiki/File:Safe_Chart_Colors-F99-FEC-ADD.jpg> | Grolltech | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) |
 | `A_Specimen_by_William_Caslon.jpg` | <https://commons.wikimedia.org/wiki/File:A_Specimen_by_William_Caslon.jpg> | William Caslon | Public domain |
-| `Color_star-en__tertiary_names_.png` | <https://commons.wikimedia.org/wiki/File:Color_star-en_(tertiary_names).svg> | auteur non relevé (limite de débit de l’API) — voir la page Commons | CC BY-SA 4.0 (indiquée au téléchargement ; à confirmer sur la page) |
+| `Color_star-en__tertiary_names_.png` | <https://commons.wikimedia.org/wiki/File:Color_star-en_(tertiary_names).svg> | Kwamikagami | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| `Double_Diamond_by_the_Design_Council.png` | <https://commons.wikimedia.org/wiki/File:Double_Diamond_by_the_Design_Council.png> | Design Council | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
+| `CVD-friendly_sequential_colormaps.png` | <https://commons.wikimedia.org/wiki/File:CVD-friendly_sequential_colormaps.png> | Curran919 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
