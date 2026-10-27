@@ -14,6 +14,46 @@
 
 ---
 
+## 2026-10-27 — [library] Revue des dépôts : candidats et dépôts revus mis à jour
+
+- **Type** : revue de dépôt
+- **Quoi** : tour de tous les dépôts du compte, branches actives comprises. INDEX § 5 réécrit dépôt
+  par dépôt, § 6 ramené à la revue la plus récente, § 2 et § 4 complétés, date du jour.
+  Précédente revue (2026-10-12) → revue du jour :
+  - ScanList `1368027` → `2ef0b6d` (un commit de CI). **SuivieMAT** (nouveau, public depuis le
+    2026-10-27) : fork de ScanList, `5eb5198` (pointe `65da616`) ; `RegexSuggester` versé dans
+    `scan-multimode` ; candidats `FolderTimeline`, purge des artefacts Actions ; défauts du
+    `CsvCodec` (injection de formule, import en UTF-8 seulement) notés sur le candidat.
+  - Suivie-Popote-Cie `08c211a` → `6149a81` (pointe `93e5d5b`) : moteurs inchangés ; capteur de
+    plantage → `rapport-plantage`, captures → `docs/methodes/` ; preuves réelles partielles du
+    trousseau et de SQLCipher citées ; Popote-Compagnie (versions) inchangé à `6e0de47`.
+  - Android-Suntrack `e5c94b4` (+ branche `meteogram-weather-icons` @ `2cb08aa`) : candidat
+    « icônes météo à paliers » ; défaut `hourIndex` d'Open-Meteo noté. **Sun-tracking** (nouveau,
+    `2aec84a`) : republication de l'état initial avec le bug d'époque lunaire, rien à extraire.
+  - Activity-track `cdf458d` → `855773c` (la revue précédente avait regardé `main` au lieu de la
+    branche active) : Gemini remplacé par l'API Anthropic ; candidats investigation multi-tours,
+    estimation de tokens, relance WorkManager, dossier surveillé SAF.
+  - ToolMap `06c80c7` → `eee8c6b` : utilisé sur un Galaxy S25 depuis le 2026-10-03 (la note
+    « jamais testé sur appareil » était périmée) ; `rapport-plantage` extrait ; 8 candidats de
+    plus ; partage de position redécrit (relais Firebase). Republié le jour même en public sans
+    historique (`a37dcab`), l'ancien dépôt devenant `ToolMap-Archive` (privé).
+  - InnovAdapt-CRM `42e9534` → branche `claude/android-rust-mobile` @ `d2c2f6e` (37 commits) :
+    synchro « Rust (mobile) » éclatée en OAuth et Drive bureau, synchro chiffrée multi-appareils,
+    trousseau ; pont Android Rust/Slint et diagnostic HTML en candidats.
+  - **Carnet-de-recette** (revu par sa propre session) vérifié à `8dc4820` : fiches fidèles,
+    défaut de CI reporté dans `maj-auto-github`, 2 candidats de plus. **Scam-Stop** (nouveau,
+    `b971f43`, GPL-3.0) : 2 candidats. **Mihon-edited-** : déjà intégré ce matin.
+  - RGL13 : pas revu (accès non accordé à la session).
+- **Preuve / vérification** : une revue par dépôt, chacune contre-vérifiée par un second agent
+  qui a refait les diffs, relu les journaux des apps, rejoué les tests possibles (pytest 86/91,
+  `cargo test` 79/79, `node --test` 54/54, tests Kotlin purs sans Gradle) et corrigé les rapports
+  (clones superficiels, pointes qui avançaient). Pointes distantes revérifiées par
+  `git ls-remote` juste avant ce commit.
+- **Apps à prévenir** : voir les entrées de fiche du jour. En plus : ScanList et SuivieMAT
+  (`CsvCodec` : injection de formule) ; Sun-tracking (copie périmée à archiver ou aligner).
+
+---
+
 ## 2026-10-27 — [docs/methodes] Fiches méthode : captures Compose sans émulateur, Android en session cloud
 
 - **Type** : ajout + transverse
