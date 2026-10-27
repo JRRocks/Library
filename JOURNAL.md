@@ -14,6 +14,22 @@
 
 ---
 
+## 2026-10-27 — [library] AGENTS.md : pièges de revue, dossier docs/methodes
+
+- **Type** : transverse
+- **Quoi** : § 5.E complété par les pièges rencontrés pendant la revue du 2026-10-27 :
+  revoir la branche active et pas seulement `main` (la revue du 2026-10-12 était déjà périmée
+  pour Activity-track et ToolMap) ; cloner sans `--depth` (un clone superficiel a fait croire à
+  une branche orpheline d'InnovAdapt et à une fausse divergence d'Android-Suntrack) ;
+  revérifier la pointe distante avant de consigner ; récupérer et fusionner d'abord les
+  branches de la Library écrites par d'autres sessions. § 4 : dossiers `docs/ui-ux/` et
+  `docs/methodes/` ajoutés à la structure.
+- **Preuve / vérification** : constats des contre-revues du 2026-10-27 (clones complets,
+  `git cat-file`, `git ls-remote`).
+- **Apps à prévenir** : aucune
+
+---
+
 ## 2026-10-27 — [astro-soleil-lune] Patch : transit de la veille et jour du changement d'heure
 
 - **Type** : patch + revue de dépôt

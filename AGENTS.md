@@ -86,6 +86,9 @@ AGENTS.md               Ce guide (règles et procédures)
 CLAUDE.md               Point d'entrée Claude Code, renvoie ici
 INDEX.md                Index de recherche : moteurs, besoins, mots-clés, candidats, dépôts revus
 JOURNAL.md              Journal des évolutions de la Library (le plus récent en haut)
+docs/
+  ui-ux/                Dossier de référence UI/UX (sources, chapitres, check-lists)
+  methodes/             Fiches méthode : outillage éprouvé, sans code d'exécution (captures, build en session cloud…)
 moteurs/
   _modele/README.md     Gabarit de fiche, à copier pour tout nouveau moteur
   <identifiant>/
@@ -173,6 +176,14 @@ la prochaine app héritera du bug.
 ### 5.E Passer en revue un dépôt
 
 1. Clonez-le, puis lisez son `README`, son `CLAUDE.md` et ses docs de décisions ou son journal.
+   Pièges vus lors des revues précédentes :
+   - revoyez la **branche active**, pas seulement `main` (`git ls-remote --heads origin`) : plusieurs
+     apps se développent sur une branche jamais fusionnée ;
+   - clonez **sans `--depth`** (ou `git fetch --unshallow`) : un clone superficiel fait croire à des
+     branches orphelines ou à de fausses divergences ;
+   - juste avant de consigner, revérifiez la pointe distante : elle a pu avancer pendant la revue ;
+   - avant d'écrire ici, récupérez les branches de la Library (`git fetch origin`) : une autre
+     session a pu la mettre à jour en parallèle. Fusionnez-les d'abord.
 2. Repérez les briques qui remplissent les critères du 5.D.
 3. Pour chacune : soit vous l'ajoutez (5.D), soit vous la notez dans « Candidats » de
    l'INDEX avec son chemin, son intérêt et ce qui manque pour la promouvoir.
