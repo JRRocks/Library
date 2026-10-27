@@ -7,9 +7,9 @@
 | **Plateforme** | Android natif, Kotlin, minSdk 26 |
 | **Dépendances** | CameraX 1.3.4, ML Kit `barcode-scanning` 17.3.0 et `text-recognition` 16.0.1 (modèles **embarqués**, donc hors-ligne), `android.nfc` |
 | **Provenance** | [JRRocks/ScanList](https://github.com/JRRocks/ScanList) (privé), commit `1368027` (2026-09-22) |
-| **Utilisé dans** | ScanList |
+| **Utilisé dans** | ScanList · Carnet de recette (intégré le 2026-10-27, OCR seul et **sans regex** : voir la variante, pas encore essayé sur appareil) |
 | **Fichiers d'origine** | `app/src/main/java/com/scanlist/app/scanner/*`, `domain/{model/ScanValue,nfc/NfcValue,regex/RegexRuleEngine}.kt`, `ui/scan/{CameraPreview,NfcScanSurface,ScanViewModel}.kt` |
-| **Dernière mise à jour de la fiche** | 2026-10-12 |
+| **Dernière mise à jour de la fiche** | 2026-10-27 |
 
 ## À quoi ça sert
 
@@ -81,6 +81,46 @@ Le NFC n'a pas de bruit optique : il passe par le debouncer seul, sans consensus
 Les packages d'origine (`com.scanlist.app.*`) sont conservés : **renommez-les** à
 l'intégration.
 
+## Variante : OCR par éléments dans le réticule, sans regex (Carnet de recette)
+
+Le Carnet lit l'étiquette d'une box de repas : un grand numéro de recette (« 207 »), le
+nombre de personnes et du bruit (dates, poids, lot). Le format de l'étiquette peut changer :
+**aucune regex**. On compare ce qui est lu à des **valeurs connues** (les numéros du menu de
+la semaine), et le grand numéro se reconnaît à sa **taille**. D'où ces adaptations :
+
+1. **`OcrAnalyzer` → `OcrElements`** : pour chaque image, il remonte les éléments ML Kit
+   (un mot, en général) dont le **centre est dans le réticule**, avec leur hauteur et leur
+   position rapportées au réticule, et plus le texte brut. Le réticule est une zone fixe en
+   fractions de l'aperçu (10–90 % en largeur, 22–78 % en hauteur), la même que celle
+   dessinée ; elle est projetée dans l'image droite via `ImageProxy.cropRect` et la rotation
+   (largeur et hauteur inversées à 90° et 270°). `ImageProxy` toujours fermée dans un
+   `finally` ; sur erreur, rien.
+2. **Résultat attendu sur le fil d'analyse** : `Tasks.await(recognizer.process(...))`
+   remplace les écouteurs, et le consensus est appelé depuis ce fil. L'image qui vient de
+   valider est encore ouverte : la petite photo de l'étiquette en est tirée (recadrée au
+   réticule, 640 px de large au plus, JPEG 70).
+3. **`CameraPreview`** sans `ScanMode` ni réticule intégré (le réticule est dessiné à part,
+   coins blancs sur liseré sombre qui grandissent avec la progression). Avec un analyseur,
+   un `ViewPort` à la taille de l'aperçu est posé (`UseCaseGroup`) pour que `cropRect`
+   corresponde à ce qui est montré. Un `ImageCapture` peut être lié en plus (photo de fiche
+   en pleine résolution). Les erreurs s'affichent en phrase française fixe, jamais
+   `e.message`.
+4. **`ScanFeedback`** : constructeur simple avec `Context`, sans Hilt ; `outOfList()` retiré.
+5. **`ScanValue.normalize`** réécrit caractère par caractère, sans regex : `isWhitespace`
+   traite aussi l'espace insécable et les espaces Unicode, que `\s` ignorait.
+6. **Consensus sur le numéro reconnu**, pas sur le texte lu : la même étiquette donne des
+   textes différents d'une image à l'autre, le numéro reste stable. Seuil 5, TTL 800 ms,
+   garde d'ambiguïté et anti-rebond 1,5 s inchangés. Le nombre de personnes est **voté**
+   image par image pendant le consensus ; votes partagés ou absents → « à confirmer ».
+7. `RegexRuleEngine`, `BarcodeAnalyzer`, `BarcodeFormats` et le NFC ne sont pas repris.
+
+Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette)
+(public), `app/src/main/kotlin/fr/jrrocks/carnetderecette/scan/` (`OcrElements`,
+`GeometrieImage`, `Reticule`, `CameraPreview`, `ScanFeedback`) et
+`core/src/main/kotlin/fr/jrrocks/carnetderecette/core/scan/` (`ReconnaissanceEtiquette`,
+`SuiviEtiquettes`, copies de `ScanConsensus`, `ScanDebouncer`, `ScanValue`), avec leurs tests
+(consensus et anti-rebond repris, géométrie de l'image en JVM).
+
 ## Intégration dans une nouvelle app
 
 1. **Dépendances** (`libs.versions.toml`) : `androidx.camera:camera-{core,camera2,lifecycle,view}`
@@ -149,7 +189,12 @@ Appareil de référence : Samsung Galaxy S25.
 - `ImageProxy.close()` doit être appelé **dans tous les cas** (`addOnCompleteListener`), sinon
   le pipeline se bloque dès que le tampon est plein.
 - Le consensus et le debouncer **ne sont pas thread-safe** : appelez-les seulement depuis
-  l'unique thread d'analyse CameraX. Le callback NFC tourne sur un autre thread ; dans
+  un seul fil. Précision relevée par le Carnet (2026-10-27) : dans `OcrAnalyzer` et
+  `BarcodeAnalyzer`, `addOnSuccessListener` sans exécuteur rappelle sur le **fil
+  principal**, pas sur le fil d'analyse comme le dit le commentaire du ViewModel modèle.
+  Ce n'est pas un défaut (c'est toujours un seul fil), mais le code qui suppose le fil
+  d'analyse (photo tirée de l'image en cours, travail lourd) doit attendre le résultat
+  avec `Tasks.await` sur le fil d'analyse. Le callback NFC tourne sur un autre thread ; dans
   ScanList il n'utilise que le debouncer, ce qui est acceptable tant qu'un écran n'a qu'un
   seul mode.
 - Le décodage réel n'est exerçable ni sur émulateur ni en CI : seuls les composants en
@@ -162,3 +207,4 @@ Appareil de référence : Samsung Galaxy S25.
 | 2026-08-24 | ScanList, tests réels | OCR et code-barres imprécis (angle, reflet) | Ajout de `ScanConsensus` et de la garde d'ambiguïté, extension de la regex aux codes |
 | 2026-09-15 | ScanList, terrain | Étiquette à code « en plusieurs étages » illisible | Mode 2D élargi (PDF417, Data Matrix, Aztec) en 1080p ; Codablock F et apparentés documentés comme limite |
 | 2026-10-12 | Catalogage Library | Moteur déclaré éprouvé par l'utilisateur | Entrée en bibliothèque ; NFC signalé ⚠️ |
+| 2026-10-27 | Carnet de recette, intégration | OCR adapté aux éléments dans le réticule, reconnaissance sans regex par comparaison au menu de la semaine ; écouteurs ML Kit rappelés sur le fil principal | Section « Variante » ; précision sur le fil des écouteurs ; statut inchangé (pas encore essayé sur appareil) |

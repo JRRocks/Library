@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-10-26
 
 | Identifiant | Ce que ça fait | Statut | Plateforme | Source | Utilisé dans |
 |---|---|---|---|---|---|
-| [`scan-multimode`](moteurs/scan-multimode/README.md) | Scan à la chaîne QR/2D, code-barres, OCR filtré par regex, NFC/RFID, **validé par consensus de N lectures identiques** | ✅ OCR et code-barres · 🟡 2D étendu · ⚠️ NFC (NDEF suspecté non lu) | Android, CameraX, ML Kit | ScanList | ScanList |
+| [`scan-multimode`](moteurs/scan-multimode/README.md) | Scan à la chaîne QR/2D, code-barres, OCR filtré par regex, NFC/RFID, **validé par consensus de N lectures identiques** | ✅ OCR et code-barres · 🟡 2D étendu · ⚠️ NFC (NDEF suspecté non lu) | Android, CameraX, ML Kit | ScanList | ScanList, Carnet de recette |
 | [`paiement-sumup`](moteurs/paiement-sumup/README.md) | Encaissement carte sur lecteur SumUp Bluetooth, connexion native du SDK, sans secret embarqué | 🟡 (connexion OK sur appareil, encaissement réel non encore validé) | Android, SDK SumUp 6.0.0 | Popote Compagnie | Popote Compagnie |
 | [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur ; variante dossier visible en `drive.file` | ✅ · ⚠️ lecture des 403 (patch proposé) · ⚠️ jeton révoqué en cache (suspecté) | Android, Play Services Auth | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
@@ -28,6 +28,7 @@ Dernière mise à jour : 2026-10-26
 | Scanner un QR Code, un Data Matrix, un PDF417 ou un Aztec | `scan-multimode` (mode Code 2D) |
 | Scanner un code-barres EAN, UPC, Code 128, Code 39… | `scan-multimode` (mode Code-barres) |
 | Lire un numéro de série imprimé (OCR) et en extraire un motif | `scan-multimode` (OCR + `RegexRuleEngine.extract`) |
+| Reconnaître un numéro sur une étiquette **sans regex** (format qui peut changer), en le comparant à une liste connue et à la taille du texte | `scan-multimode` (variante Carnet de recette : `OcrElements`, `ReconnaissanceEtiquette`) |
 | Éviter les lectures fausses d'une caméra (reflets, angle) | `scan-multimode` → `ScanConsensus` |
 | Éviter qu'un même code soit compté 30 fois par seconde | `scan-multimode` → `ScanDebouncer` |
 | Lire un tag NFC ou RFID (UID ou texte NDEF) | `scan-multimode` (mode NFC, ⚠️ lire la vigilance NDEF) |
@@ -46,6 +47,7 @@ Dernière mise à jour : 2026-10-26
 | Appeler un LLM avec une sortie JSON structurée | 🔬 candidats Activity-track (§ 5) |
 | Récupérer un rapport de plantage sans `adb logcat` | 🔬 candidat Popote, capteur de plantage (§ 5) |
 | Coloriser des pages de manga en noir et blanc | 🔬 candidat Mihon-edited-, modèle externe (§ 5) |
+| Lire des étapes à voix haute, commander à la voix sans IA | 🔬 candidats Carnet de recette (§ 5) |
 
 ---
 
@@ -67,6 +69,7 @@ Dernière mise à jour : 2026-10-26
 | GitHub Actions, release signée, keystore en secret | `maj-auto-github` |
 | GitHub API `releases/latest` | `maj-auto-github` |
 | ML Kit Barcode, ML Kit Text Recognition | `scan-multimode` |
+| OCR par éléments, réticule, `cropRect`, `ViewPort`, rotation | `scan-multimode` (variante Carnet de recette) |
 | NDEF, RTD_TEXT, UID, `enableReaderMode` | `scan-multimode` |
 | `onActivityResult`, `startActivityForResult` | `paiement-sumup` |
 | PDF417, Data Matrix, Aztec, Codablock | `scan-multimode` |
@@ -177,6 +180,17 @@ Chemins relatifs à `app/src/main/java/com/scanlist/app/`.
 |---|---|---|---|
 | Colorisation IA de manga | Modèle externe [qweasdd/manga-colorization-v2](https://github.com/qweasdd/manga-colorization-v2) @ `a0d0e44` (Python : `torch`, `torchvision`, `opencv-python`, poids à télécharger depuis Google Drive) ; serveur HTTP `GET /health`, `POST /colorize` annoncé dans `tools/colorizer-server` | Colorisation locale et gratuite de pages noir et blanc : environ 1 s par page sur GPU NVIDIA, 15 à 20 s sur CPU, ou Google Colab (chiffres de la note d'origine, non mesurés ici). Astuce notée : ne garder que les couleurs du modèle et les poser sous le trait d'origine (canal L en Lab) pour garder la page nette | Code du serveur introuvable sur GitHub. **Aucune licence** dans le dépôt du modèle : droits réservés par défaut, à vérifier avant toute redistribution. Pas de test ni de retour d'usage consigné |
 
+### Carnet de recette, [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette) @ `3d26111`
+
+Chemins relatifs à `core/src/main/kotlin/fr/jrrocks/carnetderecette/core/` et
+`app/src/main/kotlin/fr/jrrocks/carnetderecette/`.
+
+| Candidat | Chemin | Intérêt | Ce qui manque |
+|---|---|---|---|
+| Lecture à voix haute par segments | `audio/{TexteOral,LecteurSegments,Minuteurs,Jetons}.kt` (cœur, testés) + `audio/{Voix,Sonnerie}.kt` (app) | Texte écrit pour l'oral sans regex (« ½ cc » → « une demi-cuillère à café », « 180 °C »), machine à états pure (valider, relire, précédent, pause, déclencheurs manuel / fin de l'étape d'avant / fin de minuteur), `TextToSpeech` français hors ligne avec repli et installation de voix | Essai sur appareil |
+| Commandes vocales par phrases connues | `audio/ReconnaissanceCommandes.kt` (cœur, testé) + `audio/Ecoute.kt` (app) | `SpeechRecognizer` sur l'appareil (API 31+) ou service du téléphone, comparaison à une liste de phrases sans IA, garde-fou contre la conversation et les négations, micro coupé pendant que la voix parle | Essai sur appareil (bip de relance, hors ligne) |
+| Lecture de pages publiques `__NEXT_DATA__` / JSON-LD | `hellofresh/{LecteurHelloFresh,TexteHtml,AdressesHelloFresh,Sonde}.kt` + `net/PagesHelloFresh.kt` | Lecture d'une page publique comme un navigateur, redirections vérifiées une à une, taille plafonnée, sonde hebdomadaire en CI qui ouvre une issue si le site change | Très lié au site lu ; à généraliser |
+
 ---
 
 ## 6. Dépôts passés en revue
@@ -190,6 +204,7 @@ Chemins relatifs à `app/src/main/java/com/scanlist/app/`.
 | [Activity-track](https://github.com/JRRocks/Activity-track) | privé | `cdf458d` | 2026-10-12 | 5 candidats |
 | [ToolMap](https://github.com/JRRocks/ToolMap) | privé | `06c80c7` | 2026-10-12 | 10 candidats (jamais testés sur appareil) |
 | [InnovAdapt-CRM](https://github.com/JRRocks/InnovAdapt-CRM) | privé | `42e9534` | 2026-10-12 | 5 candidats |
+| [Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette) | public | `3d26111` | 2026-10-27 | Utilise `scan-multimode` (variante sans regex), `google-drive-appdata`, `maj-auto-github` ; 3 candidats (non essayés sur appareil) |
 | SuivieMAT, RGL13, Sun-tracking | privés | — | — | **Pas encore revus** |
 
 ---
