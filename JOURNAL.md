@@ -14,6 +14,23 @@
 
 ---
 
+## 2026-10-27 — [scan-multimode] Utilisé dans Carnet de recette, variante OCR sans regex ; trois candidats
+
+- **Type** : retour d'usage (intégration) · revue de dépôt
+- **Quoi** : fiche `scan-multimode` : ligne « Utilisé dans », section « Variante : OCR par
+  éléments dans le réticule, sans regex (Carnet de recette) » (sept adaptations), précision
+  dans les points de vigilance : `addOnSuccessListener` sans exécuteur rappelle sur le fil
+  principal, pas sur le fil d'analyse. INDEX : ligne du moteur, trois candidats du Carnet
+  (lecture à voix haute par segments, commandes vocales, lecture de pages publiques), dépôt
+  ajouté aux dépôts passés en revue.
+- **Preuve / vérification** : copies de `ScanConsensus`, `ScanDebouncer` et `ScanValue` dans
+  le Carnet avec leurs tests repris, au vert (`:core:test`, `:app:testDebugUnitTest`) ;
+  géométrie de l'image testée en JVM. **Aucun essai sur appareil** : statut inchangé.
+- **Apps à prévenir** : aucune (la précision sur le fil ne change pas le comportement de
+  ScanList).
+
+---
+
 ## 2026-10-26 — [google-drive-appdata] Jeton révoqué gardé en cache (suspecté)
 
 - **Type** : patch (proposé, hors `src/`)
