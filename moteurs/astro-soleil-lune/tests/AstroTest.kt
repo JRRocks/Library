@@ -157,4 +157,55 @@ class AstroTest {
         // so at least one of rise/set must land inside the day.
         assertTrue(moon.moonrise != null || moon.moonset != null)
     }
+
+    // ---- Library additions (2026-10-27) --------------------------------------
+
+    // Taken from Android-Suntrack SkyPaletteTest: altitudeDeg had no test here.
+    // Paris, declination 0 keeps the expected altitudes simple.
+    @Test
+    fun `solar noon is the highest point of the sun`() {
+        val lat = 48.8566
+        assertEquals(90.0 - lat, SolarCalculator.altitudeDeg(720.0, lat, 0.0), 0.001)
+        assertEquals(-(90.0 - lat), SolarCalculator.altitudeDeg(0.0, lat, 0.0), 0.001)
+    }
+
+    // The KDoc promises a null transit on days without one. The first version
+    // returned the previous evening's transit on ~26-29 days a year instead.
+    @Test
+    fun `moon transit falls inside the local day or is null`() {
+        val places = listOf(
+            Triple(48.8566, 2.3522, "Europe/Paris"),
+            Triple(-33.8688, 151.2093, "Australia/Sydney"),
+            Triple(40.7128, -74.0060, "America/New_York"),
+        )
+        for ((lat, lon, id) in places) {
+            val zone = ZoneId.of(id)
+            var nulls = 0
+            var date = LocalDate.of(2024, 1, 1)
+            while (date.year == 2024) {
+                val transit = MoonCalculator.calculate(date, lat, lon, zone).transit
+                if (transit == null) nulls++
+                else assertEquals("$id $date: $transit", date, transit.toLocalDate())
+                date = date.plusDays(1)
+            }
+            // A lunar day lasts ~24h50m: about one calendar day in 25 has no transit.
+            assertTrue("$id: $nulls days without transit", nulls in 8..20)
+        }
+    }
+
+    // On the 23-hour spring-forward day, a fixed 24h scan ran an hour into the
+    // next day and reported its moonrise as this day's.
+    @Test
+    fun `moonrise and moonset stay inside the local day across DST`() {
+        val zone = ZoneId.of("America/New_York")
+        for (year in 2020..2030) {
+            var date = LocalDate.of(year, 1, 1)
+            while (date.year == year) {
+                val moon = MoonCalculator.calculate(date, 40.7128, -74.0060, zone)
+                moon.moonrise?.let { assertEquals("rise $date: $it", date, it.toLocalDate()) }
+                moon.moonset?.let { assertEquals("set $date: $it", date, it.toLocalDate()) }
+                date = date.plusDays(1)
+            }
+        }
+    }
 }

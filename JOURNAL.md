@@ -14,6 +14,32 @@
 
 ---
 
+## 2026-10-27 — [astro-soleil-lune] Patch : transit de la veille et jour du changement d'heure
+
+- **Type** : patch + revue de dépôt
+- **Quoi** :
+  - `MoonCalculator.calculate` rendait, 26 à 29 jours par an, le transit de la **veille au soir**
+    (premier maximum de la fenêtre élargie), et jamais `null`, contrairement à sa KDoc. Le jour
+    de 23 h (passage à l'heure d'été), le balayage fixe de 24 h débordait sur le lendemain et
+    pouvait rendre un lever ou un coucher d'après minuit ; le jour de 25 h, la dernière heure
+    était ignorée. Correctif au plus petit périmètre : longueur réelle du jour local, et seuls
+    les maxima dont l'heure affinée tombe dans le jour comptent.
+  - `tests/AstroTest.kt` : deux tests de reproduction (2024 sur trois villes ; New York
+    2020-2030) et le test d'altitude `altitudeDeg` repris de `SkyPaletteTest` (Android-Suntrack).
+  - Fiche : statut précisé (8 tests contre éphémérides publiées sur 13), tableau Composants,
+    vigilances « époque de la théorie lunaire » (deux effets du bug d'origine) et « couverture
+    faible côté lune », `declinationDeg` sans valeur par défaut, revue Android-Suntrack et
+    Sun-tracking dans l'historique.
+- **Preuve / vérification** : défaut signalé par une contre-revue (portage Python), puis
+  reproduit en Kotlin : les deux nouveaux tests échouent sur l'ancien code (Paris 2024-01-23 :
+  transit du 22 à 22 h 43 ; New York 2023-03-12 : lever du 13 à 0 h 44) et passent après le
+  correctif. 13/13 tests verts (Kotlin 2.0.21, JUnit 4.13.2, sans Gradle). Calcul pur : aucun
+  matériel requis, mais aucun retour terrain non plus, d'où 🟡.
+- **Apps à prévenir** : Sun Track (Android-Suntrack, `MoonCalculator.kt` inchangé à `2cb08aa`).
+  Sun-tracking est une copie périmée (bug d'époque) à archiver ou aligner.
+
+---
+
 ## 2026-10-27 — [scan-multimode] Utilisé dans Carnet de recette, variante OCR sans regex ; trois candidats
 
 - **Type** : retour d'usage (intégration) · revue de dépôt

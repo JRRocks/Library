@@ -1,5 +1,6 @@
 package com.jeanrocka.suntrack.astro
 
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -42,7 +43,10 @@ object MoonCalculator {
         // roughly one calendar day in 25 contains no transit at all; padding
         // both ends guarantees an interior peak exists to be found.
         val padSteps = PAD_MINUTES / SAMPLE_MINUTES
-        val daySteps = 24 * 60 / SAMPLE_MINUTES
+        // DST days last 23h or 25h: a fixed 24h scan would spill into the next
+        // day or miss the last hour.
+        val dayMinutes = Duration.between(startOfDay, date.plusDays(1).atStartOfDay(zone)).toMinutes()
+        val daySteps = (dayMinutes / SAMPLE_MINUTES).toInt()
         val first = -padSteps
         val last = daySteps + padSteps
 
@@ -65,26 +69,25 @@ object MoonCalculator {
             }
         }
 
-        // Transit = the first interior local maximum. Taking a plain global
-        // maximum would happily return a window edge, which is not a transit.
-        var peak: Int? = null
-        for (i in (first + 1) until last) {
-            if (altitudes.getValue(i) > altitudes.getValue(i - 1) &&
-                altitudes.getValue(i) >= altitudes.getValue(i + 1)
-            ) {
-                peak = i
-                break
-            }
-        }
-
-        val transit = peak?.let { p ->
-            // Refine by fitting a parabola through the peak and its neighbours.
+        // Transit = an interior local maximum whose refined time falls inside
+        // the local day. Taking a plain global maximum would happily return a
+        // window edge, and the first maximum of the padded window can be the
+        // previous evening's transit: the padding only supplies neighbours.
+        var transit: ZonedDateTime? = null
+        for (p in 0..daySteps) {
             val y0 = altitudes.getValue(p - 1)
             val y1 = altitudes.getValue(p)
             val y2 = altitudes.getValue(p + 1)
-            val denom = y0 - 2 * y1 + y2
-            val shift = if (abs(denom) < 1e-9) 0.0 else 0.5 * (y0 - y2) / denom
-            startOfDay.plusSeconds(Math.round((p + shift) * SAMPLE_MINUTES * 60.0))
+            if (y1 > y0 && y1 >= y2) {
+                // Refine by fitting a parabola through the peak and its neighbours.
+                val denom = y0 - 2 * y1 + y2
+                val shift = if (abs(denom) < 1e-9) 0.0 else 0.5 * (y0 - y2) / denom
+                val candidate = startOfDay.plusSeconds(Math.round((p + shift) * SAMPLE_MINUTES * 60.0))
+                if (candidate.toLocalDate() == date) {
+                    transit = candidate
+                    break
+                }
+            }
         }
 
         return MoonTimes(

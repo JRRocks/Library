@@ -17,7 +17,7 @@ Dernière mise à jour : 2026-10-26
 | [`paiement-sumup`](moteurs/paiement-sumup/README.md) | Encaissement carte sur lecteur SumUp Bluetooth, connexion native du SDK, sans secret embarqué | 🟡 (connexion OK sur appareil, encaissement réel non encore validé) | Android, SDK SumUp 6.0.0 | Popote Compagnie | Popote Compagnie |
 | [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur ; variante dossier visible en `drive.file` | ✅ · ⚠️ lecture des 403 (patch proposé) · ⚠️ jeton révoqué en cache (suspecté) | Android, Play Services Auth | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
-| [`astro-soleil-lune`](moteurs/astro-soleil-lune/README.md) | Lever, coucher et midi solaire, jour et nuit polaires, phase, illumination et lever de la lune, hors-ligne | 🟡 | Kotlin pur | Android-Suntrack | Sun Track |
+| [`astro-soleil-lune`](moteurs/astro-soleil-lune/README.md) | Lever, coucher et midi solaire, jour et nuit polaires, phase, illumination et lever de la lune, hors-ligne | 🟡 (deux défauts du calcul de la lune corrigés dans la Library le 2026-10-27 ; 13 tests verts) | Kotlin pur | Android-Suntrack | Sun Track |
 
 ---
 
@@ -73,7 +73,7 @@ Dernière mise à jour : 2026-10-26
 | NDEF, RTD_TEXT, UID, `enableReaderMode` | `scan-multimode` |
 | `onActivityResult`, `startActivityForResult` | `paiement-sumup` |
 | PDF417, Data Matrix, Aztec, Codablock | `scan-multimode` |
-| Phase lunaire, jour polaire | `astro-soleil-lune` |
+| Phase lunaire, jour polaire, transit de la lune, changement d'heure (DST) | `astro-soleil-lune` |
 | Regex, `PatternSyntaxException` | `scan-multimode` |
 | Robolectric, injection de dépendance pour un SDK non testable | `paiement-sumup` |
 | SumUp, `SumUpAPI`, `SumUpState.init`, `play-services-location` | `paiement-sumup` |
