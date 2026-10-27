@@ -14,6 +14,35 @@
 
 ---
 
+## 2026-10-27 — [scan-multimode] Patch NDEF, ajout de RegexSuggester, SuivieMAT dans « Utilisé dans »
+
+- **Type** : patch + ajout (composant) + revue de dépôt
+- **Quoi** :
+  - NFC : `FLAG_READER_SKIP_NDEF_CHECK` retiré de `src/NfcScanSurface.kt`, commentaire faux
+    corrigé. D'après le code AOSP (`android14-release`), `NfcService` saute la lecture NDEF avec
+    ce drapeau et `NativeNfcTag` n'ajoute la techno NDEF que pendant cette lecture :
+    `Ndef.get(tag)` renvoyait donc `null` et seul l'UID était lu. La variante « `ndef.connect()`
+    dans `NfcTagDecoder` » du patch proposé est retirée, car inopérante. Le NFC reste ⚠️.
+  - Nouveau composant 🟡 `RegexSuggester` et son test (27 tests), copiés sans modification de
+    SuivieMAT `5c81d3c` (identiques à `5eb5198` et à la pointe `65da616`) : il propose des
+    formules regex à partir d'exemples, sans IA. L'interface est décrite, pas copiée.
+  - SuivieMAT ajouté à « Utilisé dans » : fork de ScanList, moteur identique jusqu'à `5eb5198`
+    hormis l'habillage de `NfcScanSurface`, scan jamais vérifié sur téléphone. Une preuve
+    indirecte NFC (lecteur armé sur le téléphone de l'utilisateur, 2026-09-25) est consignée,
+    sans promotion.
+  - Points de vigilance : ICU (accolade littérale non échappée, `--` en classe, messages de
+    `frenchMessage` calés sur le JDK), UID aléatoire et UID à ne pas exporter, option aperçu
+    ou économie de l'OCR. Ligne `ScanValue` corrigée (`normalize` garde la casse).
+- **Preuve / vérification** : tests purs sans Gradle (Kotlin 2.0.21, JUnit 4.13.2) :
+  `RegexSuggesterTest`, `RegexRuleEngineTest`, `ScanConsensusTest`, `ScanDebouncerTest`,
+  `NfcValueTest` : 91/91, relancés par la contre-vérification. Fichiers `RegexSuggester`
+  identiques (`cmp`) à la source. Patch NDEF non vérifié sur appareil : aucun test ne couvre ce
+  chemin Android ; la pile NFC de Samsung peut différer d'AOSP.
+- **Apps à prévenir** : ScanList (`1368027` / `2ef0b6d`) et SuivieMAT (`65da616`) n'ont pas le
+  patch NDEF ; SuivieMAT est peu concerné (il ne lit que l'UID et peut garder le drapeau).
+
+---
+
 ## 2026-10-27 — [library] AGENTS.md : pièges de revue, dossier docs/methodes
 
 - **Type** : transverse

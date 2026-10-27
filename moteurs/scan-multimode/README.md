@@ -3,12 +3,12 @@
 | Champ | Valeur |
 |---|---|
 | **Identifiant** | `scan-multimode` |
-| **Statut global** | ✅ **Éprouvé** pour l'OCR et le code-barres (déclaré éprouvé par l'utilisateur après des tests en réel). Le NFC et l'élargissement 2D restent 🟡, voir le tableau des composants |
+| **Statut global** | ✅ **Éprouvé** pour l'OCR et le code-barres (déclaré éprouvé par l'utilisateur après des tests en réel). 🟡 pour l'élargissement 2D et le générateur de formules `RegexSuggester`. ⚠️ pour le NFC : patch NDEF appliqué ici le 2026-10-27, **non vérifié sur appareil**. Détail dans le tableau des composants |
 | **Plateforme** | Android natif, Kotlin, minSdk 26 |
 | **Dépendances** | CameraX 1.3.4, ML Kit `barcode-scanning` 17.3.0 et `text-recognition` 16.0.1 (modèles **embarqués**, donc hors-ligne), `android.nfc` |
-| **Provenance** | [JRRocks/ScanList](https://github.com/JRRocks/ScanList) (privé), commit `1368027` (2026-09-22) |
-| **Utilisé dans** | ScanList · Carnet de recette (intégré le 2026-10-27, OCR seul et **sans regex** : voir la variante, pas encore essayé sur appareil) |
-| **Fichiers d'origine** | `app/src/main/java/com/scanlist/app/scanner/*`, `domain/{model/ScanValue,nfc/NfcValue,regex/RegexRuleEngine}.kt`, `ui/scan/{CameraPreview,NfcScanSurface,ScanViewModel}.kt` |
+| **Provenance** | [JRRocks/ScanList](https://github.com/JRRocks/ScanList) (privé), commit `1368027` (2026-09-22), pour tout `src/` et `tests/` sauf `RegexSuggester`. `RegexSuggester.kt` et son test : [JRRocks/SuivieMAT](https://github.com/JRRocks/SuivieMAT) (public depuis le 2026-10-27), commit d'origine `5c81d3c` (2026-10-26), identiques à la pointe revue `5eb5198` (2026-10-27). `NfcScanSurface.kt` est **patché dans la Library** (2026-10-27, voir les points de vigilance) |
+| **Utilisé dans** | ScanList · SuivieMAT (fork de ScanList pris à `1368027`, moteur identique jusqu'à `5eb5198` hormis `NfcScanSurface` habillé au thème ; scan jamais vérifié sur téléphone) · Carnet de recette (intégré le 2026-10-27, OCR seul et **sans regex** : voir la variante, pas encore essayé sur appareil) |
+| **Fichiers d'origine** | `app/src/main/java/com/scanlist/app/scanner/*`, `domain/{model/ScanValue,nfc/NfcValue,regex/RegexRuleEngine}.kt`, `ui/scan/{CameraPreview,NfcScanSurface,ScanViewModel}.kt` ; SuivieMAT : `domain/regex/RegexSuggester.kt` ; tests : `app/src/test/java/com/scanlist/app/*Test.kt` |
 | **Dernière mise à jour de la fiche** | 2026-10-27 |
 
 ## À quoi ça sert
@@ -20,7 +20,7 @@ seul téléphone tenu d'une main. Il y a quatre modes **mutuellement exclusifs**
 |---|---|---|
 | Code 2D | QR Code, PDF417, Data Matrix, Aztec | ML Kit Barcode, filtré **au décodeur** |
 | Code-barres | EAN-13/8, UPC-A/E, Code 39/93/128, ITF, Codabar | ML Kit Barcode, filtré **au décodeur** |
-| OCR | Texte imprimé, filtré par une **formule regex** écrite à la volée | ML Kit Text Recognition (latin) |
+| OCR | Texte imprimé, filtré par une **formule regex** écrite à la volée ou proposée à partir d'un exemple (`RegexSuggester`) | ML Kit Text Recognition (latin) |
 | NFC/RFID | Contenu NDEF texte, sinon l'UID matériel en hexadécimal | `NfcAdapter.enableReaderMode` |
 
 ## Le problème réglé sur le terrain : la validation par consensus
@@ -61,25 +61,89 @@ image caméra ─► décodeur filtré par mode ─► filtre regex de conformit
 
 Le NFC n'a pas de bruit optique : il passe par le debouncer seul, sans consensus.
 
+## Générateur de formules à partir d'exemples (`RegexSuggester`)
+
+Écrire une regex est l'obstacle principal du mode OCR et du filtre de conformité des
+codes. Avec `RegexSuggester`, l'utilisateur tape une valeur telle qu'elle est imprimée
+(`1GH546`) et reçoit plusieurs formules, de la plus stricte à la plus large. Le moteur
+vient de SuivieMAT (`5c81d3c`, décision 25). Il est en Kotlin pur et ne dépend que de
+`RegexRuleEngine` et `ScanValue`.
+
+**Principe :**
+
+1. Les exemples sont séparés par `,`, `;` ou un retour à la ligne. L'espace n'est pas un
+   séparateur : il peut faire partie de la valeur (`12 123456`). Chaque exemple passe par
+   `ScanValue.normalize`, comme à l'enregistrement.
+2. Chaque exemple est découpé en **blocs** : chiffres, majuscules, minuscules, lettres
+   mêlées, caractères fixes. Les caractères fixes sont recopiés et échappés.
+3. Plusieurs exemples sont fusionnés en un seul format. Seules la longueur d'un bloc et la
+   casse de ses lettres peuvent varier : des longueurs différentes donnent une **plage**
+   (`1GH546, 1GH5467` → `\d{3,4}`). Un nombre de blocs différent ou un caractère fixe
+   différent donne `Result.Incompatible`, sans proposition (`12-123456, 12 123456` est
+   incompatible : la variante « séparateurs » couvre les deux).
+4. Jusqu'à **cinq formules**, dans cet ordre (exemple `1GH546`) :
+
+   | `Kind` | Formule | Proposée quand |
+   |---|---|---|
+   | `STRICT` | `\b\d[A-Z]{2}\d{3}\b` | toujours, en premier |
+   | `ANY_CASE` | `\b\d[A-Za-z]{2}\d{3}\b` | un bloc est tout en majuscules ou tout en minuscules |
+   | `SEPARATORS` | `\b\d[ -]?[A-Z]{2}[ -]?\d{3}\b` | le format a une jonction : chiffres collés à des lettres, ou un séparateur seul entre deux blocs (sinon elle se confond avec la stricte et disparaît) ; espace et tiret tolérés, plus les séparateurs des exemples parmi ` ./_-` |
+   | `FIXED_PREFIX` | `\b1GH\d{3}\b` | le début (tout sauf le dernier bloc) est le même dans tous les exemples |
+   | `FLEXIBLE` | `\b\d+[A-Z]+\d+\b` | au moins un bloc de chiffres ou de lettres |
+
+5. `\b` n'est posé que du côté où le format commence ou finit par un chiffre ou une
+   lettre : `#123` donne `#\d{3}\b`. Un `\b#` exigerait un caractère de mot avant le `#`
+   et ne reconnaîtrait plus `#123` en début de texte. En OCR, `\b` évite d'extraire un
+   morceau d'un mot plus long.
+6. **Chaque proposition est vérifiée par `RegexRuleEngine`** : elle doit compiler
+   (`compileOrNull`) et reconnaître chaque exemple (`conforms`), sinon elle est retirée.
+   Les doublons sont retirés. Les valeurs d'illustration (`alsoAccepts`, « Accepte
+   aussi », et `rejects`, « Refuse ») sont construites à la main puis vérifiées contre la
+   formule et contre la formule stricte. Une illustration fausse n'est pas montrée.
+7. Aucun texte affichable dans le moteur : il renvoie `Result.Empty`,
+   `Result.Incompatible` ou `Result.Found(blocks, suggestions)`. L'interface fait les
+   phrases.
+
+**Pourquoi pas d'IA embarquée** (décision 25 de SuivieMAT, 2026-10-26) : Gemini Nano
+(ML Kit Prompt API) ne citait pas le Galaxy S25 parmi les appareils compatibles (liste
+consultée le 2026-10-26), et un modèle embarqué (Gemma 3 1B, environ 500 Mo) aurait
+multiplié la taille de l'APK pour un résultat peu fiable sur les quantificateurs. Un
+générateur déterministe suffit à un marquage régulier, et chaque formule est vérifiée.
+La saisie en phrase (« 1 chiffre, 2 lettres, 3 chiffres ») n'a pas été retenue.
+
+**Interface facultative, non copiée** : SuivieMAT a une feuille Compose
+`ui/scan/RegexGeneratorSheet.kt` (`ModalBottomSheet`) et les chaînes `regex_generator_*`
+de `res/values/strings.xml` (titres et commentaires des cinq formules, pluriels qui
+décrivent les blocs). Elles dépendent du thème de l'app. Le bouton est placé à côté du
+champ de formule, en OCR comme dans le filtre de conformité. La formule choisie suit le
+chemin d'une formule tapée à la main : en OCR, elle **désarme** la capture.
+
+**Statut 🟡** : 27 tests JVM, verts ici. Aucun usage réel consigné : SuivieMAT note
+« Générateur de formules à l'écran ⬜ Non vérifié » (`consignes/outils.md` § 8).
+
 ## Composants
 
 | Fichier (`src/`) | Rôle | Android ? | Tests (`tests/`) | Statut |
 |---|---|---|---|---|
 | `ScanConsensus.kt` | N lectures identiques, TTL, garde d'ambiguïté | Non, Kotlin pur | `ScanConsensusTest` | ✅ |
 | `ScanDebouncer.kt` | Verrou anti-rebond de 1,5 s par clé, purge auto | Non | `ScanDebouncerTest` | ✅ |
-| `ScanValue.kt` | Normalisation partagée (trim, espaces réduits, majuscules) : **une seule** règle pour le dédoublonnage et la comparaison | Non | via les autres tests | ✅ |
-| `RegexRuleEngine.kt` | `extract` (OCR : isole les fragments, 50 max par image), `conforms` (codes : correspondance **totale**), `validate` (messages d'erreur traduits en français), comptage des groupes capturants | Non | `RegexRuleEngineTest` | ✅ |
+| `ScanValue.kt` | Normalisation partagée : `normalize` (trim, espaces internes réduits à un seul, **casse conservée**) et `key` (la même valeur passée en majuscules, sauf `caseSensitive`). **Une seule** règle pour le dédoublonnage et la comparaison | Non | via les autres tests | ✅ |
+| `RegexRuleEngine.kt` | `extract` (OCR : isole les fragments, 50 max par image), `conforms` (codes : correspondance **totale**), `validate` (messages d'erreur traduits en français), comptage des groupes capturants | Non | `RegexRuleEngineTest` | ✅ · messages d'erreur à vérifier sur appareil (ICU, voir les points de vigilance) |
+| `RegexSuggester.kt` | Formules regex proposées à partir d'exemples, cinq variantes de la plus stricte à la plus large, chacune vérifiée par `RegexRuleEngine` (vient de SuivieMAT `5c81d3c`) | Non, Kotlin pur | `RegexSuggesterTest` | 🟡 aucun usage réel consigné |
 | `BarcodeFormats.kt` | Masques de formats 1D et 2D **disjoints**, noms de symbologie | Constantes ML Kit | `BarcodeFormatsTest` | ✅ 1D · 🟡 PDF417, Data Matrix, Aztec pas encore vus sur un vrai code |
 | `BarcodeAnalyzer.kt` | `ImageAnalysis.Analyzer` ML Kit, filtrage dans les **options** du décodeur | Oui | non (pas testable hors appareil) | ✅ |
 | `OcrAnalyzer.kt` | `ImageAnalysis.Analyzer` qui remonte le texte brut ; la regex est appliquée par l'appelant | Oui | non | ✅ |
 | `CameraPreview.kt` | Composable CameraX : 720p (1D, OCR) ou 1080p (2D), `STRATEGY_KEEP_ONLY_LATEST`, torche, réticule qui se remplit selon l'avancement du consensus | Oui | non | ✅ |
 | `ScanFeedback.kt` | Trois signatures sonores et haptiques : succès, doublon, hors liste | Oui | non | ✅ |
 | `NfcValue.kt` | Choix NDEF/UID, décodage RTD_TEXT (UTF-8/UTF-16) | Non | `NfcValueTest` | 🟡 |
-| `NfcTagDecoder.kt` | Pont `Tag` Android vers `NfcValue` | Oui | non | 🟡 ⚠️ voir les points de vigilance |
-| `NfcScanSurface.kt` | Composable qui arme et désarme `enableReaderMode` sur ON_RESUME/ON_PAUSE ; repli si pas de puce ou NFC coupé | Oui | non | 🟡 |
+| `NfcTagDecoder.kt` | Pont `Tag` Android vers `NfcValue` ; lit `cachedNdefMessage`, rempli par la sonde NDEF du système | Oui | non | ⚠️ voir les points de vigilance |
+| `NfcScanSurface.kt` | Composable qui arme et désarme `enableReaderMode` sur ON_RESUME/ON_PAUSE ; repli si pas de puce ou NFC coupé. **Patché dans la Library** : sans `FLAG_READER_SKIP_NDEF_CHECK` | Oui | non | ⚠️ patch appliqué, non vérifié sur appareil |
 
 Les packages d'origine (`com.scanlist.app.*`) sont conservés : **renommez-les** à
-l'intégration.
+l'intégration. Tous les fichiers sont ceux de ScanList `1368027`, sauf `RegexSuggester.kt`
+et `RegexSuggesterTest.kt` (SuivieMAT `5c81d3c`, copiés sans modification) et
+`NfcScanSurface.kt` (patch de la Library du 2026-10-27, absent de ScanList et de
+SuivieMAT).
 
 ## Variante : OCR par éléments dans le réticule, sans regex (Carnet de recette)
 
@@ -130,6 +194,10 @@ Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Car
 2. **Manifeste** : `CAMERA`, `VIBRATE`, `NFC` ; `<uses-feature android:name="android.hardware.nfc" android:required="false"/>`.
 3. Copiez `src/` (et `tests/`), puis renommez les packages. `ScanMode` vient de
    `domain/model/Enums.kt` dans ScanList : c'est un simple `enum { OCR, QR_CODE, BARCODE, NFC }`.
+   `RegexSuggester.kt` est facultatif (il demande `RegexRuleEngine` et `ScanValue`). Les
+   tests purs se lancent sans Android : `RegexSuggesterTest`, `RegexRuleEngineTest`,
+   `ScanConsensusTest`, `ScanDebouncerTest`, `NfcValueTest` (`BarcodeFormatsTest` demande
+   les constantes ML Kit).
 4. **ViewModel** (modèle : `ScanViewModel` de ScanList) :
    ```kotlin
    private val consensus = ScanConsensus(
@@ -151,9 +219,32 @@ Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Car
 5. **Créez un seul analyseur pour toute la durée de l'écran** : recréer un client ML Kit à
    chaque recomposition recharge le modèle. Appelez `close()` à la sortie.
 6. **OCR : armez la capture explicitement.** Tant que la formule est en cours de frappe,
-   l'aperçu tourne mais rien n'est écrit. Toute modification de la formule **désarme** la
-   capture. Sans ça, une formule incomplète comme `\d` enregistre des dizaines de valeurs
-   parasites.
+   rien n'est écrit. Toute modification de la formule **désarme** la capture. Sans ça, une
+   formule incomplète comme `\d` enregistre des dizaines de valeurs parasites. Deux
+   options pour la capture désarmée :
+   - **aperçu** (ScanList) : l'OCR tourne, le texte lu et les correspondances s'affichent
+     en direct. On vérifie la formule sur l'étiquette avant d'armer ;
+   - **économie** (SuivieMAT, décision 26, `3f0126f`) : l'aperçu est supprimé et
+     `onTextRecognized` sort tout de suite (`if (!capturingState.value) return`), donc
+     aucune extraction regex par image. Plus tard, `1fc037b` va plus loin : `OcrAnalyzer`
+     referme l'image sans la lire tant que la capture est désarmée (paramètre `isActive`),
+     pour la chauffe et la batterie. Ce changement est postérieur à la revue et non
+     vérifié sur téléphone ; il n'est pas repris dans `src/`. Contrepartie : la formule ne
+     se vérifie plus sur l'étiquette avant d'armer. Le générateur (étape 7) compense en
+     partie, en vérifiant chaque proposition contre l'exemple saisi.
+7. **Facultatif : générateur de formules.** Appelez `RegexSuggester.suggest(saisie)` depuis
+   le champ de formule (OCR ou filtre de conformité) :
+   ```kotlin
+   when (val r = RegexSuggester.suggest(saisie)) {
+       RegexSuggester.Result.Empty -> Unit                       // rien a proposer
+       RegexSuggester.Result.Incompatible -> afficherFormatsDifferents()
+       is RegexSuggester.Result.Found -> afficher(r.blocks, r.suggestions)  // kind, pattern, alsoAccepts, rejects
+   }
+   ```
+   Les phrases (titre et commentaire de chaque `Kind`, description des blocs) sont à
+   écrire dans `strings.xml` ; celles de SuivieMAT (`regex_generator_*`) servent de
+   modèle. Une formule choisie passe par le même chemin qu'une formule tapée (elle
+   désarme la capture OCR).
 
 ## Réglages éprouvés
 
@@ -171,15 +262,67 @@ Appareil de référence : Samsung Galaxy S25.
 
 ## Points de vigilance et limites connues
 
-- **⚠️ NFC, NDEF probablement jamais lu (suspecté, à confirmer sur appareil).** `NfcScanSurface`
-  passe `FLAG_READER_SKIP_NDEF_CHECK` à `enableReaderMode`. Avec ce drapeau, Android ne fait
-  pas la vérification NDEF à la découverte du tag. La technologie `Ndef` n'est donc pas
-  ajoutée et `Ndef.get(tag)` / `cachedNdefMessage` renvoient `null`. Résultat probable : on lit
-  toujours l'UID, jamais le texte NDEF. **Patch proposé** : retirer
-  `FLAG_READER_SKIP_NDEF_CHECK` des drapeaux, ou bien `ndef.connect()` puis
-  `ndef.ndefMessage` dans `NfcTagDecoder`. Si un tag NDEF texte remonte quand même son UID
-  sur un vrai téléphone, appliquez le patch ici et dans ScanList, puis consignez-le dans
-  `JOURNAL.md`.
+- **⚠️ NFC, NDEF jamais lu avec `FLAG_READER_SKIP_NDEF_CHECK` (cause établie par lecture
+  du code AOSP ; patch appliqué ici le 2026-10-27, NON vérifié sur appareil).**
+  - **Cause.** ScanList passait ce drapeau à `enableReaderMode`. Dans AOSP
+    (`android14-release`), `NfcService.java` remet alors le tag au callback **sans**
+    appeler `findAndReadNdef()`. Or `NativeNfcTag.java` n'ajoute la techno NDEF au tag
+    (`addNdefTechnology`) que dans `findAndReadNdef()` ou `findNdef()`. Donc
+    `Ndef.get(tag)` renvoie `null`, `cachedNdefMessage` n'existe pas, et `NfcTagDecoder`
+    retombe toujours sur l'UID. La variante « `ndef.connect()` puis `ndef.ndefMessage`
+    dans `NfcTagDecoder` », proposée avant, est **inopérante** : il n'y a pas d'objet
+    `Ndef` à connecter. Le commentaire d'origine (« NfcTagDecoder s'en charge lui-même »)
+    était faux.
+  - **Patch.** `src/NfcScanSurface.kt` ne passe plus `FLAG_READER_SKIP_NDEF_CHECK`, et le
+    commentaire est corrigé. `NfcTagDecoder` est inchangé : il lit `cachedNdefMessage`,
+    que la sonde du système remplit.
+  - **Coût attendu.** La sonde NDEF du système tourne à chaque tag : un peu de latence au
+    premier contact. Pour un tag sans NDEF, le système tente ensuite de se reconnecter ;
+    si la reconnexion échoue, le tag n'est pas remis au callback (même bloc de
+    `NfcService.java`), et un message système d'erreur de lecture peut s'afficher si le
+    constructeur l'active (`R.bool.enable_notify_read_failed`), ce qui s'écarte de la
+    règle « sur erreur, ne rien faire ». Une app qui ne lit que l'UID (badge sans NDEF)
+    peut remettre le drapeau.
+  - **À vérifier sur un vrai téléphone**, avec un tag NDEF texte et avec un tag sans NDEF.
+    La pile NFC d'un constructeur peut différer d'AOSP. `NfcValueTest` ne couvre pas ce
+    chemin : `NfcTagDecoder` et `NfcScanSurface` dépendent d'Android.
+  - **Apps qui portent encore le défaut** : ScanList (`1368027` sur `main`, `2ef0b6d` sur
+    `claude/init-xyw7gc`) et SuivieMAT (`5eb5198`). SuivieMAT est peu concerné : il vise
+    l'UID d'une carte sans NDEF.
+- **Identification par l'UID d'une carte.** Deux limites, relevées par SuivieMAT
+  (`consignes/plan-suivimat.md`, § 10 ter et tableau des risques) :
+  - une carte à **UID aléatoire** change d'UID à chaque présentation : l'identification
+    est alors inopérante. D'après la norme ISO/IEC 14443-3 (et non d'après un constat de
+    SuivieMAT), un tel UID fait 4 octets et commence par `0x08` ; c'est courant sur les
+    cartes à microprocesseur. Vérifiez sur la carte réelle que deux lectures donnent le
+    même UID ;
+  - l'UID d'un badge ne doit **pas quitter le téléphone** : il suffit souvent à le
+    cloner, surtout si le badge ouvre aussi des portes. Or le pipeline par défaut
+    enregistre la valeur lue dans un dossier exportable en `.csv`. Pour identifier une
+    personne, gardez l'UID sur l'appareil et exportez une référence interne.
+- **Regex : ICU (Android) est plus strict que le JDK des tests.** Sur téléphone, `Regex`
+  passe par ICU. Une `}` littérale non échappée (hors classe, hors quantificateur) y est
+  refusée, alors que le JDK l'accepte. `--` dans une classe y est lu comme une différence
+  d'ensembles (sens différent, ou erreur). `RegexRuleEngine.validate` et `compileOrNull` attrapent l'exception : pas de
+  plantage, mais le verdict d'un test JVM peut différer de celui du téléphone pour une
+  formule saisie. ToolMap l'a appris par un vrai plantage sur un Galaxy S25, sur une regex
+  figée de ToolMap et non de ce moteur (commit `c620a38`). Les formules de
+  `RegexSuggester` échappent toutes les accolades littérales et mettent le tiret en
+  dernier dans les classes (relu à la main, pas exécuté sous ICU).
+- **Regex : messages d'erreur ICU non traduits (à vérifier sur appareil).**
+  `frenchMessage` reconnaît les descriptions anglaises du JDK (« Unclosed group »,
+  « Illegal repetition », « Dangling meta character »…). Sur Android, la description est
+  celle d'ICU : ToolMap a vu « Syntax error in regexp pattern » sur un Galaxy S25
+  (`docs/JOURNAL.md`, avec `c620a38`). D'après la table des messages d'AOSP
+  (`android14-release`,
+  `external/icu/android_icu4j/libcore_bridge/src/native/com_android_icu_util_regex_PatternNative.cpp`),
+  seules les branches « closing bracket » et « escape » retrouvent un message ICU. Les
+  autres erreurs retombent sur « Erreur : formule invalide », et la position peut
+  différer. Le comportement reste sûr ; `RegexRuleEngineTest` ne vérifie ces messages
+  qu'en JVM.
+- **Aperçu OCR ou économie** : garder l'OCR actif quand la capture est désarmée coûte de
+  la chaleur et de la batterie. SuivieMAT a choisi de ne rien extraire tant que la capture
+  est désarmée (décision 26). Voir l'étape 6 de l'intégration.
 - **Codes empilés illisibles** : Codablock F, Code 16K, Code 49 et MicroPDF417 ne sont lus ni
   par ML Kit ni par ZXing. On les reconnaît aux **barres horizontales pleines entre les
   rangées** ; un PDF417 a ses rangées collées. Contournement : le mode OCR sur le texte en
@@ -208,3 +351,9 @@ Appareil de référence : Samsung Galaxy S25.
 | 2026-09-15 | ScanList, terrain | Étiquette à code « en plusieurs étages » illisible | Mode 2D élargi (PDF417, Data Matrix, Aztec) en 1080p ; Codablock F et apparentés documentés comme limite |
 | 2026-10-12 | Catalogage Library | Moteur déclaré éprouvé par l'utilisateur | Entrée en bibliothèque ; NFC signalé ⚠️ |
 | 2026-10-27 | Carnet de recette, intégration | OCR adapté aux éléments dans le réticule, reconnaissance sans regex par comparaison au menu de la semaine ; écouteurs ML Kit rappelés sur le fil principal | Section « Variante » ; précision sur le fil des écouteurs ; statut inchangé (pas encore essayé sur appareil) |
+| 2026-10-27 | Revue ScanList et SuivieMAT | ScanList inchangé (`main` `1368027` ; `claude/init-xyw7gc` `2ef0b6d`, un commit de CI). SuivieMAT est un fork de ScanList pris à `1368027` : jusqu'à `5eb5198`, 16 des 17 fichiers `src/` et `tests/` venus de ScanList sont identiques, `NfcScanSurface` est seulement habillé au thème (`c871326`). Aucune nouvelle preuve réelle : la phase 10 (test terrain S25) reste ⬜ dans les deux dépôts. Après la revue, `1fc037b` modifie `OcrAnalyzer` et `CameraPreview` dans SuivieMAT (OCR au repos hors capture, rotation d'analyse qui suit le téléphone), non vérifié sur téléphone | SuivieMAT ajouté à « Utilisé dans » ; pas de resynchronisation ; statuts inchangés |
+| 2026-10-27 | SuivieMAT, écran de test retiré (essai du 2026-09-25) | Preuve indirecte côté NFC : un écran de test a armé `enableReaderMode` sur le téléphone de l'utilisateur avec le même patron ON_RESUME/ON_PAUSE et a lu un badge ISO 14443-4 (`IsoDep`, `NfcA`, 93 ms ; `fb94ee7`, `d273afc`, écran retiré par `a0de691`). Le patron d'armement marche sur un vrai appareil. Ni `NfcTagDecoder`, ni NDEF, ni la lecture d'UID du moteur n'ont été exercés | Information seulement ; pas de promotion du NFC |
+| 2026-10-27 | Catalogage Library, patch | Défaut NDEF : cause établie par lecture du code AOSP (`FLAG_READER_SKIP_NDEF_CHECK` saute la sonde NDEF, `Ndef.get(tag)` renvoie `null`). La variante `ndef.connect()` du patch proposé est inopérante | `FLAG_READER_SKIP_NDEF_CHECK` retiré de `src/NfcScanSurface.kt`, commentaire corrigé. Non vérifié sur appareil : NFC reste ⚠️. ScanList et SuivieMAT n'ont pas ce patch |
+| 2026-10-27 | SuivieMAT `5c81d3c` (décision 25) | Générateur de formules regex à partir d'exemples, sans IA, Kotlin pur, 27 tests. Aucun usage réel consigné (« Générateur de formules à l'écran ⬜ Non vérifié ») | Ajout de `RegexSuggester` (🟡) dans `src/` et `tests/`, sans modification ; fichiers identiques de `5c81d3c` à `5eb5198` |
+| 2026-10-27 | ToolMap (`c620a38`), relecture de la fiche | ICU d'Android plus strict que le JDK des tests ; descriptions d'erreur ICU différentes de celles que `frenchMessage` attend | Points de vigilance ICU, UID et aperçu OCR ajoutés ; ligne `ScanValue` corrigée (`normalize` garde la casse, c'est `key` qui passe en majuscules) |
+| 2026-10-27 | Tests exécutés dans la Library | `ktest.sh` (Kotlin 2.0.21, JUnit 4.13.2, sans Gradle) sur `RegexSuggesterTest`, `RegexRuleEngineTest`, `ScanConsensusTest`, `ScanDebouncerTest` et `NfcValueTest` : `OK (91 tests)` | Composants purs confirmés en JVM ; statuts inchangés (un test JVM ne vaut pas un usage réel) |

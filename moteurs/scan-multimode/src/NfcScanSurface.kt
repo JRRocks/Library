@@ -72,15 +72,18 @@ fun NfcScanSurface(
         }
         // Tous les types de tag : FLAG_READER_NFC_A/B couvre l'essentiel des puces
         // Mifare utilisees pour l'etiquetage materiel, FLAG_READER_NFC_BARCODE les
-        // etiquettes Kovio parfois utilisees en logistique. SKIP_NDEF_CHECK evite une
-        // lecture NDEF automatique par le systeme avant que le callback ne recoive
-        // le tag : NfcTagDecoder s'en charge lui-meme, avec sa propre protection.
+        // etiquettes Kovio parfois utilisees en logistique.
+        // Pas de FLAG_READER_SKIP_NDEF_CHECK : c'est la sonde NDEF du systeme qui ajoute
+        // la techno Ndef au tag et remplit cachedNdefMessage. Avec ce drapeau,
+        // Ndef.get(tag) renvoie null et NfcTagDecoder ne lirait jamais que l'UID
+        // (patch Library du 2026-10-27, cause lue dans le code AOSP, non verifie sur
+        // appareil). Une app qui ne lit que l'UID peut remettre le drapeau pour
+        // eviter la sonde au premier contact.
         val flags = NfcAdapter.FLAG_READER_NFC_A or
             NfcAdapter.FLAG_READER_NFC_B or
             NfcAdapter.FLAG_READER_NFC_F or
             NfcAdapter.FLAG_READER_NFC_V or
-            NfcAdapter.FLAG_READER_NFC_BARCODE or
-            NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+            NfcAdapter.FLAG_READER_NFC_BARCODE
 
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
