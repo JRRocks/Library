@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-10-26
 
 | Identifiant | Ce que ça fait | Statut | Plateforme | Source | Utilisé dans |
 |---|---|---|---|---|---|
-| [`scan-multimode`](moteurs/scan-multimode/README.md) | Scan à la chaîne QR/2D, code-barres, OCR filtré par regex (formules proposées à partir d'un exemple), NFC/RFID, **validé par consensus de N lectures identiques** | ✅ OCR et code-barres · 🟡 2D étendu · 🟡 `RegexSuggester` · ⚠️ NFC (patch NDEF appliqué, non vérifié sur appareil) | Android, CameraX, ML Kit | ScanList, SuivieMAT | ScanList, SuivieMAT, Carnet de recette |
+| [`scan-multimode`](moteurs/scan-multimode/README.md) | Scan à la chaîne QR/2D, code-barres, OCR filtré par regex (formules proposées à partir d'un exemple), NFC/RFID, **validé par consensus de N lectures identiques** | ✅ OCR et code-barres · 🟡 2D étendu · 🟡 `RegexSuggester` · ⚠️ NFC (patch NDEF appliqué, non vérifié sur appareil) · ⚠️ lampe après l'arrière-plan (suspecté) | Android, CameraX, ML Kit | ScanList, SuivieMAT | ScanList, SuivieMAT, Carnet de recette |
 | [`paiement-sumup`](moteurs/paiement-sumup/README.md) | Encaissement carte sur lecteur SumUp Bluetooth, connexion native du SDK, sans secret embarqué | 🟡 (connexion OK sur appareil, encaissement réel non encore validé) | Android, SDK SumUp 6.0.0 | Popote Compagnie | Popote Compagnie |
 | [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur ; variante dossier visible en `drive.file` | ✅ · ⚠️ lecture des 403 (patch proposé) · ⚠️ jeton révoqué en cache (suspecté) | Android, Play Services Auth | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
@@ -31,6 +31,7 @@ Dernière mise à jour : 2026-10-26
 | Reconnaître un numéro sur une étiquette **sans regex** (format qui peut changer), en le comparant à une liste connue et à la taille du texte | `scan-multimode` (variante Carnet de recette : `OcrElements`, `ReconnaissanceEtiquette`) |
 | Éviter les lectures fausses d'une caméra (reflets, angle) | `scan-multimode` → `ScanConsensus` |
 | Éviter qu'un même code soit compté 30 fois par seconde | `scan-multimode` → `ScanDebouncer` |
+| Ne pas revalider en boucle une étiquette gardée en vue | `scan-multimode` (variante Carnet de recette : anti-rebond glissant de `SuiviEtiquettes`) |
 | Lire un tag NFC ou RFID (UID ou texte NDEF) | `scan-multimode` (mode NFC, ⚠️ patch NDEF non vérifié sur appareil) |
 | Identifier une personne par l'UID d'une carte NFC | `scan-multimode` (mode NFC ; lire la vigilance UID : UID aléatoire, UID à ne pas exporter) |
 | Valider qu'une valeur respecte un format (regex), messages d'erreur en français | `scan-multimode` → `RegexRuleEngine.validate` / `conforms` |
