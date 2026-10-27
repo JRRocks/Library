@@ -14,6 +14,39 @@
 
 ---
 
+## 2026-10-27 — [google-drive-appdata] Revue Popote et Carnet : variante complétée, vigilances, adresse de test
+
+- **Type** : revue de dépôt
+- **Quoi** :
+  - Popote `6149a81` (inchangé jusqu'à `93e5d5b`) : `DriveAppData.kt` identique à `src/` hors
+    patchs de la Library ; aucun des patchs du 2026-10-26, pas de `clearToken`. Commits `fa90649`
+    et `9391ed9` vérifiés fidèles au Carnet `8dc4820` (moteur inchangé jusqu'à `797fae7`).
+  - Section « Variante » : provenance (`f198fd3`), `RefusDrive` et `estPanneReseau`,
+    `echecGoogle` (le cas « code 8 » n'est jamais observé), `Echec(reseau)`, espaces insécables,
+    documentés sans report dans `src/` ; phrase sur le déplacement du dossier nuancée (simple
+    commentaire de code) ; renvoi aux réimplémentations d'InnovAdapt-CRM (`d2c2f6e`).
+  - Tableaux « Composants » et « Réglages éprouvés » ajoutés (gabarit). Étape 3 de
+    l'intégration complétée par les fonctions du patch 403.
+  - Vigilances : dépôt manuel seul éprouvé (WorkManager jamais vérifié en réel), effet de bord
+    du patch 403 (un 403 hors refus d'autorisation devient transitoire et serait réessayé sans
+    fin), mode « Test » à 7 jours (à vérifier pour `AuthorizationClient`), un 404 n'est jamais un
+    succès en écriture, durée de vie du jeton inconnue, pas d'épinglage TLS ; dans un dépôt
+    public, une clé de debug versionnée permet aussi d'installer un APK tiers par-dessus une
+    version de debug (ToolMap ADR-047). Jeton en cache : défaut suspecté aussi chez Popote et
+    InnovAdapt.
+  - `tests/DriveAppDataTest.kt` : adresse en `gmail.com` remplacée par une adresse en
+    `example.org` (écart volontaire avec Popote). Statut inchangé.
+- **Preuve / vérification** : `diff -u` Popote ↔ `src/` ; diffs Carnet `f198fd3..797fae7` sur
+  `drive/` ; citations relues dans les deux dépôts par la contre-vérification. 28/28 tests verts
+  hors Gradle (Kotlin 2.0.21, JUnit 4.13.2, bouchons Android, `kotlinx-serialization` 1.6.2) :
+  valable pour les fonctions pures seulement.
+- **Apps à prévenir** : Popote Compagnie (403 : patch de la Library à reporter, avec son effet
+  de bord à surveiller ; jeton en cache : défaut suspecté, correctif dans `DriveCarnet.avecJeton`
+  du Carnet). InnovAdapt-CRM, hors « Utilisé dans » : pièges communs (jeton en cache, 404, 403
+  non lu) si sa synchro est gardée.
+
+---
+
 ## 2026-10-27 — [maj-auto-github] Patch CI : mots de passe de signature hors de `Properties.load`
 
 - **Type** : patch + revue de dépôt

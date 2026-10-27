@@ -171,9 +171,11 @@ class DriveAppDataTest {
 
     @Test
     fun `la reponse userinfo se lit en adresse`() {
-        val reponse = """{"sub":"1234567890","email":"popotier@gmail.com","email_verified":true}"""
+        // Écart volontaire avec Popote (adresse en gmail.com) : un domaine réservé (RFC 2606),
+        // pour qu'aucune adresse publiée ici ne puisse appartenir à quelqu'un.
+        val reponse = """{"sub":"1234567890","email":"popotier@example.org","email_verified":true}"""
 
-        assertEquals("popotier@gmail.com", DriveAppData.lireEmail(reponse))
+        assertEquals("popotier@example.org", DriveAppData.lireEmail(reponse))
     }
 
     @Test
