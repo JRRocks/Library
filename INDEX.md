@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-26
 | Identifiant | Ce que ça fait | Statut | Plateforme | Source | Utilisé dans |
 |---|---|---|---|---|---|
 | [`scan-multimode`](moteurs/scan-multimode/README.md) | Scan à la chaîne QR/2D, code-barres, OCR filtré par regex (formules proposées à partir d'un exemple), NFC/RFID, **validé par consensus de N lectures identiques** | ✅ OCR et code-barres · 🟡 2D étendu · 🟡 `RegexSuggester` · ⚠️ NFC (patch NDEF appliqué, non vérifié sur appareil) · ⚠️ lampe après l'arrière-plan (suspecté) | Android, CameraX, ML Kit | ScanList, SuivieMAT | ScanList, SuivieMAT, Carnet de recette |
-| [`paiement-sumup`](moteurs/paiement-sumup/README.md) | Encaissement carte sur lecteur SumUp Bluetooth, connexion native du SDK, sans secret embarqué | 🟡 (connexion OK sur appareil, encaissement réel non encore validé) | Android, SDK SumUp 6.0.0 | Popote Compagnie | Popote Compagnie |
+| [`paiement-sumup`](moteurs/paiement-sumup/README.md) | Encaissement carte sur lecteur SumUp Bluetooth, connexion native du SDK, sans secret embarqué | 🟡 (écran de connexion atteint sur appareil, correctif du plantage suivant jamais confirmé ; aucun encaissement réel ; `Echec` ou `Annule` ne prouvent pas « pas débité ») | Android, SDK SumUp 6.0.0 | Popote Compagnie | Popote Compagnie |
 | [`google-drive-appdata`](moteurs/google-drive-appdata/README.md) | Autorisation Google (Identity `AuthorizationClient`) et fichiers dans le dossier caché `appDataFolder` du Drive, en REST pur ; variante dossier visible en `drive.file` | ✅ (dépôt manuel ; envoi périodique jamais vérifié) · ⚠️ lecture des 403 (patch proposé) · ⚠️ jeton révoqué en cache (suspecté, correctif seulement dans le Carnet) | Android, Play Services Auth | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch proposé) · ⚠️ CI : mots de passe relus par `Properties.load` (latent, patch appliqué) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`astro-soleil-lune`](moteurs/astro-soleil-lune/README.md) | Lever, coucher et midi solaire, jour et nuit polaires, phase, illumination et lever de la lune, hors-ligne | 🟡 (deux défauts du calcul de la lune corrigés dans la Library le 2026-10-27 ; 13 tests verts) | Kotlin pur | Android-Suntrack | Sun Track |
@@ -38,6 +38,7 @@ Dernière mise à jour : 2026-10-26
 | Obtenir une formule regex à partir d'un exemple de valeur (« 1GH546 »), sans IA | `scan-multimode` → `RegexSuggester` (🟡) |
 | Bip et vibration distincts pour succès, doublon et erreur | `scan-multimode` → `ScanFeedback` |
 | Encaisser un paiement par carte bancaire | `paiement-sumup` |
+| Éviter un double débit quand un paiement carte semble échoué ou annulé | `paiement-sumup` (points de vigilance, `avertirDebitEventuel`) |
 | Se connecter avec un compte Google sans secret dans l'APK | `google-drive-appdata` |
 | Sauvegarder des données de l'app sur le Google Drive de l'utilisateur | `google-drive-appdata` |
 | Déposer sur le Drive des fichiers qu'un autre outil (Claude Cowork, l'utilisateur) doit lire | `google-drive-appdata` (variante dossier visible en `drive.file`) |
@@ -90,6 +91,7 @@ Dernière mise à jour : 2026-10-26
 | Générateur de regex, regex par l'exemple | `scan-multimode` (`RegexSuggester`) |
 | Robolectric, injection de dépendance pour un SDK non testable | `paiement-sumup` |
 | SumUp, `SumUpAPI`, `SumUpState.init`, `play-services-location` | `paiement-sumup` |
+| Double débit, « Réessayer », `onBackPressed`, délai de garde | `paiement-sumup` |
 | `versionCode`, mise à jour en ligne | `maj-auto-github` |
 | WorkManager, échec définitif ou transitoire | `google-drive-appdata` |
 | `RefusDrive`, `estPanneReseau`, `echecGoogle`, `NETWORK_ERROR`, `UNREGISTERED_ON_API_CONSOLE` | `google-drive-appdata` (variante Carnet) |

@@ -14,6 +14,35 @@
 
 ---
 
+## 2026-10-27 — [paiement-sumup] Revue Popote : débit possible malgré `Echec` ou `Annule`
+
+- **Type** : revue de dépôt
+- **Quoi** :
+  - Code et tests identiques à Popote `6149a81` (et à la pointe `93e5d5b`), hors gabarit
+    `<AFFILIATE_KEY>`. Toujours aucun encaissement réel.
+  - Point de vigilance ajouté (constat de décompilation déjà présent dans Popote à `08c211a`) :
+    `onBackPressed()` de l'écran de paiement du SDK peut rendre `Annule` ou `Echec` après un vrai
+    débit. Parade de Popote : `avertirDebitEventuel()` avant tout « Réessayer » (Comptoir, Comptes,
+    Cotisation), qui prévient sans rien détecter. Piège « Réessayer » réécrit, exemple Compose
+    corrigé, étape d'intégration sur l'avertissement et le délai de garde de 3 min.
+  - Hypothèse de revue, non vérifiée, consignée en vigilance : après une recréation de l'activité,
+    le `Reussi` émis par un `MutableSharedFlow` sans relecture peut être perdu si
+    `onActivityResult` passe avant que l'écran l'écoute (même risque chez Popote).
+  - Statut précisé : l'écran de connexion a été atteint en v13.19 puis a planté ; le correctif
+    v13.20 n'a jamais été confirmé (l'INDEX disait « connexion OK »). `forkEvery = 1` présenté
+    comme un confinement, pas comme une cause démontrée. Sections « Composants », « Réglages
+    éprouvés » et « Points de vigilance » ajoutées. `src/` et `tests/` non modifiés, 🟡 inchangé
+    (limite du SDK, pas un défaut du code).
+- **Preuve / vérification** : `diff` Library ↔ app : seule la ligne de la clé diffère, tests
+  identiques (9) ; recherche de la vraie clé dans toute la Library : 0 occurrence. Citations de
+  `docs/todo.md`, `docs/decisions.md`, `ui/Comptoir.kt`, `ui/Comptes.kt`, `ui/Cotisation.kt`
+  relues. Perte d'une valeur émise sans abonné démontrée par un test JVM hors Library. Tests
+  Robolectric non exécutables ici.
+- **Apps à prévenir** : Popote Compagnie, pour l'hypothèse du `Reussi` perdu (à vérifier lors de
+  l'essai sur terminal physique prévu dans `docs/todo.md`).
+
+---
+
 ## 2026-10-27 — [google-drive-appdata] Revue Popote et Carnet : variante complétée, vigilances, adresse de test
 
 - **Type** : revue de dépôt
