@@ -40,7 +40,8 @@ export type ExerciseType =
   | 'order'
   | 'match'
   | 'slider'
-  | 'grid';
+  | 'grid'
+  | 'scenario';
 
 interface ExerciseBase {
   /** Globally unique, kebab-case, prefixed by the module id: `typography-measure-duel`. */
@@ -174,6 +175,76 @@ export interface GridExercise extends ExerciseBase {
   tolerance?: number;
 }
 
+/**
+ * A setting of a scenario, drawn as a slider.
+ * - `range`: a number and its unit (a size, a spacing, a duration…). The mock reads it in `--<id>`
+ *   (number and unit, `48px`) and `--<id>-n` (the number alone).
+ * - `ramp`: one color among the shades of a ramp, from the lightest to the darkest; the slider picks
+ *   its rank (0 for the first shade). The mock reads the color in `--<id>`.
+ * Its `id` names those properties: kebab-case, unique in the exercise.
+ */
+export type ScenarioControl =
+  | {
+      kind: 'range';
+      id: string;
+      /** What it sets, as the label of its slider: « Hauteur des boutons ». */
+      label: string;
+      min: number;
+      max: number;
+      step: number;
+      initial: number;
+      unit: string;
+      /** The value of the expert version. */
+      ideal: number;
+    }
+  | {
+      kind: 'ramp';
+      id: string;
+      label: string;
+      /** Hex colors (`#rrggbb`), lightest first. */
+      colors: string[];
+      /** Ranks in `colors`. */
+      initial: number;
+      ideal: number;
+    };
+
+/**
+ * What a criterion of a scenario checks, on the values set by the learner.
+ * - `range`: the value of a `range` setting lies within [min, max] (either bound may be left out).
+ * - `contrast`: the WCAG contrast ratio between two colors reaches `min`; each color is the id of a
+ *   `ramp` setting or a hex color (`#ffffff`).
+ * - `ratio`: the value of a `range` setting divided by another one lies within [min, max]: a line
+ *   height against its font size, the space between two groups against the space inside one.
+ */
+export type ScenarioCheck =
+  | { kind: 'range'; control: string; min?: number; max?: number }
+  | { kind: 'contrast'; a: string; b: string; min: number }
+  | { kind: 'ratio'; a: string; b: string; min?: number; max?: number };
+
+export interface ScenarioCriterion {
+  id: string;
+  /** The requirement and its threshold, in a few words: « Boutons d’au moins 44 px de haut ». */
+  label: string;
+  check: ScenarioCheck;
+  /** Why it matters, revealed with the evaluation. */
+  why: string;
+}
+
+/**
+ * « Mise en situation »: a realistic screen (a web page, a form, an app) and several settings to
+ * adjust on it — sizes, spacings, colors — evaluated afterwards criterion by criterion.
+ */
+export interface ScenarioExercise extends ExerciseBase {
+  type: 'scenario';
+  /** The screen; its CSS reads the settings (`var(--height)`, `var(--cta)`…). */
+  visual: Visual;
+  controls: ScenarioControl[];
+  /** Evaluated on the values set, each counting as much as the others. */
+  criteria: ScenarioCriterion[];
+  /** Measures shown live under the settings, as a design tool shows them: the contrast between two colors. */
+  readouts?: { kind: 'contrast'; label: string; a: string; b: string }[];
+}
+
 export type Exercise =
   | ChoiceExercise
   | MultiExercise
@@ -182,7 +253,8 @@ export type Exercise =
   | OrderExercise
   | MatchExercise
   | SliderExercise
-  | GridExercise;
+  | GridExercise
+  | ScenarioExercise;
 
 /* ---------- Lessons ---------- */
 

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { addDays, dayKey, daysBetween } from './dates';
-import { contrastRatio, grade, grayHex, orderConcordance } from './grade';
+import { contrastRatio, criterionMet, grade, grayHex, idealValues, initialValues, measure, orderConcordance, scenarioColor } from './grade';
 import { emptyProgress, mastery, normalizeProgress, recordAttempt, recordCard, setRecord, streak } from './progress';
 import { seeded, shuffleAway } from './random';
-import { buildSession, interleaveTypes } from './session';
+import { buildSession, interleaveTypes, isExam } from './session';
 import { scheduleCard, scheduleExercise } from './srs';
-import type { Exercise } from './types';
+import type { Exercise, ScenarioExercise } from './types';
 
 const base = { difficulty: 1 as const, prompt: 'q', explanation: 'e', takeaway: 't' };
 
@@ -62,6 +62,43 @@ describe('grade', () => {
     expect(grade(ex, { type: 'slider', value: 1.3 }).verdict).toBe('partial');
     expect(grade(ex, { type: 'slider', value: 1.05 }).verdict).toBe('wrong');
     expect(grade(ex, { type: 'slider', value: 2.4 }).verdict).toBe('wrong');
+  });
+
+  it('evaluates a scenario criterion by criterion', () => {
+    const ex: ScenarioExercise = {
+      ...base,
+      id: 'm-scenario',
+      type: 'scenario',
+      visual: { html: '<p>x</p>', css: 'p { height: var(--height); gap: var(--gap); color: var(--cta); }', alt: 'x' },
+      controls: [
+        { kind: 'range', id: 'height', label: 'Hauteur', min: 24, max: 64, step: 2, initial: 32, unit: 'px', ideal: 48 },
+        { kind: 'range', id: 'gap', label: 'Espace', min: 0, max: 32, step: 2, initial: 4, unit: 'px', ideal: 16 },
+        { kind: 'range', id: 'inner', label: 'Espace interne', min: 2, max: 16, step: 2, initial: 8, unit: 'px', ideal: 8 },
+        { kind: 'ramp', id: 'cta', label: 'Couleur', colors: ['#fcd34d', '#f59e0b', '#b45309', '#78350f'], initial: 0, ideal: 2 },
+      ],
+      criteria: [
+        { id: 'size', label: 'Au moins 44 px', check: { kind: 'range', control: 'height', min: 44 }, why: 'w' },
+        { id: 'gap', label: 'Au moins 8 px', check: { kind: 'range', control: 'gap', min: 8, max: 24 }, why: 'w' },
+        { id: 'groups', label: 'Groupes deux fois plus espacés', check: { kind: 'ratio', a: 'gap', b: 'inner', min: 2 }, why: 'w' },
+        { id: 'text', label: '4,5:1', check: { kind: 'contrast', a: 'cta', b: '#ffffff', min: 4.5 }, why: 'w' },
+      ],
+    };
+    // Nothing holds at first; everything holds in the expert version.
+    expect(grade(ex, { type: 'scenario', values: initialValues(ex) })).toEqual({ score: 0, verdict: 'wrong' });
+    expect(grade(ex, { type: 'scenario', values: idealValues(ex) })).toEqual({ score: 1, verdict: 'correct' });
+    // Half the criteria: partial credit.
+    expect(grade(ex, { type: 'scenario', values: { ...initialValues(ex), height: 48, cta: 3 } })).toEqual({ score: 0.5, verdict: 'partial' });
+    // A setting left out keeps its initial value.
+    expect(grade(ex, { type: 'scenario', values: { height: 48 } }).score).toBe(0.25);
+    expect(grade(ex, { type: 'choice', optionId: 'x' }).verdict).toBe('wrong');
+    // Colors: a ramp's shade by rank, clamped; a hex color as is.
+    expect(scenarioColor(ex, 'cta', { cta: 2 })).toBe('#b45309');
+    expect(scenarioColor(ex, 'cta', { cta: 9 })).toBe('#78350f');
+    expect(scenarioColor(ex, '#ffffff', {})).toBe('#ffffff');
+    expect(measure(ex, ex.criteria[3], { cta: 2 })).toBeCloseTo(contrastRatio('#b45309', '#ffffff'));
+    // A ratio holds at its shown precision; both bounds of a range count.
+    expect(criterionMet(ex, ex.criteria[2], { gap: 15, inner: 7.5 })).toBe(true);
+    expect(criterionMet(ex, ex.criteria[1], { gap: 26 })).toBe(false);
   });
 
   it('computes WCAG contrast', () => {
@@ -143,6 +180,26 @@ describe('sessions', () => {
     st = recordAttempt(st, pool[4], { verdict: 'wrong', score: 0 }, new Date(2026, 9, 20)).state;
     const s = buildSession({ kind: 'review' }, pool, st, seeded(2), new Date(2026, 9, 27));
     expect(s.map((e) => e.id)).toEqual(['ex-4']);
+  });
+
+  it('draws a theme from its lessons only, lesson after lesson', () => {
+    const spec = { kind: 'theme', themeId: 't', moduleIds: ['mod-0', 'mod-1'] } as const;
+    const s = buildSession(spec, pool, emptyProgress(), seeded(3));
+    expect(s).toHaveLength(12);
+    expect(s.every((e) => e.module === 'mod-0' || e.module === 'mod-1')).toBe(true);
+    expect(s.filter((e) => e.module === 'mod-0')).toHaveLength(6);
+    expect(isExam(spec)).toBe(false);
+  });
+
+  it('evaluates a theme as an exam, evenly across its lessons', () => {
+    const spec = { kind: 'evaluation', themeId: 't', moduleIds: ['mod-0', 'mod-1', 'mod-2'] } as const;
+    const s = buildSession(spec, pool, emptyProgress(), seeded(4));
+    expect(s).toHaveLength(20);
+    expect(new Set(s.map((e) => e.id)).size).toBe(20);
+    for (const m of ['mod-0', 'mod-1', 'mod-2']) expect(s.filter((e) => e.module === m).length).toBeGreaterThanOrEqual(6);
+    expect(isExam(spec)).toBe(true);
+    expect(isExam({ kind: 'exam' })).toBe(true);
+    expect(buildSession({ kind: 'evaluation', themeId: 'x', moduleIds: [] }, pool, emptyProgress())).toEqual([]);
   });
 
   it('interleaves exercise types', () => {

@@ -6,9 +6,18 @@ import type { Exercise, ExerciseType } from './types';
 /** "duel" = a choice between visuals; it is a mode, not a separate exercise type. */
 export type PracticeType = ExerciseType | 'duel';
 
+/**
+ * What a session draws from.
+ * - `theme`: training on several modules grouped by the host app (a theme, a chapter…), the
+ *   exercises to review and the new ones first, module after module; `evaluation`: the same modules
+ *   as an exam, drawn evenly from each, to be corrected at the end (`isExam`).
+ * - `tag`: the exercises carrying a free tag.
+ */
 export type SessionSpec =
   | { kind: 'daily' }
   | { kind: 'module'; moduleId: string }
+  | { kind: 'theme'; themeId: string; moduleIds: readonly string[] }
+  | { kind: 'evaluation'; themeId: string; moduleIds: readonly string[] }
   | { kind: 'type'; type: PracticeType }
   | { kind: 'review' }
   | { kind: 'mistakes' }
@@ -18,12 +27,17 @@ export type SessionSpec =
 export const SESSION_SIZE: Record<SessionSpec['kind'], number> = {
   daily: 10,
   module: 12,
+  theme: 12,
+  evaluation: 20,
   type: 10,
   review: 20,
   mistakes: 20,
   exam: 30,
   tag: 12,
 };
+
+/** The sessions that hold back the corrections until their summary. */
+export const isExam = (spec: SessionSpec): boolean => spec.kind === 'exam' || spec.kind === 'evaluation';
 
 export function isDuel(ex: Exercise): boolean {
   return ex.type === 'choice' && ex.options.length >= 2 && ex.options.every((o) => o.visual);
@@ -98,6 +112,16 @@ export function buildSession(
       return interleaveTypes(byPriority(all.filter((e) => e.module === spec.moduleId), state, today, rng).slice(0, size));
     case 'type':
       return byPriority(all.filter((e) => matchesType(e, spec.type)), state, today, rng).slice(0, size);
+    case 'theme': {
+      // Its modules in turn, so that a session is not one module in a row.
+      const pool = all.filter((e) => spec.moduleIds.includes(e.module ?? ''));
+      return interleaveTypes(spreadAcrossModules(byPriority(pool, state, today, rng), size));
+    }
+    case 'evaluation': {
+      // Stratified like the exam, on the given modules only.
+      const pool = all.filter((e) => spec.moduleIds.includes(e.module ?? ''));
+      return interleaveTypes(shuffle(spreadAcrossModules(shuffle(pool, rng), size), rng));
+    }
     case 'tag': {
       const pool = all.filter((e) => e.tags?.includes(spec.tag));
       return interleaveTypes(byPriority(pool, state, today, rng).slice(0, size));

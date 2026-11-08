@@ -1,4 +1,4 @@
-import type { Exercise } from './types';
+import type { Exercise, ScenarioCriterion, ScenarioExercise } from './types';
 
 export type Verdict = 'correct' | 'partial' | 'wrong';
 
@@ -17,7 +17,9 @@ export type Answer =
   /** leftId → pair id chosen on the right */
   | { type: 'match'; pairs: Record<string, string> }
   | { type: 'slider'; value: number }
-  | { type: 'grid'; scores: Record<string, number> };
+  | { type: 'grid'; scores: Record<string, number> }
+  /** Setting id → value set (a number for a `range`, a rank for a `ramp`). */
+  | { type: 'scenario'; values: Record<string, number> };
 
 const result = (score: number, partialFloor: number): GradeResult => ({
   score,
@@ -70,6 +72,62 @@ export function grayHex(lightness: number): string {
   return `#${hh}${hh}${hh}`;
 }
 
+/* ---------------------------------------------------------------- scenario */
+
+/** The values of a scenario before any change. */
+export function initialValues(ex: ScenarioExercise): Record<string, number> {
+  return Object.fromEntries(ex.controls.map((c) => [c.id, c.initial]));
+}
+
+/** The values of its expert version. */
+export function idealValues(ex: ScenarioExercise): Record<string, number> {
+  return Object.fromEntries(ex.controls.map((c) => [c.id, c.ideal]));
+}
+
+/** The value of a setting: the one set, or its initial value if it was not given. */
+function valueOf(ex: ScenarioExercise, id: string, values: Record<string, number>): number {
+  const control = ex.controls.find((c) => c.id === id);
+  return values[id] ?? control?.initial ?? 0;
+}
+
+/** A color of a scenario: the shade picked on a `ramp` setting named by its id, or a hex color as is. */
+export function scenarioColor(ex: ScenarioExercise, ref: string, values: Record<string, number>): string {
+  const control = ex.controls.find((c) => c.id === ref);
+  if (control?.kind !== 'ramp') return ref;
+  const rank = Math.round(valueOf(ex, ref, values));
+  return control.colors[Math.min(control.colors.length - 1, Math.max(0, rank))];
+}
+
+/**
+ * What a criterion measures on the values set: a setting's value (`range`), a quotient (`ratio`) or
+ * a contrast ratio (`contrast`).
+ */
+export function measure(ex: ScenarioExercise, c: ScenarioCriterion, values: Record<string, number>): number {
+  const check = c.check;
+  switch (check.kind) {
+    case 'range':
+      return valueOf(ex, check.control, values);
+    case 'ratio': {
+      const b = valueOf(ex, check.b, values);
+      return b === 0 ? Infinity : valueOf(ex, check.a, values) / b;
+    }
+    case 'contrast':
+      return contrastRatio(scenarioColor(ex, check.a, values), scenarioColor(ex, check.b, values));
+  }
+}
+
+/**
+ * Whether a criterion holds. A ratio is compared at its second decimal, as it is shown (1,5 holds
+ * for « 1,5 au moins »), a contrast ratio as WCAG does, without rounding: 4,49:1 fails 4,5:1.
+ */
+export function criterionMet(ex: ScenarioExercise, c: ScenarioCriterion, values: Record<string, number>): boolean {
+  const v = measure(ex, c, values);
+  const check = c.check;
+  if (check.kind === 'contrast') return v >= check.min;
+  const x = check.kind === 'ratio' ? Math.round(v * 100) / 100 : v;
+  return (check.min === undefined || x >= check.min) && (check.max === undefined || x <= check.max);
+}
+
 export function grade(ex: Exercise, answer: Answer): GradeResult {
   switch (ex.type) {
     case 'choice':
@@ -105,6 +163,12 @@ export function grade(ex: Exercise, answer: Answer): GradeResult {
       const agree = ex.criteria.filter((c) => Math.abs((answer.scores[c.id] ?? -99) - c.expert) <= tol).length;
       const share = agree / ex.criteria.length;
       return { score: share, verdict: share >= 0.8 ? 'correct' : share >= 0.5 ? 'partial' : 'wrong' };
+    }
+    case 'scenario': {
+      // Every criterion counts as much as the others; all of them must hold for « Juste ».
+      if (answer.type !== 'scenario') return result(0, 0.5);
+      const met = ex.criteria.filter((c) => criterionMet(ex, c, answer.values)).length;
+      return result(met / ex.criteria.length, 0.5);
     }
   }
 }

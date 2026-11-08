@@ -9,14 +9,19 @@ Extrait de l’application [Learn-UI-UX](https://github.com/JRRocks/Learn-UI-UX)
 
 ## Ce qu’il fait
 
-- **8 types d’exercices** décrits en données (`src/types.ts`) :
+- **9 types d’exercices** décrits en données (`src/types.ts`) :
   `choice` (choix unique, texte ou visuel), `multi` (plusieurs bonnes réponses),
   `truefalse`, `hotspot` (cliquer sur les zones fautives d’une maquette), `order` (remettre
   dans l’ordre), `match` (associer), `slider` (calibrer une valeur avec une cible), `grid`
-  (noter des critères et comparer à un expert).
+  (noter des critères et comparer à un expert), `scenario` (mise en situation : plusieurs
+  réglages sur un écran réaliste — tailles, espacements, nuances d’une rampe de couleurs —
+  évalués critère par critère).
 - **Correction** (`grade.ts`) : verdict `correct` / `partial` / `wrong` et score de 0 à 1 —
   les mauvaises cases annulent les bonnes, l’ordre est noté par paires concordantes, un
-  curseur proche de la cible obtient un crédit partiel. Bonus : `contrastRatio()` WCAG.
+  curseur proche de la cible obtient un crédit partiel, une mise en situation vaut la part de
+  ses critères respectés (une valeur dans une plage, un contraste WCAG minimal entre deux
+  couleurs, un rapport entre deux réglages). Bonus : `contrastRatio()` WCAG, `measure()` et
+  `criterionMet()` pour afficher l’évaluation critère par critère.
 - **Répétition espacée** (`srs.ts`) : boîtes de Leitner pour les exercices (0, 1, 3, 7, 16,
   35, 90 jours) et une variante de SM-2 pour les fiches (« À revoir », « Difficile »,
   « Bien », « Facile »).
@@ -24,8 +29,9 @@ Extrait de l’application [Learn-UI-UX](https://github.com/JRRocks/Learn-UI-UX)
   d’exercices, éléments à réviser, meilleurs scores des défis chronométrés (`setRecord`),
   normalisation d’une sauvegarde importée.
 - **Sessions** (`session.ts`) : session du jour (révisions dues + nouveautés réparties sur
-  plusieurs modules), par module, par type, par tag, révisions, erreurs, examen stratifié ;
-  les types d’exercices sont alternés.
+  plusieurs modules), par module, par thème (plusieurs modules à tour de rôle), évaluation
+  d’un thème (examen stratifié sur ses modules, corrigé à la fin : `isExam`), par type, par
+  tag, révisions, erreurs, examen stratifié ; les types d’exercices sont alternés.
 - **Utilitaires** : dates locales `YYYY-MM-DD` (`dates.ts`), mélange déterministe pour les
   tests (`random.ts`).
 
@@ -68,6 +74,6 @@ Le moteur ne stocke rien : l’application garde `state` (un objet JSON) et le p
 
 ```bash
 npm install
-npm test        # 14 tests : correction, dates, Leitner, SM-2, séries, sessions
+npm test        # 17 tests : correction (mises en situation comprises), dates, Leitner, SM-2, séries, sessions
 npm run typecheck
 ```
