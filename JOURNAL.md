@@ -32,6 +32,8 @@
     écarts entre projets, les constats de la revue.
   - `AGENTS.md` : § 1 et § 4 complétés, § 5.F (skills) et 5.G (règles communes), check-list.
     `CLAUDE.md`, `README.md` et INDEX (§ 7, § 8) à jour.
+  - `.gitattributes` : fins de ligne Unix pour les scripts, les skills et `SOCLE.md`, pour que
+    l'installation marche aussi depuis un clone fait sous Windows.
 - **Preuve / vérification** : lecture de tous les dépôts du compte (branches actives, journaux,
   décisions, consignes) et des `CLAUDE.md` du Drive ; les règles citées avec une date ont été
   relues à leur source. Mécanismes vérifiés dans la documentation de Claude Code le jour même
