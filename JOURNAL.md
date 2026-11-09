@@ -14,6 +14,23 @@
 
 ---
 
+## 2026-11-09 — [library] revue-langages en service, vérifié dans une session neuve
+
+- **Type** : transverse
+- **Quoi** : sur accord de l'utilisateur (« Oui, mets en service »), `main` reçoit par un push
+  en avance rapide, sans fusion GitHub, le skill `revue-langages`, la correction du skill
+  `depot-public` et le script d'environnement en version 2026-11-09.2. Le script de
+  l'environnement cloud « Drive » est remplacé par cette version, acceptée par lui, pour que
+  les nouvelles sessions réinstallent tout de suite.
+- **Preuve / vérification** : le script exact, lancé contre `main` dans un dossier d'essai, pose
+  onze skills. Une session neuve du même environnement, sans dépôt joint et sans outil, a
+  répondu : « Library : version 2026-11-09 41f3230 (11 skills). » et a cité les onze skills,
+  `revue-langages` compris. Le commit de tête de `main` porte l'identité de la session, pas
+  l'adresse du compte.
+- **Apps à prévenir** : aucune. Restent à équiper : les autres environnements cloud et les PC.
+
+---
+
 ## 2026-11-09 — [skills] Ajout du skill revue-langages
 
 - **Type** : ajout
