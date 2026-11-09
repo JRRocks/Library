@@ -14,6 +14,34 @@
 
 ---
 
+## 2026-11-09 — [library][exercices-repetition-espacee] Branches fusionnées, moteur d'entraînement rangé au gabarit
+
+- **Type** : transverse + ajout
+- **Quoi** :
+  - Branche `claude/recipe-app-planner-92zsww` (session Carnet de recette, commit `044dd63`)
+    fusionnée : son entrée du 2026-11-09 est juste en dessous. Conflits dans ce journal et dans
+    la fiche `maj-auto-github` : les deux côtés sont gardés (compléments du 2026-10-27 et
+    variante « à chaque ouverture »).
+  - Branche `claude/charming-bell-vrm1id` (session Learn-UI-UX, commits `d5880ef`, `22bbb99`,
+    `2dd3016`) fusionnée. Elle partait du commit initial et posait `moteur-entrainement/` à la
+    racine, avec une ligne dans le README. Le dossier devient
+    `moteurs/exercices-repetition-espacee/`, sa fiche est mise au gabarit (le descriptif
+    d'origine est repris) et le moteur entre dans l'INDEX (§ 1 à 4, § 6). Le README garde la
+    structure du catalogue.
+  - Toutes les branches du dépôt sont réunies dans `ccr-0190ac9b-h36zmh`. `main` ne contient
+    toujours que le README d'origine.
+- **Preuve / vérification** : `git branch -r --no-merged` ne liste plus rien. 17 tests du moteur
+  relancés verts (`npx vitest run`, vitest 5.1.0) ; l'installation des versions figées a échoué
+  dans la session (erreur interne de npm 10.9.9), le typage n'est donc pas revérifié.
+  Comparaison fichier par fichier avec Learn-UI-UX @ `939e441` : `dates.ts`, `grade.ts` et
+  `random.ts` identiques ; `srs.ts` en retard d'un correctif (« Facile » à la première
+  révision), d'où ⚠️ sur ce composant.
+- **Apps à prévenir** : aucune, le défaut de `srs.ts` est déjà corrigé dans Learn-UI-UX. La
+  session Learn-UI-UX écrit encore dans `moteur-entrainement/` sur sa branche : à la prochaine
+  fusion, ses changements sont à porter dans `moteurs/exercices-repetition-espacee/`.
+
+---
+
 ## 2026-11-09 — [maj-auto-github] Variante « à chaque ouverture » (Carnet de recette)
 
 - **Type** : retour d'usage (demande de l'utilisateur) · variante

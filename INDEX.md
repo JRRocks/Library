@@ -5,7 +5,7 @@
 >
 > Légende des statuts : ✅ Éprouvé · 🟡 Testé · ⚠️ À patcher · 🔬 Candidat · ⛔ Obsolète
 
-Dernière mise à jour : 2026-10-27
+Dernière mise à jour : 2026-11-09
 
 ---
 
@@ -19,6 +19,7 @@ Dernière mise à jour : 2026-10-27
 | [`maj-auto-github`](moteurs/maj-auto-github/README.md) | L'APK se met à jour seul depuis les Releases d'un dépôt GitHub public, CI de publication signée incluse | ✅ · ⚠️ annulation avalée (patch dans `src/`, non vérifié sur appareil) · ⚠️ CI : mots de passe relus par `Properties.load` (latent, patch dans `src/`) | Android et GitHub Actions | Popote Compagnie | Popote Compagnie, Carnet de recette |
 | [`astro-soleil-lune`](moteurs/astro-soleil-lune/README.md) | Lever, coucher et midi solaire, jour et nuit polaires, phase, illumination et lever de la lune, hors-ligne | 🟡 (deux défauts du calcul de la lune corrigés dans la Library le 2026-10-27 ; 13 tests verts) | Kotlin pur | Android-Suntrack | Sun Track |
 | [`rapport-plantage`](moteurs/rapport-plantage/README.md) | Rapport de plantage lisible sur le téléphone, à copier ou partager, sans adb, logcat ni réseau : exception Java affichée tout de suite dans un processus `:crash`, plantage natif relu au démarrage suivant | ✅ exceptions Java/Kotlin · 🟡 plantages natifs (Android 11+) et saut de l'initialisation | Android natif | ToolMap | ToolMap, Popote Compagnie (variante minimale) |
+| [`exercices-repetition-espacee`](moteurs/exercices-repetition-espacee/README.md) | Exercices décrits en données (9 types, dont la mise en situation évaluée par critères), correction avec crédit partiel, répétition espacée (Leitner et SM-2), progression, constructeur de sessions | 🟡 (17 tests verts le 2026-11-09 ; aucun retour d'usage consigné) · ⚠️ `srs.ts` : correctif de l'app non repris | TypeScript, sans dépendance | Learn-UI-UX | Learn-UI-UX (l'app garde sa propre copie) |
 
 ---
 
@@ -67,6 +68,10 @@ Dernière mise à jour : 2026-10-27
 | Purger les artefacts GitHub Actions d'un compte | 🔬 candidat SuivieMAT (§ 5) |
 | Récupérer un rapport de plantage sans `adb logcat`, savoir pourquoi une app installée hors Play Store se ferme | `rapport-plantage` |
 | Relire au démarrage suivant un plantage natif (signal dans une `.so`) | `rapport-plantage` (`ApplicationExitInfo`, Android 11+, 🟡) |
+| Proposer des exercices corrigés (choix, vrai ou faux, ordre, associations, curseur, zones à cliquer, mise en situation) avec crédit partiel | `exercices-repetition-espacee` → `grade.ts` |
+| Faire réviser au bon moment (répétition espacée : boîtes de Leitner, SM-2) | `exercices-repetition-espacee` → `srs.ts` (⚠️ voir la fiche) |
+| Composer une session d'entraînement ou un examen, suivre la progression (XP, séries, maîtrise, records) | `exercices-repetition-espacee` → `session.ts`, `progress.ts` |
+| Calculer un contraste WCAG entre deux couleurs | `exercices-repetition-espacee` → `contrastRatio()` de `grade.ts` |
 | Coloriser des pages de manga en noir et blanc | 🔬 candidat Mihon-edited-, modèle externe (§ 5) |
 | Lire des étapes à voix haute, commander à la voix sans IA | 🔬 candidats Carnet de recette (§ 5) |
 
@@ -115,6 +120,9 @@ Dernière mise à jour : 2026-10-27
 | `RefusDrive`, `estPanneReseau`, `echecGoogle`, `NETWORK_ERROR`, `UNREGISTERED_ON_API_CONSOLE` | `google-drive-appdata` (variante Carnet) |
 | `clearToken`, jeton en cache, 403 `insufficientPermissions`, `accessNotConfigured`, `rateLimitExceeded` | `google-drive-appdata` |
 | Écran de consentement en mode Test, refresh token 7 jours | `google-drive-appdata` (vigilance, à vérifier) |
+| Leitner, SM-2, répétition espacée, SRS, fiches de révision | `exercices-repetition-espacee` |
+| Quiz, QCM, exercices, épreuves, crédit partiel, examen | `exercices-repetition-espacee` |
+| XP, séries (streak), maîtrise, progression | `exercices-repetition-espacee` |
 
 ---
 
@@ -127,6 +135,7 @@ Dernière mise à jour : 2026-10-27
 | **CI GitHub Actions** | `maj-auto-github` |
 | **Python** | aucun moteur pour l'instant (candidats Activity-track, dont les versions les plus portables sont en Kotlin JVM pur dans `android/core` ; colorisation manga de Mihon-edited-, modèle externe ; import d'icônes du Carnet, `outils/icones.py`) |
 | **Rust** | aucun moteur pour l'instant (candidats InnovAdapt : OAuth et Drive sur le bureau, synchro chiffrée) |
+| **TypeScript** (navigateur, Node, sans framework) | `exercices-repetition-espacee` |
 | **JS navigateur** | aucun moteur pour l'instant (candidats InnovAdapt : `.xlsx`, CSV, synchro chiffrée, diagnostic) |
 
 ---
@@ -308,6 +317,7 @@ Revue la plus récente par dépôt ; les précédentes sont dans le [`JOURNAL.md
 | [Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette) | public | `3d26111` (session Carnet) ; `8dc4820` revu en détail le 2026-10-27, pointe `797fae7` | 2026-10-27 | Utilise `scan-multimode` (variante sans regex), `google-drive-appdata`, `maj-auto-github` ; fiches vérifiées fidèles ; 1 défaut de CI reporté dans `maj-auto-github` ; 5 candidats (non essayés sur appareil) |
 | [Scam-Stop](https://github.com/JRRocks/Scam-Stop) | public | `b971f43` | 2026-10-27 | Nouveau (créé le 2026-10-26, dérivé d'un projet GPL-3.0) ; 2 candidats |
 | [Mihon-edited-](https://github.com/JRRocks/Mihon-edited-) | public (fork) | `d001e6f` | 2026-10-27 | Amont Mihon sans code propre au fork ; 1 candidat externe (colorisation) |
+| [Learn-UI-UX](https://github.com/JRRocks/Learn-UI-UX) | public | `939e441` | 2026-11-09 | Revue limitée à `src/engine/`, comparé à `exercices-repetition-espacee` : `dates.ts`, `grade.ts`, `random.ts` identiques, un correctif de `srs.ts` à reprendre dans la Library. Reste du dépôt non revu pour ses candidats |
 | RGL13 | privé | — | — | **Pas encore revu** (accès non accordé à la session du 2026-10-27) |
 
 ---
