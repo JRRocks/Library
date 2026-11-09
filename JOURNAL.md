@@ -14,6 +14,40 @@
 
 ---
 
+## 2026-11-09 — [library] Méthode de travail : règles communes, skills, installation
+
+- **Type** : ajout · transverse
+- **Quoi** : demande de l'utilisateur à une session « master dev » qui n'écrit que dans la
+  Library : « comprendre ma méthode de travail et la centraliser », puis proposer des skills
+  « à déployer par défaut pour toute nouvelle session ». Son exemple : que Claude cesse tout
+  texte de suivi et n'écrive que pour lui parler directement.
+  - `SOCLE.md` : les règles communes à toutes les sessions, en une page.
+  - `skills/mode-silencieux` : le skill demandé. Onze autres attendent son accord dans
+    `skills/_propositions/` (INDEX § 8) ; `depot-public` porte un script de contrôle,
+    `nouveau-projet` ses gabarits.
+  - `installation/` : `installer.sh` pose `SOCLE.md` et `skills/` dans `~/.claude` (bloc
+    délimité, rien d'autre n'est touché, option `--retirer`) ; `environnement-cloud.sh` est le
+    script de démarrage à mettre dans l'environnement cloud ; mode d'emploi.
+  - `docs/methode-de-travail/README.md` : la méthode expliquée, l'origine de chaque règle, les
+    écarts entre projets, les constats de la revue.
+  - `AGENTS.md` : § 1 et § 4 complétés, § 5.F (skills) et 5.G (règles communes), check-list.
+    `CLAUDE.md`, `README.md` et INDEX (§ 7, § 8) à jour.
+- **Preuve / vérification** : lecture de tous les dépôts du compte (branches actives, journaux,
+  décisions, consignes) et des `CLAUDE.md` du Drive ; les règles citées avec une date ont été
+  relues à leur source. Mécanismes vérifiés dans la documentation de Claude Code le jour même
+  (un script de démarrage peut écrire `~/.claude/CLAUDE.md` ; cache d'environ sept jours).
+  `installer.sh` essayé sous Linux sur neuf cas (poste vierge, fichier personnel, relances,
+  skill retiré, repères abîmés, fichier vide, fins de ligne Windows, dossier de configuration
+  déplacé, retrait). `controle.sh` essayé sur un dépôt d'essai (contenu privé, fichiers
+  interdits, image avec métadonnées, identité et messages de commit). En-têtes des douze skills
+  lus par un analyseur YAML. **Non vérifié** : le chargement dans une vraie session neuve, le
+  script pendant le démarrage d'un environnement cloud, `installer.sh` sous Git Bash.
+- **Apps à prévenir** : aucune. Rien n'est installé tant que la branche n'est pas fusionnée dans
+  `main` et que le script n'est pas dans l'environnement cloud. Ensuite, les `CLAUDE.md` des
+  projets pourront se réduire à ce qui leur est propre.
+
+---
+
 ## 2026-11-09 — [library][exercices-repetition-espacee] Branches fusionnées, moteur d'entraînement rangé au gabarit
 
 - **Type** : transverse + ajout

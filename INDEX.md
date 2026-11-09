@@ -329,8 +329,44 @@ Revue la plus récente par dépôt ; les précédentes sont dans le [`JOURNAL.md
 | [`docs/ui-ux/README.md`](docs/ui-ux/README.md) | Dossier UI/UX : 41 chapitres (principes, heuristiques, lois de l'UX, couleur et contraste, typographie, composants, mobile et Android, accessibilité WCAG 2.2, éthique, glossaire, check-lists), 202 sources avec URL, images libres de droits | 🔬 Rédigé à partir de sources publiques, non éprouvé en réel ; volume réel annoncé dans le README (en deçà des 200 pages visées) |
 | [`docs/methodes/captures-compose-robolectric.md`](docs/methodes/captures-compose-robolectric.md) | Écran Compose réel en PNG sans émulateur (Robolectric en rendu natif) : gabarit de test vérifié en session, variantes sombre, police, largeurs, paysage, pièges de stabilité | ✅ méthode de base (Popote, 2026-09-29) · 🟡 extensions (Carnet de recette, plusieurs tailles de Popote) |
 | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) | Compiler, tester et livrer une app Android depuis claude.ai/code : SDK, miroir Maven contre les 429, tests purs sans Gradle, Rust, Node, Python, APK de plus de 30 Mio, pièges de CI GitHub Actions, clones superficiels | ✅ compilation et tests en session, APK de CI installé sur téléphone · 🟡 livraison par `release/` ou pré-version |
+| [`docs/methode-de-travail/README.md`](docs/methode-de-travail/README.md) | Ma méthode de travail : qui fait quoi, déroulé d'un changement, origine de chaque règle, écarts entre projets, constats de la revue du 2026-11-09 | 🟡 Règles déjà appliquées dans au moins un projet ; leur réunion en règles communes n'est pas encore éprouvée |
 
 Index des fiches méthode : [`docs/methodes/README.md`](docs/methodes/README.md).
 
 Mots-clés : UI, UX, ergonomie, heuristiques de Nielsen, WCAG, contraste, Material Design, accessibilité,
 glossaire UX, check-list de conception, navigation Android.
+
+---
+
+## 8. Règles communes et skills
+
+Posés dans chaque session par [`installation/`](installation/README.md). Procédures : [`AGENTS.md`](AGENTS.md) § 5.F et 5.G.
+
+| Fichier | Rôle | État |
+|---|---|---|
+| [`SOCLE.md`](SOCLE.md) | Règles communes à toutes les sessions, sur tous les projets : parler peu, dire vrai, respecter les décisions, livrer, tenir la mémoire, ne rien perdre, rien de privé en public, réutiliser | Écrit le 2026-11-09, pas encore installé |
+
+### Skills installés par défaut (`skills/`)
+
+| Skill | Ce qu'il fait | État |
+|---|---|---|
+| [`mode-silencieux`](skills/mode-silencieux/SKILL.md) | Aucun texte pendant le travail ; seulement une question qui bloque, un choix à valider, le résultat final. Forme du message final | Demandé par l'utilisateur le 2026-11-09 ; pas encore installé |
+
+### Skills proposés (`skills/_propositions/`, non installés)
+
+| Skill | Ce qu'il fait | D'où vient le besoin |
+|---|---|---|
+| [`livraison`](skills/_propositions/livraison/SKILL.md) | Finir un changement par un fichier ou un lien installable : vérifications, version nouvelle, compilation, remise, signature inchangée, privé d'abord pour une app en service | La règle la plus répétée : six `CLAUDE.md` en portent une variante |
+| [`apercu-avant-code`](skills/_propositions/apercu-avant-code/SKILL.md) | Aperçu avant et après, variantes nommées, accord explicite avant de coder ce qui se voit ; rendu réel montré ensuite | ToolMap (2026-10-18), cinq variantes dans ToolMap et SuivieMAT (2026-10-26) |
+| [`memoire-projet`](skills/_propositions/memoire-projet/SKILL.md) | Lire la mémoire du projet au début, la tenir à la fin ; une information à un seul endroit ; `CLAUDE.md` court | Chaque projet a sa disposition ; des faits recopiés se contredisent |
+| [`depot-public`](skills/_propositions/depot-public/SKILL.md) | Contrôle « rien de privé » avant un commit ou un push, avec un script qui regarde contenu, fichiers, images, messages et identité des commits | ToolMap (2026-10-27) ; cette Library |
+| [`copie-recente`](skills/_propositions/copie-recente/SKILL.md) | Trouver la copie la plus récente (GitHub toutes branches, Drive, PC), mettre les autres à jour sans rien écraser, miroir Drive | `CLAUDE.md` du dossier Drive et ToolMap (2026-10-28) |
+| [`cadrage`](skills/_propositions/cadrage/SKILL.md) | Questions numérotées à choix, avec recommandation, puis un plan écrit, sans coder | Longues séries de questions suivies de décisions dans ToolMap ; études restées « à valider » dans SuivieMAT |
+| [`recette-telephone`](skills/_propositions/recette-telephone/SKILL.md) | Liste unique de ce que seul le téléphone peut vérifier ; trois points par livraison ; séance d'essai guidée | Des dizaines de tâches « à vérifier sur téléphone » sans liste |
+| [`depannage-ci`](skills/_propositions/depannage-ci/SKILL.md) | Pannes de compilation et de CI déjà rencontrées, avec leur parade ; tests instables ; émulateur | Fiche [`android-en-session-cloud`](docs/methodes/android-en-session-cloud.md) et journaux des projets |
+| [`moteurs`](skills/_propositions/moteurs/SKILL.md) | Chercher dans cette Library avant d'écrire une brique, la reprendre selon sa fiche, rapporter le résultat | `AGENTS.md` § 5.A : aujourd'hui, seule une session qui a la Library sous la main y pense |
+| [`nouveau-projet`](skills/_propositions/nouveau-projet/SKILL.md) | Démarrer un projet avec la méthode : cadrage, mémoire, livraison dès le premier jour, sauvegardes ; gabarits fournis | Chaque projet a réinventé ses règles ; certains n'ont pas de `CLAUDE.md` (Learn-UI-UX, Android-Suntrack) |
+| [`master-dev`](skills/_propositions/master-dev/SKILL.md) | Session qui ne code pas : tour des projets, tenue de la Library, bilan court et propositions | Rôle demandé par l'utilisateur le 2026-11-09 |
+
+Mots-clés : skill, règles communes, socle, consignes par défaut, méthode de travail, silence, livraison, APK, aperçu,
+variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître.

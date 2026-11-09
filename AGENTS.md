@@ -19,6 +19,11 @@ l'ont montré, et le problème a été corrigé par un **consensus de N lectures
 consécutives**. Ce savoir (le code, mais surtout le *pourquoi* et les réglages) est rangé
 ici pour que la prochaine app qui a besoin de scanner ne refasse pas le même chemin.
 
+Depuis le 2026-11-09, la Library porte aussi **la méthode de travail** de JRRocks : les règles
+communes à toutes les sessions ([`SOCLE.md`](SOCLE.md)) et les skills ([`skills/`](skills/)),
+posés dans chaque session par [`installation/`](installation/README.md). L'explication est dans
+[`docs/methode-de-travail/`](docs/methode-de-travail/README.md).
+
 **La Library n'est pas figée.** Chaque utilisation d'un moteur est une occasion de
 l'améliorer. Votre rôle, en tant qu'agent de passage, est de la **faire évoluer** :
 
@@ -29,6 +34,8 @@ l'améliorer. Votre rôle, en tant qu'agent de passage, est de la **faire évolu
 | Un moteur a un défaut | **Le patcher** ici et le signaler aux apps concernées | § 5.C |
 | Une app contient un moteur éprouvé absent d'ici | **L'ajouter** | § 5.D |
 | On passe en revue un dépôt | Noter les candidats dans l'INDEX | § 5.E |
+| Une procédure revient d'un projet à l'autre | Proposer un skill, ou corriger celui qui existe | § 5.F |
+| L'utilisateur pose ou change une règle de travail | Mettre à jour les règles communes | § 5.G |
 
 ---
 
@@ -84,11 +91,17 @@ Le tableau « Composants » de la fiche porte alors le détail, et le statut glo
 README.md               Présentation courte, renvoie ici et vers l'INDEX
 AGENTS.md               Ce guide (règles et procédures)
 CLAUDE.md               Point d'entrée Claude Code, renvoie ici
-INDEX.md                Index de recherche : moteurs, besoins, mots-clés, candidats, dépôts revus
+INDEX.md                Index de recherche : moteurs, besoins, mots-clés, candidats, dépôts revus, skills
 JOURNAL.md              Journal des évolutions de la Library (le plus récent en haut)
+SOCLE.md                Règles communes, chargées au début de chaque session sur tous les projets
+skills/
+  <nom>/SKILL.md        Skill installé par défaut dans chaque session
+  _propositions/<nom>/  Skill proposé : attend l'accord de l'utilisateur, n'est pas installé
+installation/           Script qui pose SOCLE.md et skills/ dans ~/.claude (cloud et PC), et son mode d'emploi
 docs/
   ui-ux/                Dossier de référence UI/UX (sources, chapitres, check-lists)
   methodes/             Fiches méthode : outillage éprouvé, sans code d'exécution (captures, build en session cloud…)
+  methode-de-travail/   La méthode de travail expliquée : déroulé, origine des règles, écarts entre projets
 moteurs/
   _modele/README.md     Gabarit de fiche, à copier pour tout nouveau moteur
   <identifiant>/
@@ -189,6 +202,40 @@ la prochaine app héritera du bug.
    l'INDEX avec son chemin, son intérêt et ce qui manque pour la promouvoir.
 4. Mettez à jour le tableau « Dépôts passés en revue » de l'INDEX (date, commit).
 
+### 5.F Ajouter ou modifier un skill
+
+Un skill est une procédure que Claude Code charge quand la situation se présente. Sa
+description reste en contexte dans toutes les sessions ; son corps n'est lu qu'à l'usage.
+
+1. Un dossier par skill : `<nom>/SKILL.md`. En-tête : `name` (le nom du dossier, en minuscules
+   et tirets) et `description` (ce qu'il fait, quand l'utiliser, avec les mots que l'utilisateur
+   emploie ; 1 536 caractères au plus, sans `: ` au milieu de la phrase). Corps : visez moins de
+   100 lignes.
+2. **Un skill nouveau va dans `skills/_propositions/`.** Il ne passe dans `skills/` que sur
+   accord explicite de l'utilisateur, noté au JOURNAL avec ses mots. Seul `skills/` est installé.
+3. Chaque règle du skill dit son *pourquoi* et s'appuie sur un fait relevé dans un projet. Le
+   skill renvoie vers les fiches de la Library (`~/.claude/library/…`) au lieu de les recopier.
+4. Règle 1 : ni secret, ni donnée personnelle. Les exemples sont inventés.
+5. Vérifiez : en-tête lisible, puis installation dans un dossier d'essai
+   (`HOME=<dossier vide> bash installation/installer.sh`).
+6. Mettez à jour l'INDEX (§ 8) et le JOURNAL. Commit : `[skills] <résumé>`.
+7. Mise en service : fusion dans `main`, puis réinstallation
+   ([`installation/README.md`](installation/README.md)).
+
+### 5.G Modifier les règles communes (`SOCLE.md`)
+
+`SOCLE.md` est chargé en entier dans chaque session : chaque ligne coûte du contexte partout.
+
+1. On n'y écrit qu'une règle **demandée ou confirmée par l'utilisateur**. Son origine (date,
+   projet, ses mots) va dans [`docs/methode-de-travail/README.md`](docs/methode-de-travail/README.md), § 4.
+2. La règle doit valoir pour toute session et tout projet. Sinon, c'est un skill (5.F) ou une
+   ligne du `CLAUDE.md` du projet concerné.
+3. Une page au plus. Une ligne par règle, à la première personne (c'est l'utilisateur qui
+   parle), sans terme technique inutile.
+4. Une règle oubliée deux fois par les sessions ne se réécrit pas une troisième fois : faites-en
+   un automatisme (script, contrôle dans la CI, étape d'un skill).
+5. Entrée au JOURNAL. Commit : `[socle] <résumé>`. Mise en service comme en 5.F.
+
 ---
 
 ## 6. Synchronisation avec les apps sources
@@ -207,4 +254,7 @@ la prochaine app héritera du bug.
 - [ ] Ligne ajoutée à l'historique de la fiche (pas de réécriture).
 - [ ] `INDEX.md` à jour (tableau principal, besoins, mots-clés, candidats, dépôts revus).
 - [ ] Entrée en haut de `JOURNAL.md`.
-- [ ] Message de commit préfixé `[<identifiant>]` (ou `[library]` pour un changement transverse).
+- [ ] Skill ou règle commune : accord de l'utilisateur noté, INDEX § 8 et
+      `docs/methode-de-travail/` à jour, installation essayée (§ 5.F, 5.G).
+- [ ] Message de commit préfixé `[<identifiant>]` (`[library]` pour un changement transverse,
+      `[skills]` ou `[socle]` pour la méthode de travail).
