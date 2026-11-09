@@ -41,6 +41,7 @@ Dernière mise à jour : 2026-10-26
 | Déposer sur le Drive des fichiers qu'un autre outil (Claude Cowork, l'utilisateur) doit lire | `google-drive-appdata` (variante dossier visible en `drive.file`) |
 | Distribuer et mettre à jour une app sans Play Store | `maj-auto-github` |
 | Publier les APK d'une app dont le code est déjà public, sans second dépôt ni jeton | `maj-auto-github` (variante « dépôt de code public ») |
+| Proposer une mise à jour à chaque ouverture de l'app, pas seulement au démarrage du processus | `maj-auto-github` (variante « à chaque ouverture ») |
 | Publier un APK signé depuis GitHub Actions | `maj-auto-github` (`src/version.yml`) |
 | Connaître l'heure du lever ou du coucher du soleil, ou la phase de la lune | `astro-soleil-lune` |
 | Lire un fichier Excel `.xlsx` sans bibliothèque | 🔬 candidat InnovAdapt (§ 5) ou Popote `ImportBase` |
@@ -72,6 +73,7 @@ Dernière mise à jour : 2026-10-26
 | OCR par éléments, réticule, `cropRect`, `ViewPort`, rotation | `scan-multimode` (variante Carnet de recette) |
 | NDEF, RTD_TEXT, UID, `enableReaderMode` | `scan-multimode` |
 | `onActivityResult`, `startActivityForResult` | `paiement-sumup` |
+| `onStart`, retour au premier plan, `isChangingConfigurations` | `maj-auto-github` (variante « à chaque ouverture ») |
 | PDF417, Data Matrix, Aztec, Codablock | `scan-multimode` |
 | Phase lunaire, jour polaire | `astro-soleil-lune` |
 | Regex, `PatternSyntaxException` | `scan-multimode` |

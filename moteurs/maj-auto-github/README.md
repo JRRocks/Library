@@ -7,9 +7,9 @@
 | **Plateforme** | Android natif, Kotlin, minSdk 26, et GitHub Actions |
 | **Dépendances** | `kotlinx-serialization-json` (accès `JsonObject`, sans plugin), `androidx.core` (`FileProvider`, `PackageInfoCompat`), coroutines |
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé), commit `08c211a` (2026-10-12). Dépôt public des versions : [JRRocks/Popote-Compagnie](https://github.com/JRRocks/Popote-Compagnie) |
-| **Utilisé dans** | Popote Compagnie · Carnet de recette (intégré le 2026-10-26, variante « dépôt de code public », aucune version publiée pour l'instant) |
+| **Utilisé dans** | Popote Compagnie · Carnet de recette (intégré le 2026-10-26, variante « dépôt de code public » ; variante « à chaque ouverture » le 2026-11-09 ; aucune version publiée pour l'instant) |
 | **Fichiers d'origine** | `app-terrain/src/main/kotlin/fr/popote/terrain/maj/MiseAJour.kt`, `ui/MiseAJour.kt` (boîte de dialogue), `.github/workflows/version.yml`, `docs/publication.md` |
-| **Dernière mise à jour de la fiche** | 2026-10-26 |
+| **Dernière mise à jour de la fiche** | 2026-11-09 |
 
 ## À quoi ça sert
 
@@ -48,6 +48,35 @@ Quand le code n'a rien de privé, le second dépôt n'a plus de raison d'être :
 Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette)
 (public), `.github/workflows/apercu.yml` et `version.yml`, `docs/publication.md`.
 
+## Variante : vérifier à chaque ouverture (Carnet de recette)
+
+Demandée par l'utilisateur le 2026-11-09 : « l'app vérifie la dernière release GitHub à chaque
+lancement ». Dans `src/`, `publicationDuLancement` n'interroge **qu'une fois par processus**.
+Or Android garde souvent une app en mémoire des jours entiers : rouvrir l'app ne relance
+alors rien, et une version publiée entre-temps n'est pas proposée. Le Carnet
+(`maj/MiseAJour.kt`, `ui/AccueilViewModel.kt` et `MainActivity.kt`, commit `89275f2`) fait
+ainsi :
+
+- **Une ouverture déclenche la vérification** : `MainActivity.onStart` appelle
+  `AccueilViewModel.auPremierPlan()`. `onStop` réarme la vérification
+  (`enArrierePlan()`), **sauf** si `isChangingConfigurations` : une rotation n'est pas une
+  ouverture. Le premier `onStart` couvre le lancement à froid ; le ViewModel est le même que
+  celui de l'écran (`by viewModels()`).
+- **Un plancher d'une minute** (`INTERVALLE_MIN_MS`) : deux ouvertures plus rapprochées
+  partagent la même réponse. L'API anonyme de GitHub accepte 60 requêtes par heure et par
+  adresse, et les téléphones d'un foyer partagent la même box.
+- **Un échec n'est plus retenu** : pas de réseau ou GitHub en panne, l'ouverture suivante
+  réessaie sans attendre la minute, et une version déjà trouvée reste proposée. Dans `src/`,
+  un échec valait réponse vide jusqu'à la mort du processus.
+- **La ligne d'état ne saute pas** (`fusionnerMiseAJour`, testée) : rien ne change pendant un
+  téléchargement ou l'autorisation d'installer ; « Plus tard » et un échec de téléchargement
+  tiennent pour la version concernée ; une version plus récente se propose dès qu'elle paraît.
+
+Tests : `MiseAJourTest` (chaque ouverture redemande sauf dans la minute, un échec n'est pas
+retenu, une version trouvée reste proposée hors ligne) et `AccueilViewModelTest`. Pas encore
+vérifié sur appareil : aucune version du Carnet n'est publiée. `src/` reste la version de
+Popote, réellement en service (règle 6) : reprenez cette variante depuis le Carnet.
+
 ## Conventions qui font marcher le tout
 
 | Règle | Pourquoi |
@@ -56,7 +85,7 @@ Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Car
 | Un APK sans ce suffixe est **ignoré** | Mieux vaut ne rien proposer qu'une version qu'on ne sait pas dater |
 | Comparaison **strictement** supérieure | Ne jamais faire régresser un téléphone en service |
 | L'APK doit être **signé de la même clé** que l'installé ; la CI **échoue** sur un APK `-unsigned` | Sinon Android refuse le remplacement et il faudrait désinstaller, donc perdre les données |
-| Une seule requête **par processus**, silencieuse en cas d'échec | Pas de message d'erreur pour une mise à jour non demandée ; « Plus tard » tient jusqu'au prochain lancement |
+| Une seule requête **par processus**, silencieuse en cas d'échec | Pas de message d'erreur pour une mise à jour non demandée ; « Plus tard » tient jusqu'au prochain lancement. Le Carnet vérifie, lui, à chaque ouverture (variante ci-dessus) |
 | Téléchargement en `.part`, renommé à la fin | Un fichier interrompu n'est jamais pris pour un APK complet |
 | En-tête `User-Agent` **obligatoire** | GitHub répond 403 aux requêtes sans `User-Agent`, même anonymes |
 | 404 sur `/releases/latest` | Normal tant que rien n'a été publié, ce n'est pas une panne |
@@ -102,7 +131,7 @@ Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Car
 
 | Membre | Rôle |
 |---|---|
-| `publicationDuLancement(ctx): Publication?` | Interroge une fois par processus et rend la version à proposer, ou `null` |
+| `publicationDuLancement(ctx): Publication?` | Interroge une fois par processus et rend la version à proposer, ou `null` (variante du Carnet : à chaque ouverture, au plus une fois par minute) |
 | `versionInstallee(ctx): Long` | `versionCode` en cours |
 | `telecharger(ctx, publication, onProgression)` | Télécharge en `.part` avec progression par paliers et rend le `File` |
 | `peutInstaller(ctx)` / `ecranSourcesInconnues(ctx)` | Autorisation d'installer |
@@ -136,3 +165,4 @@ Code de référence : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Car
 | v13.22 → v13.125 | Popote, production | Chaîne utilisée à chaque version | Statut ✅ |
 | 2026-10-12 | Catalogage Library | — | Entrée en bibliothèque |
 | 2026-10-26 | Carnet de recette, intégration et relecture | Défaut : annulation avalée par `publicationDuLancement`. Variante « dépôt de code public » mise en place | Patch dans `src/` et deux tests ; composant ⚠️ jusqu'à un essai sur appareil ; section « Variante » ; Popote à prévenir |
+| 2026-11-09 | Carnet de recette, demande de l'utilisateur | Vérifier la dernière version à chaque ouverture de l'app (lancement ou retour au premier plan), pas une fois par processus ; un échec réseau n'est plus retenu. Tests JVM, pas encore d'essai sur appareil | Section « Variante : vérifier à chaque ouverture » ; `src/` inchangé (version de Popote) |

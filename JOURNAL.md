@@ -14,6 +14,21 @@
 
 ---
 
+## 2026-11-09 — [maj-auto-github] Variante « à chaque ouverture » (Carnet de recette)
+
+- **Type** : retour d'usage (demande de l'utilisateur) · variante
+- **Quoi** : le Carnet vérifie la dernière version publiée à chaque ouverture de l'app
+  (`onStart` ; une rotation n'en est pas une), au plus une fois par minute, au lieu d'une fois
+  par processus ; un échec réseau n'est plus retenu jusqu'à la mort du processus ; la ligne
+  d'état ne saute pas pendant un téléchargement ou une autorisation. Nouvelle section de la
+  fiche, lignes « Je cherche à… » et mots-clés de l'INDEX.
+- **Preuve / vérification** : tests JVM du Carnet (`MiseAJourTest`, `AccueilViewModelTest`),
+  commit `89275f2`. Aucune version du Carnet publiée : pas d'essai sur appareil. `src/`
+  inchangé (version de Popote, en service).
+- **Apps à prévenir** : Popote Compagnie, si l'on veut la même vérification à chaque ouverture.
+
+---
+
 ## 2026-10-27 — [scan-multimode] Anti-rebond glissant et lampe après l'arrière-plan (Carnet de recette)
 
 - **Type** : retour d'usage (relecture adverse) · patch proposé
