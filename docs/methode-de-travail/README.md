@@ -53,6 +53,8 @@ Un projet vit donc à trois endroits : GitHub (toutes ses branches), le miroir D
 
 Autour de ce déroulé : `nouveau-projet` pour démarrer, `depannage-ci` quand la compilation casse, `master-dev` pour tenir l'ensemble.
 
+Dix de ces skills sont installés depuis le 2026-11-09. `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
+
 ## 4. Les règles et leur origine
 
 | Règle | D'où elle vient |

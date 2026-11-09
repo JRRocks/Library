@@ -14,6 +14,22 @@
 
 ---
 
+## 2026-11-09 — [skills] Neuf skills activés, mise en place acceptée
+
+- **Type** : transverse
+- **Quoi** : réponses de l'utilisateur aux quatre questions posées en fin de session.
+  - Activés (passés de `skills/_propositions/` à `skills/`) : `livraison`, `recette-telephone`,
+    `depot-public`, `depannage-ci`, `apercu-avant-code`, `memoire-projet`, `cadrage`, `moteurs`,
+    `nouveau-projet`. Avec `mode-silencieux`, dix skills sont installés par défaut.
+  - Non retenus pour l'instant : `copie-recente`, `master-dev` (restent en proposition).
+  - Mise en place : « Oui, installe ». Fusion dans `main`, puis script de démarrage dans
+    l'environnement cloud de la session.
+- **Preuve / vérification** : INDEX § 8 refait à partir des dossiers ; installation rejouée
+  dans un dossier d'essai (dix skills posés, les deux propositions ignorées).
+- **Apps à prévenir** : aucune.
+
+---
+
 ## 2026-11-09 — [library] Méthode de travail : règles communes, skills, installation
 
 - **Type** : ajout · transverse
