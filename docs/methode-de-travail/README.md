@@ -44,7 +44,7 @@ Un projet vit donc à trois endroits : GitHub (toutes ses branches), le miroir D
 | 2 | Lire la mémoire du projet : avancement, dernières entrées du journal, décisions | `memoire-projet` |
 | 3 | Demande importante ou floue : des questions numérotées, puis un plan, sans coder | `cadrage` |
 | 4 | Tout ce qui se voit : un aperçu, des variantes, mon « oui » avant le code | `apercu-avant-code` |
-| 5 | Construire par petits pas, en reprenant les moteurs déjà éprouvés | `moteurs` |
+| 5 | Construire par petits pas, en reprenant ce qui existe : mes moteurs d'abord, puis ce qui est déjà publié ailleurs | `moteurs`, `recherche-github` |
 | 6 | Vérifier tout ce qui peut l'être, et dire ce qui ne l'a pas été | `recette-telephone` |
 | 7 | Monter la version, compiler, me remettre un lien ou un fichier | `livraison` |
 | 8 | Écrire le journal, l'avancement, les décisions | `memoire-projet` |
@@ -53,7 +53,7 @@ Un projet vit donc à trois endroits : GitHub (toutes ses branches), le miroir D
 
 Autour de ce déroulé : `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `master-dev` pour tenir l'ensemble.
 
-Onze de ces skills sont installés (dix depuis le 2026-11-09, `revue-langages` ajouté le même jour). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
+Douze de ces skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `recherche-github` ajoutés le même jour). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
 
 ## 4. Les règles et leur origine
 

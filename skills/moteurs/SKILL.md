@@ -46,6 +46,8 @@ Après un essai réel sur le téléphone :
 
 N'écris dans la Library que si elle est jointe à la session et que l'utilisateur le demande. Suis alors son `AGENTS.md`.
 
+Rien dans la Library pour ce besoin ? Avant d'écrire, cherche un projet déjà publié (skill `recherche-github`).
+
 ## 5. Proposer
 
 Une brique neuve qui resservira (isolable, testée, sans secret ni donnée personnelle) : signale-la dans le message final comme candidate pour la Library.

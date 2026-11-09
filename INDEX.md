@@ -330,6 +330,7 @@ Revue la plus récente par dépôt ; les précédentes sont dans le [`JOURNAL.md
 | [`docs/methodes/captures-compose-robolectric.md`](docs/methodes/captures-compose-robolectric.md) | Écran Compose réel en PNG sans émulateur (Robolectric en rendu natif) : gabarit de test vérifié en session, variantes sombre, police, largeurs, paysage, pièges de stabilité | ✅ méthode de base (Popote, 2026-09-29) · 🟡 extensions (Carnet de recette, plusieurs tailles de Popote) |
 | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) | Compiler, tester et livrer une app Android depuis claude.ai/code : SDK, miroir Maven contre les 429, tests purs sans Gradle, Rust, Node, Python, APK de plus de 30 Mio, pièges de CI GitHub Actions, clones superficiels | ✅ compilation et tests en session, APK de CI installé sur téléphone · 🟡 livraison par `release/` ou pré-version |
 | [`docs/methode-de-travail/README.md`](docs/methode-de-travail/README.md) | Ma méthode de travail : qui fait quoi, déroulé d'un changement, origine de chaque règle, écarts entre projets, constats de la revue du 2026-11-09 | 🟡 Règles déjà appliquées dans au moins un projet ; leur réunion en règles communes n'est pas encore éprouvée |
+| [`docs/projets-externes/README.md`](docs/projets-externes/README.md) | Registre des projets déjà publiés (GitHub, Codeberg, F-Droid) repérés pour mes applications : besoin, lien, comment l'essayer, licence, dernière activité, état | 🔬 Chaque ligne est vérifiée sur la page du projet (existence, licence, activité) ; aucun n'est encore essayé ni intégré |
 
 Index des fiches méthode : [`docs/methodes/README.md`](docs/methodes/README.md).
 
@@ -348,7 +349,7 @@ Posés dans chaque session par [`installation/`](installation/README.md). Procé
 
 ### Skills installés par défaut (`skills/`)
 
-Accord de l'utilisateur le 2026-11-09 (`mode-silencieux` et `revue-langages` demandés par lui ; les neuf autres choisis parmi onze propositions).
+Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `recherche-github` demandés par lui ; les neuf autres choisis parmi onze propositions).
 
 | Skill | Ce qu'il fait | D'où vient le besoin |
 |---|---|---|
@@ -363,6 +364,7 @@ Accord de l'utilisateur le 2026-11-09 (`mode-silencieux` et `revue-langages` dem
 | [`moteurs`](skills/moteurs/SKILL.md) | Chercher dans cette Library avant d'écrire une brique, la reprendre selon sa fiche, rapporter le résultat | `AGENTS.md` § 5.A : aujourd'hui, seule une session qui a la Library sous la main y pense |
 | [`nouveau-projet`](skills/nouveau-projet/SKILL.md) | Démarrer un projet avec la méthode : cadrage, mémoire, livraison dès le premier jour, sauvegardes ; gabarits fournis | Chaque projet a réinventé ses règles ; certains n'ont pas de `CLAUDE.md` (Learn-UI-UX, Android-Suntrack) |
 | [`revue-langages`](skills/revue-langages/SKILL.md) | Revue d'un projet domaine par domaine (interface, graphisme, moteur, fichiers, base, réseau, sécurité) : le langage utilisé est-il le plus efficace et le plus robuste ? Propose un changement là où il se mesure, application hybride comprise (moteur Rust sous une interface Kotlin), avec une grille par domaine et un gabarit de rapport | Demande de l'utilisateur le 2026-11-09 : ses applications sont surtout en Kotlin, sans moteur Rust |
+| [`recherche-github`](skills/recherche-github/SKILL.md) | Chercher un projet déjà publié qui répond à un besoin, le trier (licence, activité, poids, fiabilité), le faire essayer tel quel, puis proposer comment l'intégrer ; guide des licences ; tient le registre [`docs/projets-externes/`](docs/projets-externes/README.md) | Demande de l'utilisateur le 2026-11-09, avec l'exemple d'un dépôt de colorisation trouvé pour son fork de Mihon |
 
 ### Skills proposés (`skills/_propositions/`, non installés)
 
@@ -374,4 +376,4 @@ Proposés le 2026-11-09 et non retenus pour l'instant.
 | [`master-dev`](skills/_propositions/master-dev/SKILL.md) | Session qui ne code pas : tour des projets, tenue de la Library, bilan court et propositions | Rôle demandé par l'utilisateur le 2026-11-09 |
 
 Mots-clés : skill, règles communes, socle, consignes par défaut, méthode de travail, silence, livraison, APK, aperçu,
-variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître, revue des langages, Rust, moteur natif, application hybride.
+variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître, revue des langages, Rust, moteur natif, application hybride, recherche GitHub, projet existant, licence, veille.

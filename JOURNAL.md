@@ -14,6 +14,30 @@
 
 ---
 
+## 2026-11-09 — [skills] Ajout du skill recherche-github et du registre des projets externes
+
+- **Type** : ajout · revue
+- **Quoi** : demande de l'utilisateur : « Ajoute un nouveau skill, sur de la recherche de projet
+  GitHub qui pourrait répondre à mes besoins et rapidement testable puisque déjà publié », avec
+  l'exemple d'un dépôt de colorisation trouvé par lui pour son fork de Mihon ; puis « faire une
+  recherche sur des projets GitHub qui pourraient ajouter une amélioration à mes propres projets ».
+  - `skills/recherche-github/` : la procédure (dire le besoin, chercher, trier, se méfier,
+    proposer, faire essayer avant d'intégrer, intégrer du moins engageant au plus engageant,
+    garder la trace) et un guide des licences. Installé par défaut, puisque demandé : douze
+    skills dans `skills/`. Le skill `moteurs` y renvoie quand la Library n'a rien.
+  - `docs/projets-externes/README.md` : registre de la première recherche, par application
+    (Mihon, SuivieMAT, Scam Stop, ToolMap, Sun Track, Épreuves, coach d'entraînement, CRM, Carnet
+    de recette, skills) : 32 lignes, dont 5 projets écartés avec leur raison.
+- **Preuve / vérification** : chaque dépôt cité a été cloné sans ses fichiers le jour même, pour
+  relever son existence, la date de son dernier commit, sa dernière étiquette et son fichier de
+  licence ; les faits repris (formats lus, sites pris en charge, liens d'essai, modules) sont
+  lus dans le `README` ou l'arborescence du projet. Un dépôt GitHub réduit à un `README`
+  renvoyait vers Codeberg : vérifié à sa nouvelle adresse. **Non vérifié** : aucun de ces projets
+  n'a été essayé ni lancé ; « comment l'essayer » décrit ce que le projet publie, pas un essai fait.
+- **Apps à prévenir** : aucune. Les essais sont à faire par l'utilisateur, projet par projet.
+
+---
+
 ## 2026-11-09 — [library] revue-langages en service, vérifié dans une session neuve
 
 - **Type** : transverse
