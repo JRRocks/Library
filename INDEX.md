@@ -344,7 +344,7 @@ Posés dans chaque session par [`installation/`](installation/README.md). Procé
 
 | Fichier | Rôle | État |
 |---|---|---|
-| [`SOCLE.md`](SOCLE.md) | Règles communes à toutes les sessions, sur tous les projets : parler peu, dire vrai, respecter les décisions, livrer, tenir la mémoire, ne rien perdre, rien de privé en public, réutiliser | Écrit le 2026-11-09 ; mise en place acceptée par l'utilisateur le même jour |
+| [`SOCLE.md`](SOCLE.md) | Règles communes à toutes les sessions, sur tous les projets : parler peu, dire vrai, respecter les décisions, livrer, tenir la mémoire, ne rien perdre, rien de privé en public, réutiliser | En service depuis le 2026-11-09 dans l'environnement cloud « Drive » (constaté dans une session neuve). Autres environnements et PC : à installer |
 
 ### Skills installés par défaut (`skills/`)
 
