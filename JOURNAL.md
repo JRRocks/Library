@@ -14,6 +14,25 @@
 
 ---
 
+## 2026-11-09 — [library] Mise en place vérifiée dans une session neuve
+
+- **Type** : transverse
+- **Quoi** : pull request n° 1 fusionnée dans `main` (`d4b5b4b`) sur accord de l'utilisateur :
+  `main` porte désormais toute la Library. Script de démarrage accepté par lui dans
+  l'environnement cloud « Drive ». `installation/README.md` : tableau des vérifications et
+  des environnements à jour.
+- **Preuve / vérification** : le script exact, lancé contre `main` dans un dossier d'essai, pose
+  les règles communes et dix skills. Puis une session neuve du même environnement, sans dépôt
+  joint, interrogée sans outil, a répondu : « Library : 2026-11-09 d4b5b4b (10 skills). » et a
+  cité les dix skills installés, pas les deux propositions. Sont donc constatés : le clone
+  pendant le script de démarrage, le chargement de `~/.claude/CLAUDE.md` et celui des skills de
+  `~/.claude/skills/`. **Non vérifié** : `installer.sh` sous Git Bash ; l'effet réel des règles
+  sur le comportement d'une session de travail.
+- **Apps à prévenir** : aucune. Restent à équiper : les autres environnements cloud et les
+  deux PC (`installation/README.md`).
+
+---
+
 ## 2026-11-09 — [skills] Neuf skills activés, mise en place acceptée
 
 - **Type** : transverse

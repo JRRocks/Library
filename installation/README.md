@@ -22,6 +22,13 @@ Le contenu de [`environnement-cloud.sh`](environnement-cloud.sh) va dans le **sc
 - Le dépôt est public : aucun identifiant n'est demandé. Il faut seulement que l'environnement laisse passer GitHub (c'est le cas du réglage par défaut).
 - Le script ne peut pas empêcher une session de démarrer : en cas d'échec, la session démarre sans la Library.
 
+### Où c'est en place
+
+| Environnement cloud | Script de démarrage | Constaté |
+|---|---|---|
+| « Drive » | Posé le 2026-11-09 | Oui, par une session neuve le même jour |
+| Les autres environnements | Pas encore | |
+
 ## PC Windows (Git Bash)
 
 La première fois :
@@ -58,7 +65,7 @@ Déplacer son dossier de `skills/_propositions/` vers `skills/`, fusionner dans 
 | Point | État |
 |---|---|
 | `installer.sh` sous Linux : poste vierge, fichier personnel existant, relances, skill retiré, repères abîmés, fichier vide, fins de ligne Windows, retrait | Vérifié en session le 2026-11-09 |
-| Chargement de `~/.claude/CLAUDE.md` écrit par le script de démarrage d'une session cloud | Documenté par Claude Code (« Add personal preferences without committing to the repo »). Pas encore constaté avec ce script |
-| Chargement des skills de `~/.claude/skills/` dans une session cloud | Constaté le 2026-11-09 pour un skill posé là par la plateforme. Non documenté |
-| Clone d'un dépôt public non joint à la session | Constaté en cours de session le 2026-11-09. Pas encore constaté pendant le script de démarrage |
+| Chargement de `~/.claude/CLAUDE.md` écrit par le script de démarrage d'une session cloud | Documenté par Claude Code (« Add personal preferences without committing to the repo »). **Constaté le 2026-11-09** : une session neuve a répondu à « Library ? » avec la version installée, sans utiliser d'outil |
+| Chargement des skills de `~/.claude/skills/` dans une session cloud | **Constaté le 2026-11-09** dans la même session neuve : les dix skills installés y sont disponibles, les deux propositions n'y sont pas. Non documenté par Claude Code |
+| Clone d'un dépôt public non joint à la session | **Constaté le 2026-11-09** pendant le script de démarrage, dans une session neuve sans aucun dépôt joint |
 | `installer.sh` sous Git Bash (Windows) | Pas encore essayé : commandes courantes seulement (`cp`, `rm`, `awk`, `grep`) |
