@@ -7,9 +7,9 @@
 | **Plateforme** | Android natif, Kotlin, minSdk 26, et GitHub Actions |
 | **Dépendances** | `kotlinx-serialization-json` (accès `JsonObject`, sans plugin), `androidx.core` (`FileProvider`, `PackageInfoCompat`), coroutines. CI : `actions/checkout@v4`, `actions/setup-java@v4` (Temurin 17), `gradle/actions/setup-gradle@v4`, `gh` du runner ; pas de `setup-android` |
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé), commit `08c211a` (2026-10-12) ; `MiseAJour.kt`, `MiseAJourTest.kt` et `version.yml` identiques à `6149a81` (2026-10-26), hors patchs de la Library. Patch CI `Properties.load` repris de [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette) (public), commit `f198fd3` (2026-10-26). Dépôt public des versions : [JRRocks/Popote-Compagnie](https://github.com/JRRocks/Popote-Compagnie) |
-| **Utilisé dans** | Popote Compagnie · Carnet de recette (intégré le 2026-10-26, variante « dépôt de code public » ; aucune version publiée au 2026-10-27, aucune balise `v*` ni `apercu-*`) |
+| **Utilisé dans** | Popote Compagnie · Carnet de recette (intégré le 2026-10-26, variante « dépôt de code public » ; variante « à chaque ouverture » le 2026-11-09 ; aucune version publiée au 2026-10-27, aucune balise `v*` ni `apercu-*` ; toujours aucune version publiée le 2026-11-09 d'après la session du Carnet) |
 | **Fichiers d'origine** | Popote : `app-terrain/src/main/kotlin/fr/popote/terrain/maj/MiseAJour.kt`, `ui/MiseAJour.kt` (boîte de dialogue), `.github/workflows/version.yml`, `docs/publication.md`. Carnet : `.github/workflows/version.yml` et `apercu.yml`, `app/build.gradle.kts` (patch `Properties.load`), `ui/EtatsUi.kt` et `ui/AccueilViewModel.kt` (exemple d'interface) |
-| **Dernière mise à jour de la fiche** | 2026-10-27 |
+| **Dernière mise à jour de la fiche** | 2026-11-09 |
 
 ## À quoi ça sert
 
@@ -52,6 +52,35 @@ passés par l'environnement) ; pointe revue `8dc4820` ; `maj/MiseAJour.kt` et le
 workflows sont inchangés de `f198fd3` à `8c5251c`, et encore à `797fae7` (pointe distante du
 2026-10-27, 10:53 UTC).
 
+## Variante : vérifier à chaque ouverture (Carnet de recette)
+
+Demandée par l'utilisateur le 2026-11-09 : « l'app vérifie la dernière release GitHub à chaque
+lancement ». Dans `src/`, `publicationDuLancement` n'interroge **qu'une fois par processus**.
+Or Android garde souvent une app en mémoire des jours entiers : rouvrir l'app ne relance
+alors rien, et une version publiée entre-temps n'est pas proposée. Le Carnet
+(`maj/MiseAJour.kt`, `ui/AccueilViewModel.kt` et `MainActivity.kt`, commit `89275f2`) fait
+ainsi :
+
+- **Une ouverture déclenche la vérification** : `MainActivity.onStart` appelle
+  `AccueilViewModel.auPremierPlan()`. `onStop` réarme la vérification
+  (`enArrierePlan()`), **sauf** si `isChangingConfigurations` : une rotation n'est pas une
+  ouverture. Le premier `onStart` couvre le lancement à froid ; le ViewModel est le même que
+  celui de l'écran (`by viewModels()`).
+- **Un plancher d'une minute** (`INTERVALLE_MIN_MS`) : deux ouvertures plus rapprochées
+  partagent la même réponse. L'API anonyme de GitHub accepte 60 requêtes par heure et par
+  adresse, et les téléphones d'un foyer partagent la même box.
+- **Un échec n'est plus retenu** : pas de réseau ou GitHub en panne, l'ouverture suivante
+  réessaie sans attendre la minute, et une version déjà trouvée reste proposée. Dans `src/`,
+  un échec valait réponse vide jusqu'à la mort du processus.
+- **La ligne d'état ne saute pas** (`fusionnerMiseAJour`, testée) : rien ne change pendant un
+  téléchargement ou l'autorisation d'installer ; « Plus tard » et un échec de téléchargement
+  tiennent pour la version concernée ; une version plus récente se propose dès qu'elle paraît.
+
+Tests : `MiseAJourTest` (chaque ouverture redemande sauf dans la minute, un échec n'est pas
+retenu, une version trouvée reste proposée hors ligne) et `AccueilViewModelTest`. Pas encore
+vérifié sur appareil : aucune version du Carnet n'est publiée. `src/` reste la version de
+Popote, réellement en service (règle 6) : reprenez cette variante depuis le Carnet.
+
 ## Conventions qui font marcher le tout
 
 | Règle | Pourquoi |
@@ -61,7 +90,7 @@ workflows sont inchangés de `f198fd3` à `8c5251c`, et encore à `797fae7` (poi
 | Comparaison **strictement** supérieure | Ne jamais faire régresser un téléphone en service |
 | L'APK doit être **signé de la même clé** que l'installé ; la CI **échoue** sur un APK `-unsigned` | Sinon Android refuse le remplacement et il faudrait désinstaller, donc perdre les données |
 | Les mots de passe de signature passent par l'**environnement** de l'étape de compilation, jamais par `keystore.properties` | `Properties.load` lit `\` comme un échappement et retire les espaces de tête : un mot de passe généré peut être corrompu (voir « Points de vigilance ») |
-| Une seule requête **par processus**, silencieuse en cas d'échec | Pas de message d'erreur pour une mise à jour non demandée ; « Plus tard » tient jusqu'au prochain lancement |
+| Une seule requête **par processus**, silencieuse en cas d'échec | Pas de message d'erreur pour une mise à jour non demandée ; « Plus tard » tient jusqu'au prochain lancement. Le Carnet vérifie, lui, à chaque ouverture (variante ci-dessus) |
 | Téléchargement en `.part`, renommé à la fin | Un fichier interrompu n'est jamais pris pour un APK complet |
 | En-tête `User-Agent` **obligatoire** | GitHub répond 403 aux requêtes sans `User-Agent`, même anonymes |
 | 404 sur `/releases/latest` | Normal tant que rien n'a été publié, ce n'est pas une panne |
@@ -207,7 +236,7 @@ test sont inchangés jusqu'à `797fae7` (2026-10-27).
 
 | Membre | Rôle |
 |---|---|
-| `publicationDuLancement(ctx): Publication?` | Interroge une fois par processus et rend la version à proposer, ou `null` |
+| `publicationDuLancement(ctx): Publication?` | Interroge une fois par processus et rend la version à proposer, ou `null` (variante du Carnet : à chaque ouverture, au plus une fois par minute) |
 | `versionInstallee(ctx): Long` | `versionCode` en cours |
 | `telecharger(ctx, publication, onProgression)` | Télécharge en `.part` avec progression par paliers et rend le `File` |
 | `peutInstaller(ctx)` / `ecranSourcesInconnues(ctx)` | Autorisation d'installer |
@@ -284,3 +313,4 @@ test sont inchangés jusqu'à `797fae7` (2026-10-27).
 | 2026-10-27 | Revue Carnet de recette (`8dc4820`, distant `797fae7`) | Aucune balise sur le dépôt au 2026-10-27 (ni `v*` ni `apercu-*`) : aucune version publiée, aucun APK installé depuis la CI. `maj/MiseAJour.kt` et les workflows inchangés de `f198fd3` à `797fae7`. Interface passée en ligne d'état (`f5f8baf`, `8dc4820`) | Section « Exemple d'interface » (non éprouvé) ; commit de provenance ajouté à la « Variante » ; statut inchangé |
 | 2026-10-27 | Revues InnovAdapt, Activity-track, SuivieMAT, Android-Suntrack, ToolMap | Pièges de CI vécus ailleurs : clé vérifiée trop tard et secrets interpolés (InnovAdapt `c5aba61`), quota d'artefacts (InnovAdapt `02dd5cd`, Activity-track run `38150625547`), `setup-android` cassé, minutes épuisées. Aucun de ces dépôts n'utilise le moteur | Tableau « Pièges de CI » ; `src/` inchangé pour ces points |
 | 2026-10-27 | Relecture de la Library | Effet de bord du patch d'annulation (une `Error` n'est plus avalée) ; parade de Popote aux minutes épuisées : runner auto-hébergé sur le PC (`2bd6298`, après la revue de `6149a81`) | Points de vigilance et « Pièges de CI » complétés ; section « Réglages éprouvés » ajoutée (gabarit) |
+| 2026-11-09 | Carnet de recette, demande de l'utilisateur | Vérifier la dernière version à chaque ouverture de l'app (lancement ou retour au premier plan), pas une fois par processus ; un échec réseau n'est plus retenu. Tests JVM, pas encore d'essai sur appareil | Section « Variante : vérifier à chaque ouverture » ; `src/` inchangé (version de Popote) |

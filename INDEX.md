@@ -47,6 +47,7 @@ Dernière mise à jour : 2026-10-27
 | Me connecter à Google Drive depuis une app de bureau, sans Play Services | 🔬 candidat InnovAdapt, OAuth PKCE + loopback en Rust (§ 5) ; voir aussi `google-drive-appdata` |
 | Distribuer et mettre à jour une app sans Play Store | `maj-auto-github` |
 | Publier les APK d'une app dont le code est déjà public, sans second dépôt ni jeton | `maj-auto-github` (variante « dépôt de code public ») |
+| Proposer une mise à jour à chaque ouverture de l'app, pas seulement au démarrage du processus | `maj-auto-github` (variante « à chaque ouverture ») |
 | Publier un APK signé depuis GitHub Actions | `maj-auto-github` (`src/version.yml`) |
 | Signer un APK en CI sans que le mot de passe soit corrompu (`\`, espaces de tête) | `maj-auto-github` (`src/version.yml`, extrait `signingConfigs.release`) |
 | Éviter les pièges GitHub Actions d'une app Android (quota d'artefacts, `setup-android`, minutes épuisées, balise refusée en session) | `maj-auto-github` (« Pièges de CI ») et [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) |
@@ -98,6 +99,7 @@ Dernière mise à jour : 2026-10-27
 | NDEF, RTD_TEXT, UID, `enableReaderMode`, `FLAG_READER_SKIP_NDEF_CHECK` | `scan-multimode` |
 | UID aléatoire, clonage de badge | `scan-multimode` (vigilance NFC) |
 | `onActivityResult`, `startActivityForResult` | `paiement-sumup` |
+| `onStart`, retour au premier plan, `isChangingConfigurations` | `maj-auto-github` (variante « à chaque ouverture ») |
 | PDF417, Data Matrix, Aztec, Codablock | `scan-multimode` |
 | Phase lunaire, jour polaire, transit de la lune, changement d'heure (DST) | `astro-soleil-lune` |
 | Regex, `PatternSyntaxException`, ICU (regex Android) | `scan-multimode` |
