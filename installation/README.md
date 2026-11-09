@@ -17,7 +17,7 @@ Dans une nouvelle session, écrire **« Library ? »** : Claude répond en une l
 Le contenu de [`environnement-cloud.sh`](environnement-cloud.sh) va dans le **script de démarrage** de l'environnement cloud : menu de l'environnement dans la barre de titre d'une session, puis *Edit*, puis *Setup script*. Une session peut aussi le proposer elle-même : une carte d'approbation s'affiche, il suffit d'accepter.
 
 - À faire une fois par environnement (chaque environnement a son propre script).
-- Le script tourne au démarrage de la première session, puis son résultat est gardé en cache environ sept jours. Un changement de la Library arrive donc dans les nouvelles sessions sous sept jours. Pour l'avoir tout de suite : changer la date écrite dans le script, ce qui force la réinstallation.
+- Le script tourne au démarrage de la première session, puis son résultat est gardé en cache environ sept jours. Un changement de la Library arrive donc dans les nouvelles sessions sous sept jours. Pour l'avoir tout de suite : changer le numéro de version écrit dans le script, ce qui force la réinstallation.
 - Une session déjà ouverte garde ce qu'elle avait à son démarrage.
 - Le dépôt est public : aucun identifiant n'est demandé. Il faut seulement que l'environnement laisse passer GitHub (c'est le cas du réglage par défaut).
 - Le script ne peut pas empêcher une session de démarrer : en cas d'échec, la session démarre sans la Library.
@@ -58,7 +58,7 @@ Pour tout retirer : `bash ~/.claude/library/installation/installer.sh --retirer`
 
 ## Activer un skill proposé
 
-Déplacer son dossier de `skills/_propositions/` vers `skills/`, fusionner dans `main`, puis réinstaller (PC) ou changer la date du script (cloud).
+Déplacer son dossier de `skills/_propositions/` vers `skills/`, faire entrer le changement dans `main`, puis réinstaller (PC) ou changer le numéro de version du script (cloud).
 
 ## Ce qui est vérifié, et ce qui ne l'est pas
 
