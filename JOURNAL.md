@@ -14,6 +14,20 @@
 
 ---
 
+## 2026-11-09 — [library] recherche-github en service, vérifié dans une session neuve
+
+- **Type** : transverse
+- **Quoi** : `main` a reçu par un push en avance rapide le skill `recherche-github`, le registre
+  des projets externes et l'accord durable. Script de l'environnement cloud « Drive » remplacé
+  par la version 2026-11-09.3, acceptée par l'utilisateur.
+- **Preuve / vérification** : le script exact, lancé contre `main` dans un dossier d'essai, pose
+  douze skills. Une session neuve du même environnement, sans dépôt joint et sans outil, a
+  répondu : « Library : version 2026-11-09 53950c1 (12 skills). » et a cité les douze skills,
+  `recherche-github` compris.
+- **Apps à prévenir** : aucune. Restent à équiper : les autres environnements cloud et les PC.
+
+---
+
 ## 2026-11-09 — [library] Accord durable : un skill demandé par l'utilisateur va directement en service
 
 - **Type** : transverse

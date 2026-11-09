@@ -26,7 +26,7 @@ Le contenu de [`environnement-cloud.sh`](environnement-cloud.sh) va dans le **sc
 
 | Environnement cloud | Script de démarrage | Constaté |
 |---|---|---|
-| « Drive » | Posé le 2026-11-09, version 2026-11-09.2 | Oui, par une session neuve à chaque version (dix skills, puis onze) |
+| « Drive » | Posé le 2026-11-09, version 2026-11-09.3 | Oui, par une session neuve à chaque version (dix skills, puis onze, puis douze) |
 | Les autres environnements | Pas encore | |
 
 ## PC Windows (Git Bash)
