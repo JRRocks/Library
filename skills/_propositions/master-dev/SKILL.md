@@ -48,6 +48,7 @@ Selon l'`AGENTS.md` de la Library : retours d'usage, défauts à corriger, moteu
 ## Mettre en service
 
 - Un changement de la Library ne sert qu'une fois fusionné dans `main` : pull request sur demande de l'utilisateur.
+- Une fusion faite par GitHub est signée de l'adresse du compte. Tant que sa protection n'est pas confirmée, passe par un push en avance rapide, avec l'accord de l'utilisateur.
 - Sessions cloud : après la fusion, propose de changer la date du script de l'environnement. Les nouvelles sessions réinstallent alors tout de suite, au lieu d'attendre l'expiration du cache (environ sept jours).
 - PC : `git -C ~/.claude/library pull && bash ~/.claude/library/installation/installer.sh`.
 

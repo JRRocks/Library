@@ -14,6 +14,26 @@
 
 ---
 
+## 2026-11-09 — [skills] depot-public : une fusion faite par GitHub porte l'adresse du compte
+
+- **Type** : patch · transverse
+- **Quoi** : constat fait en corrigeant les dépôts publics à la demande de l'utilisateur
+  (« corrige »). Une pull request fusionnée par GitHub donne un commit signé de l'adresse du
+  compte, même quand c'est l'outil GitHub d'une session qui fusionne : c'est arrivé le jour même
+  dans ce dépôt. Le skill `depot-public` ne le disait que pour le site GitHub. Il le dit
+  maintenant pour toute fusion, demande un push en avance rapide tant que la protection de
+  l'adresse n'est pas confirmée, et fait vérifier l'adresse après coup. `AGENTS.md` § 5.F et la
+  proposition `master-dev` renvoient à cette règle.
+  Revue « rien de privé » de tous les dépôts publics du compte, toutes branches : fichiers
+  corrigés dans deux dépôts ; rien à corriger dans les fichiers des autres, ni ici.
+- **Preuve / vérification** : clone complet de chaque dépôt public ; adresses des auteurs relevées
+  sur toutes les branches ; recherche de l'adresse et du nom d'utilisateur du poste à la pointe
+  de chaque branche, avant et après correction.
+- **Apps à prévenir** : aucune. Les historiques ne sont pas modifiés : c'est une décision de
+  l'utilisateur. Cette entrée et ce patch attendent d'entrer dans `main`.
+
+---
+
 ## 2026-11-09 — [library] Mise en place vérifiée dans une session neuve
 
 - **Type** : transverse

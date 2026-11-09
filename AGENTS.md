@@ -220,7 +220,10 @@ description reste en contexte dans toutes les sessions ; son corps n'est lu qu'�
    (`HOME=<dossier vide> bash installation/installer.sh`).
 6. Mettez à jour l'INDEX (§ 8) et le JOURNAL. Commit : `[skills] <résumé>`.
 7. Mise en service : fusion dans `main`, puis réinstallation
-   ([`installation/README.md`](installation/README.md)).
+   ([`installation/README.md`](installation/README.md)). Une fusion faite par GitHub, bouton ou
+   outil de la session, est signée de l'adresse du compte : tant que sa protection n'est pas
+   confirmée, faites entrer le travail par un push en avance rapide, avec l'accord de
+   l'utilisateur (skill [`depot-public`](skills/depot-public/SKILL.md), § 4).
 
 ### 5.G Modifier les règles communes (`SOCLE.md`)
 

@@ -49,7 +49,8 @@ Les commits d'un dépôt public portent une adresse `noreply`, jamais l'adresse 
   git config user.email "314636139+JRRocks@users.noreply.github.com"
   ```
 
-- Les commits créés depuis le site GitHub (commit initial, fichier ajouté à la main, fusion d'une pull request) prennent l'adresse du compte. Le réglage qui protège une fois pour toutes se trouve dans GitHub, *Settings → Emails* : « Keep my email addresses private » et « Block command line pushes that expose my email ». S'il n'est pas actif, dis-le à l'utilisateur.
+- Les commits créés **par GitHub** prennent l'adresse du compte : commit initial, fichier ajouté à la main, et **fusion d'une pull request, y compris quand c'est l'outil GitHub de la session qui la fusionne**. Le réglage qui protège une fois pour toutes se trouve dans GitHub, *Settings → Emails* : « Keep my email addresses private » et « Block command line pushes that expose my email ». S'il n'est pas actif, dis-le à l'utilisateur.
+- Tant que l'utilisateur n'a pas confirmé ce réglage, **ne fusionne pas par GitHub dans un dépôt public** : le commit de fusion porterait son adresse. Fais entrer le travail par un push en avance rapide, avec son accord pour la branche visée. Après une fusion, vérifie l'adresse du commit créé : `git log -1 --format=%ae origin/<branche>`.
 
 ## 5. Ce qui est déjà parti
 
