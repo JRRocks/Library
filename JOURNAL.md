@@ -14,6 +14,30 @@
 
 ---
 
+## 2026-11-09 — [skills] Ajout du skill revue-langages
+
+- **Type** : ajout
+- **Quoi** : demande de l'utilisateur : « Rajoute un skill qui passe un projet en revue sur le
+  langage de code choisi et propose un changement vers le langage le plus efficient selon le
+  domaine (graphique, moteur, base de données, réseau…). Que l'application soit hybride peu
+  importe, l'importance est l'efficience et la robustesse de l'application. Beaucoup de mes
+  apps sont majoritairement en Kotlin sans moteur Rust. »
+  `skills/revue-langages/` : la procédure (cartographier, mesurer, écarter ce qui coûte moins
+  qu'un changement de langage, juger chaque domaine, compter le coût du pont, proposer, puis
+  changer par petits pas), une grille par domaine et un gabarit de rapport. Le skill propose et
+  ne réécrit rien sans accord. `nouveau-projet` y renvoie pour choisir les langages au départ.
+  Installé par défaut, puisque demandé : onze skills dans `skills/`.
+- **Preuve / vérification** : les repères de la grille citent leur source dans les projets
+  (démarrage de SuivieMAT, expression régulière de ToolMap, moteur Rust d'InnovAdapt lu sur sa
+  branche `claude/android-rust-mobile`). Exigences d'Android sur les bibliothèques natives et
+  générateur de liaisons Kotlin relus dans leur documentation le jour même. `cargo test` lancé
+  dans la session : un moteur Rust s'y compile et s'y teste sans rien installer. En-tête du
+  skill lu par un analyseur YAML ; installation rejouée dans un dossier d'essai. **Non
+  vérifié** : le skill n'a encore été appliqué à aucun projet.
+- **Apps à prévenir** : aucune.
+
+---
+
 ## 2026-11-09 — [skills] depot-public : une fusion faite par GitHub porte l'adresse du compte
 
 - **Type** : patch · transverse

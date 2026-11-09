@@ -51,9 +51,9 @@ Un projet vit donc à trois endroits : GitHub (toutes ses branches), le miroir D
 | 9 | Sauvegarder : GitHub, puis miroir Drive depuis le PC | `copie-recente`, `depot-public` |
 | 10 | Un message final court | `mode-silencieux` |
 
-Autour de ce déroulé : `nouveau-projet` pour démarrer, `depannage-ci` quand la compilation casse, `master-dev` pour tenir l'ensemble.
+Autour de ce déroulé : `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `master-dev` pour tenir l'ensemble.
 
-Dix de ces skills sont installés depuis le 2026-11-09. `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
+Onze de ces skills sont installés (dix depuis le 2026-11-09, `revue-langages` ajouté le même jour). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
 
 ## 4. Les règles et leur origine
 

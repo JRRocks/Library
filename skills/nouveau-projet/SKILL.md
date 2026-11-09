@@ -23,6 +23,8 @@ Note chaque réponse dans les décisions du projet, avec la date.
 
 Avant d'écrire une brique, regarde la Library (`~/.claude/library/INDEX.md`, ou le dépôt `Library`) : moteurs déjà éprouvés, fiches méthode pour compiler et voir un écran depuis une session cloud, dossier UI/UX pour concevoir l'interface.
 
+Choisis aussi le langage de chaque domaine dès le départ (interface, moteur, base, réseau), avec le skill `revue-langages` : c'est bien moins cher que de changer plus tard.
+
 ## 3. Poser la mémoire
 
 Copie les gabarits du dossier `modeles/` de ce skill :

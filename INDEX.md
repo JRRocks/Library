@@ -348,7 +348,7 @@ Posés dans chaque session par [`installation/`](installation/README.md). Procé
 
 ### Skills installés par défaut (`skills/`)
 
-Accord de l'utilisateur le 2026-11-09 (`mode-silencieux` demandé par lui ; les neuf autres choisis parmi onze propositions).
+Accord de l'utilisateur le 2026-11-09 (`mode-silencieux` et `revue-langages` demandés par lui ; les neuf autres choisis parmi onze propositions).
 
 | Skill | Ce qu'il fait | D'où vient le besoin |
 |---|---|---|
@@ -362,6 +362,7 @@ Accord de l'utilisateur le 2026-11-09 (`mode-silencieux` demandé par lui ; les 
 | [`depannage-ci`](skills/depannage-ci/SKILL.md) | Pannes de compilation et de CI déjà rencontrées, avec leur parade ; tests instables ; émulateur | Fiche [`android-en-session-cloud`](docs/methodes/android-en-session-cloud.md) et journaux des projets |
 | [`moteurs`](skills/moteurs/SKILL.md) | Chercher dans cette Library avant d'écrire une brique, la reprendre selon sa fiche, rapporter le résultat | `AGENTS.md` § 5.A : aujourd'hui, seule une session qui a la Library sous la main y pense |
 | [`nouveau-projet`](skills/nouveau-projet/SKILL.md) | Démarrer un projet avec la méthode : cadrage, mémoire, livraison dès le premier jour, sauvegardes ; gabarits fournis | Chaque projet a réinventé ses règles ; certains n'ont pas de `CLAUDE.md` (Learn-UI-UX, Android-Suntrack) |
+| [`revue-langages`](skills/revue-langages/SKILL.md) | Revue d'un projet domaine par domaine (interface, graphisme, moteur, fichiers, base, réseau, sécurité) : le langage utilisé est-il le plus efficace et le plus robuste ? Propose un changement là où il se mesure, application hybride comprise (moteur Rust sous une interface Kotlin), avec une grille par domaine et un gabarit de rapport | Demande de l'utilisateur le 2026-11-09 : ses applications sont surtout en Kotlin, sans moteur Rust |
 
 ### Skills proposés (`skills/_propositions/`, non installés)
 
@@ -373,4 +374,4 @@ Proposés le 2026-11-09 et non retenus pour l'instant.
 | [`master-dev`](skills/_propositions/master-dev/SKILL.md) | Session qui ne code pas : tour des projets, tenue de la Library, bilan court et propositions | Rôle demandé par l'utilisateur le 2026-11-09 |
 
 Mots-clés : skill, règles communes, socle, consignes par défaut, méthode de travail, silence, livraison, APK, aperçu,
-variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître.
+variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître, revue des langages, Rust, moteur natif, application hybride.
