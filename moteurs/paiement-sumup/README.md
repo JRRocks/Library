@@ -9,7 +9,7 @@
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé, code source de [Popote-Compagnie](https://github.com/JRRocks/Popote-Compagnie)), commit `08c211a` (2026-10-12) ; `CheckoutSumUp.kt` et `CheckoutSumUpTest.kt` identiques à `6149a81` (2026-10-26), hors gabarit `<AFFILIATE_KEY>`. Les numéros de ligne de Popote cités dans cette fiche renvoient à `6149a81` |
 | **Utilisé dans** | Popote Compagnie |
 | **Fichiers d'origine** | `app-terrain/src/main/kotlin/fr/popote/terrain/sumup/CheckoutSumUp.kt`, `PopoteApplication.kt`, `MainActivity.kt` (`onActivityResult`), `ui/Comptoir.kt` (`FeuilleCarteSumUp`, `avertirDebitEventuel`, `DELAI_GARDE_CARTE_MS`), `ui/Comptes.kt` et `ui/Cotisation.kt` (même feuille), `docs/decisions.md` (sections « Paiement carte SumUp » et « Connexion SumUp native »), `docs/todo.md` (« L'essai réel sur terminal SumUp physique ») |
-| **Dernière mise à jour de la fiche** | 2026-10-27 |
+| **Dernière mise à jour de la fiche** | 2026-11-09 |
 
 ## À quoi ça sert
 
@@ -80,6 +80,10 @@ transitif `com.sumup:reader`, pas dans `merchant-sdk`, qui n'est qu'une façade.
    ```
    Le SDK 7.x existe, mais il exige AGP 9 et Gradle 9.1 et retire le plugin
    `kotlin-android`. Restez en **6.0.0** sauf si le projet est déjà sous AGP 9.
+   Relevé du 2026-11-09, sans compilation : le journal du SDK annonce pour la 7.1.0 la
+   « prise en charge » d'AGP 9, sans écrire qu'il est exigé ; son application d'exemple est
+   construite avec Gradle 9.5.1, sans `kotlin-android`. L'exigence est à revérifier par un
+   build d'essai avant de monter (voir l'historique).
 3. **Module app** : `implementation(libs.sumup.merchant.sdk)`, `implementation(libs.play.services.location)`,
    `coreLibraryDesugaring(libs.android.desugar.jdk.libs)`, `compileOptions { isCoreLibraryDesugaringEnabled = true }`.
    Le SDK fournit ses propres règles R8 (`-keep class com.sumup.reader.sdk.** { *; }`) et
@@ -238,3 +242,4 @@ terrain : SDK `6.0.0` (étape 2) et délai de garde de 3 min (étape 8).
 | 2026-10-27 | Revue Popote (`6149a81`) | `CheckoutSumUp.kt` et `CheckoutSumUpTest.kt` identiques à la Library hors gabarit `<AFFILIATE_KEY>` (l. 48) ; `sumup/` inchangé depuis `08c211a`. Toujours aucun encaissement réel (`docs/todo.md` l. 325 : « Aucun encaissement réel n'a jamais abouti à ce jour »). Correctif du piège 2 (v13.20) jamais confirmé sur l'appareil (`docs/todo.md` l. 328) | Statut 🟡 inchangé ; provenance vérifiée jusqu'à `6149a81` ; statut précisé ; section « Pièges trouvés sur appareil réel » renommée « Pièges connus », avec une colonne « Où constaté » (seuls les pièges 1 et 2 l'ont été sur appareil) ; `src/` et `tests/` non modifiés |
 | 2026-10-27 | Revue Popote, documentation | Point de vigilance du dépôt source non repris au catalogage (déjà à `08c211a`) : d'après la décompilation du SDK, `Echec` ou `Annule` possibles après un vrai débit. Parade `avertirDebitEventuel()` dans `ui/Comptoir.kt`, `ui/Comptes.kt` et `ui/Cotisation.kt`. `forkEvery = 1` : confinement d'une cascade d'échecs inexpliquée, pas une cause démontrée (`docs/decisions.md` l. 3692-3720). Hypothèse de revue, non vérifiée : après une recréation de l'activité, le `Reussi` arriverait avant l'abonnement à `evenements` et serait perdu | Sections « Composants », « Réglages éprouvés » et « Points de vigilance » ajoutées ; piège 3 et exemple Compose mis à jour ; étape 8 (avertissement, délai de garde) ; § « Tests » nuancé ; hypothèse notée en point de vigilance et en point ouvert. Limite du SDK et hypothèse non vérifiée : pas de ⚠️ |
 | 2026-10-27 | Relecture de la Library | Le `Reussi` perdu après une recréation de l'activité vient de `src/CheckoutSumUp.kt` (`MutableSharedFlow` sans relecture, l. 73 ; le test l. 176 confirme qu'une valeur émise sans abonné est perdue), pas du SDK. Fortement suspecté, conséquence financière : traité comme les autres défauts suspectés de la Library (lampe de `scan-multimode`, jeton de `google-drive-appdata`) | Composant `CheckoutSumUp.kt` : ⚠️ (suspecté, non vérifié) ; statut global 🟡 inchangé ; Popote à prévenir |
+| 2026-11-09 | Revue des projets externes (journal du SDK lu à `v7.1.0`) | SDK 7.1.0 du 2026-06-19 : contrats Activity Result (`SumUpLoginContract`, `SumUpCardReaderPageContract`, `SumUpCheckoutContract`), qui supprimeraient le piège 4 ; SDK allégé d'environ 8 Mo ; prise en charge d'AGP 9 et de la cible 36 ; **une fois la 7.1.0 utilisée, le retour à une version antérieure n'est pas pris en charge**. La 7.0.0 change l'API des paiements hors ligne. Rien n'a été compilé ni essayé | Note sous l'étape 2 (exigence d'AGP 9 à revérifier) ; conseil « rester en 6.0.0 » inchangé ; statut 🟡 inchangé |

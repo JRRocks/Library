@@ -40,6 +40,14 @@ Pour chaque candidat, relevé **sur sa page**, jamais de mémoire :
 | Fiabilité | Tests, usage réel. Les étoiles seules ne prouvent rien |
 | Intégration | Application à utiliser telle quelle, bibliothèque à ajouter, service à côté, ou code à reprendre ? À quel coût ? |
 
+Pour relever d'un coup l'existence, la licence, le dernier commit et les dernières versions de plusieurs dépôts, sans l'API :
+
+```bash
+bash <dossier du skill>/releve.sh proprietaire/depot autre/depot
+```
+
+Rien du dépôt n'est exécuté. Ce relevé ne remplace pas la lecture de la page : il dit seulement si le projet existe, sous quelle licence, et s'il vit encore. La dernière version se lit **par date** : un dépôt qui a changé la forme de ses numéros trompe un classement par nom.
+
 ## 4. Se méfier
 
 Un dépôt inconnu, c'est du code inconnu.
@@ -84,3 +92,4 @@ Ensuite, la méthode habituelle : aperçu si quelque chose se voit, petits pas, 
 - Pars des besoins connus de chaque projet (limites notées dans sa mémoire, défauts, demandes en attente), pas d'une liste de nouveautés.
 - Trois trouvailles au plus par projet.
 - Confie la recherche à des sous-agents, un par groupe de projets. Puis **ouvre toi-même** la page de chaque projet retenu avant de le présenter : un sous-agent peut se tromper de dépôt, de licence ou de date.
+- Vérifie de la même façon ce qu'un sous-agent affirme de l'application elle-même (« elle fait déjà ceci », « il lui manque cela ») : ça se lit dans son code.

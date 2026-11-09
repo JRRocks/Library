@@ -14,6 +14,37 @@
 
 ---
 
+## 2026-11-09 — [library] [scan-multimode] [paiement-sumup] Projets externes : revue terminée, deux fiches précisées
+
+- **Type** : transverse · retour d'information (rien d'essayé)
+- **Quoi** : fin de la recherche demandée par l'utilisateur (« faire une recherche sur des
+  projets github qui pourrais ajouter une amélioration à mes propres projets »). Le registre
+  [`docs/projets-externes/`](docs/projets-externes/README.md) couvre toutes les applications :
+  sections SuivieMAT / ScanList et Scam Stop refaites, section Popote Compagnie ajoutée,
+  sections Mihon et Carnet de recette corrigées, dix lignes d'écartés en plus. Fiche
+  `scan-multimode` : la vigilance « Codes empilés illisibles » dit maintenant que `zxing-cpp`
+  annonce le MicroPDF417 et les DataBar empilés, et que rien n'existe sur Android pour
+  Codablock F, Code 16K et Code 49. Fiche `paiement-sumup` : contenu du SDK 7.1.0 noté, et
+  doute signalé sur « la 7.x exige AGP 9 ». Skill `recherche-github` : outil `releve.sh`
+  (licence, dernier commit, dernières versions par date, sans API et sans rien exécuter).
+- **Preuve / vérification** : chaque projet cité relevé sur son dépôt par un clone sans
+  fichiers (licence lue, dernier commit, étiquettes classées par date) ; formats de
+  `zxing-cpp`, règles de SpamBlocker, journal du SDK SumUp, motifs de Saracroche et réglage
+  de ColorComic lus dans leurs fichiers ; ce que les rapports de recherche disaient de mes
+  applications relu dans leur code. Erreur trouvée dans le registre et corrigée : fastexcel y
+  était noté « v0.8.7 » (étiquettes classées par nom) alors que la dernière version est la
+  0.20.2. `releve.sh` essayé sur sept dépôts, dont un absent et un hors GitHub. Rien n'a été
+  compilé, installé ni essayé : toutes les lignes du registre restent « à essayer ».
+- **Apps à prévenir** : SuivieMAT et ScanList (leur documentation dit que les codes empilés
+  autres que le PDF417 resteront hors de portée : une piste existe pour deux d'entre eux) ;
+  Popote (SDK SumUp 7.1.0, scanner de documents) ; Scam Stop (trois règles de SpamBlocker,
+  voix de l'annonce) ; toute application qui exporte en CSV (valeurs commençant par `=`, `+`,
+  `-` ou `@` écrites telles quelles). Les nouvelles sessions cloud reçoivent `releve.sh` au
+  prochain renouvellement de l'environnement (sept jours au plus) : le numéro de version du
+  script de démarrage n'a pas été changé.
+
+---
+
 ## 2026-11-09 — [library] recherche-github en service, vérifié dans une session neuve
 
 - **Type** : transverse

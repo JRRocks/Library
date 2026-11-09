@@ -9,7 +9,7 @@
 | **Provenance** | [JRRocks/ScanList](https://github.com/JRRocks/ScanList) (privé), commit `1368027` (2026-09-22), pour tout `src/` et `tests/` sauf `RegexSuggester`. `RegexSuggester.kt` et son test : [JRRocks/SuivieMAT](https://github.com/JRRocks/SuivieMAT) (public depuis le 2026-10-27), commit d'origine `5c81d3c` (2026-10-26), identiques à la pointe revue `5eb5198` (2026-10-27). `NfcScanSurface.kt` est **patché dans la Library** (2026-10-27, voir les points de vigilance) |
 | **Utilisé dans** | ScanList · SuivieMAT (fork de ScanList pris à `1368027`, moteur identique jusqu'à `5eb5198` hormis `NfcScanSurface` habillé au thème ; scan jamais vérifié sur téléphone) · Carnet de recette (intégré le 2026-10-27, OCR seul et **sans regex** : voir la variante, pas encore essayé sur appareil) |
 | **Fichiers d'origine** | `app/src/main/java/com/scanlist/app/scanner/*`, `domain/{model/ScanValue,nfc/NfcValue,regex/RegexRuleEngine}.kt`, `ui/scan/{CameraPreview,NfcScanSurface,ScanViewModel}.kt` ; SuivieMAT : `domain/regex/RegexSuggester.kt` ; tests : `app/src/test/java/com/scanlist/app/*Test.kt` |
-| **Dernière mise à jour de la fiche** | 2026-10-27 |
+| **Dernière mise à jour de la fiche** | 2026-11-09 |
 
 ## À quoi ça sert
 
@@ -362,6 +362,10 @@ Appareil de référence : Samsung Galaxy S25.
   par ML Kit ni par ZXing. On les reconnaît aux **barres horizontales pleines entre les
   rangées** ; un PDF417 a ses rangées collées. Contournement : le mode OCR sur le texte en
   clair (ex. `[A-Z]{2}-\d{3}[A-Z]/\d{5}`).
+  Précision du 2026-11-09, non essayée : `zxing-cpp` (réécriture en C++, projet distinct du
+  ZXing Java) range le MicroPDF417 et les DataBar empilés parmi ses formats. Pour Codablock F,
+  Code 16K et Code 49, aucun décodeur Android ou JVM n'a été trouvé. Pistes et façon de les
+  essayer : [`docs/projets-externes/`](../../docs/projets-externes/README.md), section SuivieMAT.
 - **Sur erreur, ne rien faire** : une image floue, une regex invalide ou un tag mal formé ne
   lèvent jamais d'exception jusqu'au pipeline. Le scan continue.
 - `ImageProxy.close()` doit être appelé **dans tous les cas** (`addOnCompleteListener`), sinon
@@ -394,3 +398,4 @@ Appareil de référence : Samsung Galaxy S25.
 | 2026-10-27 | ToolMap (`c620a38`), relecture de la fiche | ICU d'Android plus strict que le JDK des tests ; descriptions d'erreur ICU différentes de celles que `frenchMessage` attend | Points de vigilance ICU, UID et aperçu OCR ajoutés ; ligne `ScanValue` corrigée (`normalize` garde la casse, c'est `key` qui passe en majuscules) |
 | 2026-10-27 | Tests exécutés dans la Library | `ktest.sh` (Kotlin 2.0.21, JUnit 4.13.2, sans Gradle) sur `RegexSuggesterTest`, `RegexRuleEngineTest`, `ScanConsensusTest`, `ScanDebouncerTest` et `NfcValueTest` : `OK (91 tests)` | Composants purs confirmés en JVM ; statuts inchangés (un test JVM ne vaut pas un usage réel) |
 | 2026-10-27 | Relecture de la Library | Le ✅ de l'OCR et du code-barres repose sur la déclaration de l'utilisateur du 2026-10-12 ; la documentation de ScanList (`CLAUDE.md` et `consignes/workflow.md` à `1368027`) dit toujours que le décodage réel et les seuils du consensus n'ont été vérifiés qu'en test unitaire (phase 10 ⬜). Contradiction signalée, à faire trancher par l'utilisateur. Provenance de la variante Carnet complétée (`afccb60`, `25b24e4`, `6c60ef0`) | Statut inchangé ; note ajoutée aux réglages du consensus |
+| 2026-11-09 | Revue des projets externes (skill `recherche-github`) | `zxing-cpp` (v3.1.1, Apache-2.0) range MicroPDF417, DataBar empilé, Micro QR et rMQR parmi ses formats (README lu aux étiquettes v3.0.2, v3.1.0 et v3.1.1) ; il n'annonce ni Codablock F, ni Code 16K, ni Code 49, que seuls deux projets hors JVM décodent (ZXing.Delphi en Pascal, CodeGlyphX en .NET). Rien n'a été essayé | Vigilance « Codes empilés illisibles » précisée ; `src/BarcodeFormats.kt` laissé identique à la source (son commentaire dit encore « aucun moteur embarqué gratuit ») ; statuts inchangés |

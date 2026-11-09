@@ -103,9 +103,9 @@ Dernière mise à jour : 2026-11-09
 | OCR par éléments, réticule, `cropRect`, `ViewPort`, rotation | `scan-multimode` (variante Carnet de recette) |
 | NDEF, RTD_TEXT, UID, `enableReaderMode`, `FLAG_READER_SKIP_NDEF_CHECK` | `scan-multimode` |
 | UID aléatoire, clonage de badge | `scan-multimode` (vigilance NFC) |
-| `onActivityResult`, `startActivityForResult` | `paiement-sumup` |
+| `onActivityResult`, `startActivityForResult`, `SumUpCheckoutContract` (SDK 7.1, non essayé) | `paiement-sumup` |
 | `onStart`, retour au premier plan, `isChangingConfigurations` | `maj-auto-github` (variante « à chaque ouverture ») |
-| PDF417, Data Matrix, Aztec, Codablock | `scan-multimode` |
+| PDF417, MicroPDF417, Data Matrix, Aztec, Codablock, Code 16K, Code 49, zxing-cpp | `scan-multimode` (codes empilés : limite connue ; pistes dans [`docs/projets-externes/`](docs/projets-externes/README.md)) |
 | Phase lunaire, jour polaire, transit de la lune, changement d'heure (DST) | `astro-soleil-lune` |
 | Regex, `PatternSyntaxException`, ICU (regex Android) | `scan-multimode` |
 | Générateur de regex, regex par l'exemple | `scan-multimode` (`RegexSuggester`) |
@@ -364,7 +364,7 @@ Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `r
 | [`moteurs`](skills/moteurs/SKILL.md) | Chercher dans cette Library avant d'écrire une brique, la reprendre selon sa fiche, rapporter le résultat | `AGENTS.md` § 5.A : aujourd'hui, seule une session qui a la Library sous la main y pense |
 | [`nouveau-projet`](skills/nouveau-projet/SKILL.md) | Démarrer un projet avec la méthode : cadrage, mémoire, livraison dès le premier jour, sauvegardes ; gabarits fournis | Chaque projet a réinventé ses règles ; certains n'ont pas de `CLAUDE.md` (Learn-UI-UX, Android-Suntrack) |
 | [`revue-langages`](skills/revue-langages/SKILL.md) | Revue d'un projet domaine par domaine (interface, graphisme, moteur, fichiers, base, réseau, sécurité) : le langage utilisé est-il le plus efficace et le plus robuste ? Propose un changement là où il se mesure, application hybride comprise (moteur Rust sous une interface Kotlin), avec une grille par domaine et un gabarit de rapport | Demande de l'utilisateur le 2026-11-09 : ses applications sont surtout en Kotlin, sans moteur Rust |
-| [`recherche-github`](skills/recherche-github/SKILL.md) | Chercher un projet déjà publié qui répond à un besoin, le trier (licence, activité, poids, fiabilité), le faire essayer tel quel, puis proposer comment l'intégrer ; guide des licences ; tient le registre [`docs/projets-externes/`](docs/projets-externes/README.md) | Demande de l'utilisateur le 2026-11-09, avec l'exemple d'un dépôt de colorisation trouvé pour son fork de Mihon |
+| [`recherche-github`](skills/recherche-github/SKILL.md) | Chercher un projet déjà publié qui répond à un besoin, le trier (licence, activité, poids, fiabilité), le faire essayer tel quel, puis proposer comment l'intégrer ; guide des licences ; outil `releve.sh` (licence, dernier commit et dernières versions d'un dépôt, sans API) ; tient le registre [`docs/projets-externes/`](docs/projets-externes/README.md) | Demande de l'utilisateur le 2026-11-09, avec l'exemple d'un dépôt de colorisation trouvé pour son fork de Mihon |
 
 ### Skills proposés (`skills/_propositions/`, non installés)
 
