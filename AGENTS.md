@@ -211,8 +211,13 @@ description reste en contexte dans toutes les sessions ; son corps n'est lu qu'�
    et tirets) et `description` (ce qu'il fait, quand l'utiliser, avec les mots que l'utilisateur
    emploie ; 1 536 caractères au plus, sans `: ` au milieu de la phrase). Corps : visez moins de
    100 lignes.
-2. **Un skill nouveau va dans `skills/_propositions/`.** Il ne passe dans `skills/` que sur
-   accord explicite de l'utilisateur, noté au JOURNAL avec ses mots. Seul `skills/` est installé.
+2. **Un skill proposé par une session va dans `skills/_propositions/`.** Il ne passe dans
+   `skills/` que sur accord explicite de l'utilisateur, noté au JOURNAL avec ses mots. Seul
+   `skills/` est installé.
+   **Un skill que l'utilisateur demande lui-même va directement dans `skills/` et dans `main`**
+   (accord durable du 2026-11-09 : « Mets-les en service directement »), par un push en avance
+   rapide. On le lui dit dans le message final. La mise à jour du script de l'environnement
+   cloud passe toujours par son acceptation.
 3. Chaque règle du skill dit son *pourquoi* et s'appuie sur un fait relevé dans un projet. Le
    skill renvoie vers les fiches de la Library (`~/.claude/library/…`) au lieu de les recopier.
 4. Règle 1 : ni secret, ni donnée personnelle. Les exemples sont inventés.

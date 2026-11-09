@@ -14,6 +14,21 @@
 
 ---
 
+## 2026-11-09 — [library] Accord durable : un skill demandé par l'utilisateur va directement en service
+
+- **Type** : transverse
+- **Quoi** : à la question « je te redemande à chaque fois avant de les mettre en service ? »,
+  l'utilisateur a répondu « Mets-les en service directement ». `AGENTS.md` § 5.F et `CLAUDE.md`
+  le disent : un skill qu'il demande va dans `skills/` et dans `main` par un push en avance
+  rapide ; un skill proposé par une session attend toujours dans `skills/_propositions/`. Le
+  script de l'environnement cloud passe en version 2026-11-09.3 pour que les nouvelles sessions
+  reçoivent `recherche-github`.
+- **Preuve / vérification** : réponses de l'utilisateur dans la session (« Oui, mets en service »
+  pour `recherche-github`, puis l'accord durable).
+- **Apps à prévenir** : aucune.
+
+---
+
 ## 2026-11-09 — [skills] Ajout du skill recherche-github et du registre des projets externes
 
 - **Type** : ajout · revue
