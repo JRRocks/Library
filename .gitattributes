@@ -1,0 +1,5 @@
+# Fins de ligne Unix pour les scripts, les skills et les regles communes, meme sur un
+# clone Windows : un script en fins de ligne Windows ne se lance pas sous Git Bash.
+*.sh     text eol=lf
+SKILL.md text eol=lf
+SOCLE.md text eol=lf
