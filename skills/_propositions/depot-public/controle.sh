@@ -60,12 +60,12 @@ cherche() { # $1 = libelle, $2 = expression reguliere etendue, $3 = lignes a ign
 
 cherche "adresse e-mail" \
   '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[a-z]{2,}' \
-  'noreply|@example\.|@users\.noreply|@[0-9]+x\.(png|webp)|@(string|dimen|color|drawable|style|id|android|mipmap)'
+  'noreply|@example\.|@exemple\.|@domaine\.|@users\.noreply|@[0-9]+x\.(png|webp)|@(string|dimen|color|drawable|style|id|android|mipmap)'
 cherche "chemin du poste avec un nom d'utilisateur" \
   '(C:[\\/]+Users[\\/]+|/Users/|/home/)[A-Za-z0-9._-]+' \
   '<utilisateur>|/home/user|/home/runner|Users[\\/]+(Public|Default)'
 cherche "cle, jeton ou mot de passe" \
-  'BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AIza[0-9A-Za-z_-]{30,}|sk-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|(api[_-]?key|secret|token|password|passwd|mot[_ ]de[_ ]passe)[A-Za-z_]*["'"'"' ]*[:=][ "'"'"']*[A-Za-z0-9/+_-]{12,}'
+  'BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AIza[0-9A-Za-z_-]{30,}|sk-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|(api[_-]?key|secret|token|password|passwd|mot[_ ]de[_ ]passe)[A-Za-z_]*["'"'"']?[ ]*[:=][ ]*("[^" ]{8,}"|'"'"'[^'"'"' ]{8,}'"'"'|[A-Za-z0-9/+_-]*[0-9][A-Za-z0-9/+_-]{8,})'
 cherche "lien prive (invitation, Drive)" \
   '[a-z]+://join\?|drive\.google\.com/|docs\.google\.com/'
 cherche "coordonnees GPS precises" \
@@ -86,7 +86,7 @@ if [ -n "$images" ]; then
       suspectes="$suspectes $image"
     fi
   done <<< "$images"
-  [ -z "$suspectes" ] || signale "images avec des metadonnees d'appareil a retirer :$suspectes"
+  [ -z "$suspectes" ] || signale "images qui portent des metadonnees (a retirer si elles viennent du telephone) :$suspectes"
 fi
 
 # --- 4. Messages de commit -----------------------------------------------------
