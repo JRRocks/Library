@@ -14,6 +14,26 @@
 
 ---
 
+## 2026-11-10 — [skills] `lever-le-doute` : ne jamais deviner une demande
+
+- **Type** : ajout (skill demandé par l'utilisateur, mis en service directement, AGENTS.md § 5.F)
+- **Quoi** : nouveau skill [`lever-le-doute`](skills/lever-le-doute/SKILL.md). Demande de
+  l'utilisateur, avec ses mots : « Ajoute moi un skill qui a pour principe et intérêt que Claude
+  ne cherche jamais à comprendre ce qu'il doit faire. Si il se pose la question, c'est que je
+  n'ai pas été assez clair, claude doit impérativement me poser des questions pour retirer toute
+  ambiguïté. » Le skill dit comment reconnaître le doute, comment poser les questions, et ce qui
+  se passe sans réponse (la partie concernée attend). Lecture de la session, à confirmer par
+  l'utilisateur : le doute visé porte sur **ce qui est demandé** (quoi, où, jusqu'où, résultat
+  attendu) ; le « comment » technique et le debug restent sans question (`SOCLE.md` § 4, non
+  modifié). `SOCLE.md` § 1 n'a pas changé : le skill précise qu'un doute sur la demande est une
+  « question qui bloque vraiment ». INDEX § 8 et `docs/methode-de-travail/` (§ 3, § 4) à jour.
+- **Preuve / vérification** : en-tête lu (nom = dossier, description de moins de 1 536
+  caractères, sans « : » au milieu d'une phrase) ; installation dans un dossier d'essai
+  (`HOME=<dossier vide> bash installation/installer.sh`) : treize skills posés, dont
+  `lever-le-doute`. Pas encore constaté dans une session neuve.
+- **Apps à prévenir** : aucune. Les sessions cloud le reçoivent sous sept jours (cache du script
+  de démarrage), ou tout de suite si le numéro de version du script de l'environnement est changé.
+
 ## 2026-11-09 — [library] [scan-multimode] [paiement-sumup] Projets externes : revue terminée, deux fiches précisées
 
 - **Type** : transverse · retour d'information (rien d'essayé)

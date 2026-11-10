@@ -51,9 +51,9 @@ Un projet vit donc à trois endroits : GitHub (toutes ses branches), le miroir D
 | 9 | Sauvegarder : GitHub, puis miroir Drive depuis le PC | `copie-recente`, `depot-public` |
 | 10 | Un message final court | `mode-silencieux` |
 
-Autour de ce déroulé : `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `master-dev` pour tenir l'ensemble.
+Autour de ce déroulé : `lever-le-doute` à chaque demande (au moindre doute, une question plutôt qu'une supposition), `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `master-dev` pour tenir l'ensemble.
 
-Douze de ces skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `recherche-github` ajoutés le même jour). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
+Treize skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `recherche-github` ajoutés le même jour, `lever-le-doute` le 2026-11-10). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
 
 ## 4. Les règles et leur origine
 
@@ -78,6 +78,7 @@ Douze de ces skills sont installés (dix depuis le 2026-11-09, `revue-langages` 
 | Dépôt public : rien de privé, identité de commit `noreply` | ToolMap (2026-10-27), cette Library |
 | Application en service : privé par défaut, publication sur feu vert donné pour cette version | Suivie-Popote-Cie |
 | Chercher un moteur dans la Library avant d'en écrire un | `AGENTS.md` de cette Library |
+| Ne jamais deviner une demande : au moindre doute, des questions jusqu'à ce qu'il ne reste aucune ambiguïté | Demande du 2026-11-10 : « Si il se pose la question, c'est que je n'ai pas été assez clair » (skill `lever-le-doute`) |
 
 ## 5. Là où mes projets divergent
 

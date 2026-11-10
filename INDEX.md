@@ -349,7 +349,7 @@ Posés dans chaque session par [`installation/`](installation/README.md). Procé
 
 ### Skills installés par défaut (`skills/`)
 
-Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `recherche-github` demandés par lui ; les neuf autres choisis parmi onze propositions).
+Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `recherche-github` demandés par lui ; les neuf autres choisis parmi onze propositions). `lever-le-doute` demandé par lui le 2026-11-10.
 
 | Skill | Ce qu'il fait | D'où vient le besoin |
 |---|---|---|
@@ -365,6 +365,7 @@ Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `r
 | [`nouveau-projet`](skills/nouveau-projet/SKILL.md) | Démarrer un projet avec la méthode : cadrage, mémoire, livraison dès le premier jour, sauvegardes ; gabarits fournis | Chaque projet a réinventé ses règles ; certains n'ont pas de `CLAUDE.md` (Learn-UI-UX, Android-Suntrack) |
 | [`revue-langages`](skills/revue-langages/SKILL.md) | Revue d'un projet domaine par domaine (interface, graphisme, moteur, fichiers, base, réseau, sécurité) : le langage utilisé est-il le plus efficace et le plus robuste ? Propose un changement là où il se mesure, application hybride comprise (moteur Rust sous une interface Kotlin), avec une grille par domaine et un gabarit de rapport | Demande de l'utilisateur le 2026-11-09 : ses applications sont surtout en Kotlin, sans moteur Rust |
 | [`recherche-github`](skills/recherche-github/SKILL.md) | Chercher un projet déjà publié qui répond à un besoin, le trier (licence, activité, poids, fiabilité), le faire essayer tel quel, puis proposer comment l'intégrer ; guide des licences ; outil `releve.sh` (licence, dernier commit et dernières versions d'un dépôt, sans API) ; tient le registre [`docs/projets-externes/`](docs/projets-externes/README.md) | Demande de l'utilisateur le 2026-11-09, avec l'exemple d'un dépôt de colorisation trouvé pour son fork de Mihon |
+| [`lever-le-doute`](skills/lever-le-doute/SKILL.md) | Ne jamais deviner une demande : au moindre doute sur ce qui est demandé (quoi, où, jusqu'où, résultat attendu), s'arrêter et poser des questions à choix jusqu'à ce qu'il ne reste aucune ambiguïté ; le « comment » technique reste le travail de Claude | Demande de l'utilisateur le 2026-11-10 |
 
 ### Skills proposés (`skills/_propositions/`, non installés)
 
@@ -376,4 +377,4 @@ Proposés le 2026-11-09 et non retenus pour l'instant.
 | [`master-dev`](skills/_propositions/master-dev/SKILL.md) | Session qui ne code pas : tour des projets, tenue de la Library, bilan court et propositions | Rôle demandé par l'utilisateur le 2026-11-09 |
 
 Mots-clés : skill, règles communes, socle, consignes par défaut, méthode de travail, silence, livraison, APK, aperçu,
-variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître, revue des langages, Rust, moteur natif, application hybride, recherche GitHub, projet existant, licence, veille.
+variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître, revue des langages, Rust, moteur natif, application hybride, recherche GitHub, projet existant, licence, veille, doute, ambiguïté, supposition, question, demande floue.
