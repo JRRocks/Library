@@ -51,9 +51,9 @@ Un projet vit donc à trois endroits : GitHub (toutes ses branches), le miroir D
 | 9 | Sauvegarder : GitHub, puis miroir Drive depuis le PC | `copie-recente`, `depot-public` |
 | 10 | Un message final court | `mode-silencieux` |
 
-Autour de ce déroulé : `lever-le-doute` à chaque demande (au moindre doute, une question plutôt qu'une supposition), `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `master-dev` pour tenir l'ensemble.
+Autour de ce déroulé : `lever-le-doute` à chaque demande (au moindre doute, une question plutôt qu'une supposition), `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `deleguer-antigravity` pour confier une tâche à Antigravity, `master-dev` pour tenir l'ensemble.
 
-Treize skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `recherche-github` ajoutés le même jour, `lever-le-doute` le 2026-11-10). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
+Quatorze skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `recherche-github` ajoutés le même jour, `lever-le-doute` le 2026-11-10, `deleguer-antigravity` le 2026-11-25, chez Claude seulement). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
 
 ## 4. Les règles et leur origine
 

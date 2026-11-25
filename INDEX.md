@@ -349,7 +349,7 @@ Posés dans chaque session par [`installation/`](installation/README.md), et che
 
 ### Skills installés par défaut (`skills/`)
 
-Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `recherche-github` demandés par lui ; les neuf autres choisis parmi onze propositions). `lever-le-doute` demandé par lui le 2026-11-10.
+Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `recherche-github` demandés par lui ; les neuf autres choisis parmi onze propositions). `lever-le-doute` demandé par lui le 2026-11-10. `deleguer-antigravity` accepté par lui le 2026-11-25 avec le plan du pont (« Oui, commence », puis « Oui, continue tout les étapes ne t'arrête pas ») ; il n'est posé que chez Claude.
 
 | Skill | Ce qu'il fait | D'où vient le besoin |
 |---|---|---|
@@ -365,6 +365,7 @@ Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `r
 | [`nouveau-projet`](skills/nouveau-projet/SKILL.md) | Démarrer un projet avec la méthode : cadrage, mémoire, livraison dès le premier jour, sauvegardes ; gabarits fournis | Chaque projet a réinventé ses règles ; certains n'ont pas de `CLAUDE.md` (Learn-UI-UX, Android-Suntrack) |
 | [`revue-langages`](skills/revue-langages/SKILL.md) | Revue d'un projet domaine par domaine (interface, graphisme, moteur, fichiers, base, réseau, sécurité) : le langage utilisé est-il le plus efficace et le plus robuste ? Propose un changement là où il se mesure, application hybride comprise (moteur Rust sous une interface Kotlin), avec une grille par domaine et un gabarit de rapport | Demande de l'utilisateur le 2026-11-09 : ses applications sont surtout en Kotlin, sans moteur Rust |
 | [`recherche-github`](skills/recherche-github/SKILL.md) | Chercher un projet déjà publié qui répond à un besoin, le trier (licence, activité, poids, fiabilité), le faire essayer tel quel, puis proposer comment l'intégrer ; guide des licences ; outil `releve.sh` (licence, dernier commit et dernières versions d'un dépôt, sans API) ; tient le registre [`docs/projets-externes/`](docs/projets-externes/README.md) | Demande de l'utilisateur le 2026-11-09, avec l'exemple d'un dépôt de colorisation trouvé pour son fork de Mihon |
+| [`deleguer-antigravity`](skills/deleguer-antigravity/SKILL.md) | Confier une tâche à Antigravity (relecture, second avis, code, architecture) avec ses garde-fous : copie du projet, bac à sable, ni push ni publication ni suppression ; rôle, modèle, suite d'une conversation, accord pour un dépôt privé, entrée de journal. Réservé à Claude (`.claude-seulement`) | Pont Claude → Antigravity, 2026-11-25 ([`pont-antigravity.md`](docs/methodes/pont-antigravity.md)) |
 | [`lever-le-doute`](skills/lever-le-doute/SKILL.md) | Ne jamais deviner une demande : au moindre doute sur ce qui est demandé (quoi, où, jusqu'où, résultat attendu), s'arrêter et poser des questions à choix jusqu'à ce qu'il ne reste aucune ambiguïté ; le « comment » technique reste le travail de Claude | Demande de l'utilisateur le 2026-11-10 |
 
 ### Skills proposés (`skills/_propositions/`, non installés)

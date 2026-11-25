@@ -1,7 +1,7 @@
 # Pont Claude → Antigravity
 
 > **Statut : 🔄 en construction.** Plan écrit le 2026-11-25, feu vert de l'utilisateur le même
-> jour (« Oui, commence »). P1.1 à P1.4 sont faits. Cette page deviendra la fiche méthode du pont ; la
+> jour (« Oui, commence »). P1.1 à P1.5 sont faits. Cette page deviendra la fiche méthode du pont ; la
 > section « Plan » sera retirée quand toutes les tâches seront terminées.
 
 ## But
@@ -40,7 +40,7 @@ skills, même mémoire de projet.
 | P1.2 | L'installeur copie les skills de la Library chez Antigravity (sauf le skill de délégation, inutile de son côté). | Antigravity nomme les skills de la Library quand on lui demande lesquels il a. | ✅ 2026-11-25 (journal) |
 | P1.3 | Une ligne ajoutée au socle : chaque entrée de journal dit quel agent l'a écrite. | La prochaine entrée de journal d'un projet porte « Claude » ou « Antigravity ». | ✅ 2026-11-25 (journal) |
 | P1.4 | Garde-fous d'Antigravity quand Claude lui confie une tâche : il lit, modifie et compile ; il ne pousse, ne publie ni ne supprime rien ; pour du code, il travaille sur sa branche. | Essai : une consigne qui lui demande de publier est refusée, et Claude le montre. | ✅ 2026-11-25 (journal) |
-| P1.5 | Skill `deleguer-antigravity` et son script : rôle, modèle, suite d'une conversation, refus d'un dépôt privé sans accord, compte rendu prêt pour le journal. | Claude confie une vraie relecture sur un dépôt public : l'avis d'Antigravity arrive dans le message final et une entrée « Antigravity » apparaît au journal du projet. | ⬜ |
+| P1.5 | Skill `deleguer-antigravity` et son script : rôle, modèle, suite d'une conversation, refus d'un dépôt privé sans accord, compte rendu prêt pour le journal. | Claude confie une vraie relecture sur un dépôt public : l'avis d'Antigravity arrive dans le message final et une entrée « Antigravity » apparaît au journal du projet. | ✅ 2026-11-25 (journal) |
 | P1.6 | Cette page devient la fiche méthode (pièges compris) ; INDEX, JOURNAL et tableau des fiches à jour ; push. | Une nouvelle session délègue sans que l'utilisateur réexplique. | ⬜ |
 
 ## Constats du 2026-11-25
@@ -99,6 +99,38 @@ Garde-fous (P1.4). Ils sont portés par `skills/deleguer-antigravity/confier.sh`
 - Python n'est pas installé sur ce PC (seul le raccourci du Microsoft Store répond) : le script
   lit le JSON d'`agy` avec PowerShell.
 - Coût d'une tâche d'essai : 15 000 à 30 000 jetons.
+
+Relecture confiée (P1.5). Le skill `deleguer-antigravity` dit quand et comment confier. Claude a
+fait relire par Antigravity ce skill, `confier.sh`, `garde-fous.json` et cette fiche, dans la
+Library (dépôt public).
+
+- Relecture : `gemini-4-hydrogen-high` (modèle par défaut d'Antigravity), 167 s, 71 433 jetons,
+  dix points, entrée de journal proposée et extraite par le compte rendu. Retenus et corrigés :
+  dossier hors git lu dans une copie, et non plus en place ; commandes git qui modifient le dépôt
+  refusées même avec `-C` ou des options ; plus de règles contre la suppression, le réseau et les
+  commandes encodées ; transports git coupés (`GIT_ALLOW_PROTOCOL`) : un push vers un chemin
+  local, un `pushurl` explicite ou une adresse `user@hôte:`, que `pushInsteadOf` ne couvrait pas,
+  échoue (essayé) ; consigne limitée à 28 000 octets (la ligne de commande de Windows s'arrête à
+  32 767 caractères) ; conversation reprise du journal d'`agy` après un délai dépassé ; copies
+  nommées avec une empreinte du chemin du projet ; sous-dossier non suivi, dépôt sans commit et
+  option sans valeur refusés ; bloc de journal pris seulement entre ses deux lignes. Retenu comme
+  limite écrite : en profil code, compilation et tests tournent hors du bac à sable ; ils ne sont
+  plus permis en profil lecture (`compilation.json`). Écarté : une règle `edit_file`. `agy` ne
+  connaît que `command`, `read_file`, `write_file`, `read_url`, `execute_url`, `download_url` et
+  `mcp` (lu dans le programme) ; `download_url(*)` est désormais refusé aussi.
+- Les deux alertes de ce compte rendu (« une branche distante a bougé », « le dossier du projet a
+  changé ») venaient de Claude : un `git fetch` et des modifications de la Library pendant la
+  tâche. Le compte rendu distingue désormais un fetch d'un push (reflog) et nomme les fichiers
+  changés ; le skill demande de ne pas toucher au projet pendant une tâche.
+- Le compte rendu comptait comme refus toute citation de « permission denied », fréquente dans une
+  relecture des garde-fous. Le journal d'`agy` ne garde aucune trace d'un refus par règle : seule
+  la phrase exacte d'`agy`, « Matches user-configured deny rule », est retenue dans la réponse.
+- Essai réel des règles corrigées (`gemini-3.8-flash-medium`, 158 s, 51 871 jetons) :
+  `git log --pretty=format:%h` et `git grep -n` passent ; création et modification de fichier par
+  l'outil d'Antigravity refusées par `write_file(*)` ; `Set-Content` dans la copie de lecture
+  refusé par le bac à sable (« Access to the path … is denied ») ; `Clear-Content`,
+  `[IO.File]::Delete`, `powershell -enc` et `git -C . reset --hard` refusés par les règles ;
+  copie et projet inchangés. Le modèle Flash était saturé lui aussi (deux nouvelles tentatives).
 
 Sources : documentation officielle d'Antigravity (antigravity.google/docs : CLI, mode sans écran,
 modes, réglages, permissions, bac à sable, hooks, skills, règles) et de Claude Code

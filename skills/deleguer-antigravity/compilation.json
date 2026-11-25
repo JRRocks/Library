@@ -1,0 +1,23 @@
+[
+  "command(gradlew)",
+  "command(./gradlew)",
+  "command(.\\gradlew)",
+  "command(gradlew.bat)",
+  "command(./gradlew.bat)",
+  "command(.\\gradlew.bat)",
+  "command(python -m unittest)",
+  "command(python -m pytest)",
+  "command(python -m py_compile)",
+  "command(py -m unittest)",
+  "command(py -m pytest)",
+  "command(pytest)",
+  "command(npm test)",
+  "command(npm run build)",
+  "command(npm run test)",
+  "command(npm run lint)",
+  "command(cargo build)",
+  "command(cargo test)",
+  "command(cargo check)",
+  "command(dotnet build)",
+  "command(dotnet test)"
+]

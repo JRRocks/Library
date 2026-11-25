@@ -15,6 +15,51 @@
 
 ---
 
+## 2026-11-25 — [deleguer-antigravity] Pont Antigravity, P1.5 : skill de délégation, relecture confiée à Antigravity
+
+- **Type** : ajout
+- **Agent** : Claude
+- **Quoi** : feu vert de l'utilisateur : « Oui, continue tout les étapes ne t'arrête pas ». Nouveau
+  skill `deleguer-antigravity`, réservé à Claude (`.claude-seulement`) : quand confier, accord pour
+  un dépôt privé (D-05), consigne, profil, rôle, modèle, lancement, lecture du compte rendu, tâche
+  de code, journal, pièges. Accord de l'utilisateur pour ce skill : le plan du pont, qui le
+  prévoyait, accepté le 2026-11-25 (« Oui, commence »), puis « Oui, continue tout les étapes ne
+  t'arrête pas ». Relecture du skill, de `confier.sh`, de `garde-fous.json` et de
+  `pont-antigravity.md` confiée à Antigravity (profil lecture, `gemini-4-hydrogen-high`, 167 s,
+  71 433 jetons) : son entrée est posée telle quelle juste en dessous. Retenu et corrigé : dossier
+  hors git lu dans une copie ; règles git valables avec `-C` et les options ; plus de règles contre
+  la suppression, le réseau et les commandes encodées, et `download_url(*)` refusé ; transports
+  git coupés (`GIT_ALLOW_PROTOCOL`) ; consigne limitée à 28 000 octets ; conversation reprise du
+  journal d'`agy` après un délai dépassé ; empreinte du chemin dans le nom des copies ; sous-dossier
+  non suivi, dépôt sans commit et option sans valeur refusés ; bloc de journal pris seulement entre
+  ses deux lignes ; `--retirer` dit quand il n'y a rien à retirer. Compilation et tests permis
+  seulement en profil code (nouveau `compilation.json`), limite écrite dans le skill. Écarté : la
+  règle `edit_file`, qui n'existe pas dans `agy` (création et modification passent par
+  `write_file`, vérifié). Le compte rendu distingue un fetch d'un push, nomme les fichiers changés
+  du projet, signale les fichiers de compilation modifiés et ne retient plus comme refus que la
+  phrase exacte d'`agy`.
+- **Preuve / vérification** : règles essayées sur 37 commandes à refuser et 28 à laisser passer
+  (expressions rationnelles .NET, mêmes constructions qu'en RE2) : aucune erreur. Faux `agy`, 28
+  cas (aide, option sans valeur, refus D-05, lecture, copie modifiée gardée puis retirée, écriture
+  dans le projet signalée, bloc de journal non fermé ou contenant « Fin des tests », code, push
+  d'un script refusé, doublon, suite, délai dépassé, retrait avant et après fusion, rien à retirer,
+  sous-dossier non suivi, dépôt sans commit, dossier hors git, consigne trop longue, copie
+  occupée) : tous conformes. Vrai `agy` (`gemini-3.8-flash-medium`, 158 s, 51 871 jetons) sur un
+  dépôt d'essai : lectures git permises ; création et modification de fichier, `Set-Content`,
+  `Clear-Content`, `[IO.File]::Delete`, `powershell -enc` et `git -C . reset --hard` refusés ;
+  copie et projet inchangés. Les deux alertes du compte rendu de la relecture venaient de Claude
+  (un `git fetch` et des modifications de la Library pendant la tâche), pas d'Antigravity.
+  Installation essayée dans un dossier personnel vide : 14 skills chez Claude, 13 chez Antigravity,
+  sans `deleguer-antigravity`. `depot-public/controle.sh` : rien à signaler.
+- **Apps à prévenir** : aucune.
+
+## 2026-11-25 — [deleguer-antigravity] Relecture des garde-fous et de confier.sh (pont Antigravity)
+- **Type** : transverse
+- **Agent** : Antigravity (tâche confiée par Claude)
+- **Quoi** : relecture statique de `skills/deleguer-antigravity/SKILL.md`, `confier.sh`, `garde-fous.json` et `docs/methodes/pont-antigravity.md`. 10 défauts ou risques relevés, dont : profil `--lecture` ne bloquant pas les écritures PowerShell dans la copie ni l'usage du vrai dossier sans git (`edit_file` non listé dans `deny`, à vérifier) ; sous-commandes git interdites (`add`, `commit`, `reset`, `clean`, etc.) et outils réseau sans `regex` pour `git -C` ou wrappers ; commandes `allow` de test/build exécutées hors bac à sable ; limite Windows de 32 Ko sur `-p "$invite"` ; faux positif sur les citations d'erreurs de permission dans la réponse ; impasse après expiration de `--delai` en `--code` ; collisions et cas limites sur les sous-dossiers non suivis, options sans valeur et `bloc_journal`.
+- **Preuve / vérification** : lecture directe des 4 fichiers concernés et du format de `JOURNAL.md` ; aucune modification effectuée, script non exécuté en réel (hypothèses signalées dans le compte rendu).
+- **Apps à prévenir** : aucune.
+
 ## 2026-11-25 — [library] Pont Antigravity, P1.4 : garde-fous des tâches confiées
 
 - **Type** : transverse
