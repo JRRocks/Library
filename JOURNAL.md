@@ -15,6 +15,42 @@
 
 ---
 
+## 2026-11-25 — [library] Pont Antigravity, P1.6 : fiche méthode, essai par une session neuve
+
+- **Type** : transverse
+- **Agent** : Claude
+- **Quoi** : feu vert de l'utilisateur : « Oui, continue tout les étapes ne t'arrête pas ».
+  `docs/methodes/pont-antigravity.md` devient la fiche méthode du pont : en-tête de fiche, ce qui
+  est en place, mise en place sur un poste, couches de garde-fous, décisions (D-11 ajoutée : copie
+  d'un dossier hors git, compilation seulement en profil code, transports git coupés), constats
+  datés, historique. Le plan, terminé (P1.1 à P1.6), est retiré de la fiche ; ses tâches restent
+  dans les entrées ci-dessous. Fiche ajoutée au tableau des fiches méthode et à l'INDEX (§ 2, § 3,
+  § 7). Essai du critère « une nouvelle session délègue sans que l'utilisateur réexplique » : un
+  agent neuf (sous-agent de Claude, sans le contexte de la conversation) n'a reçu que « Demande à
+  Antigravity un second avis sur la section 1 de SOCLE.md de ma Library, et rapporte-moi son
+  avis » ; il a trouvé le skill, vérifié la visibilité, lancé une lecture en arrière-plan sans
+  toucher à la Library et rapporté l'avis (`SUCCESS`, 115 s, 64 280 jetons, aucun refus, projet
+  inchangé, copie retirée). L'entrée d'Antigravity est posée juste en dessous, accents rétablis
+  dans « tâche confiée » ; son affirmation « aucune commande exécutée » n'est pas vérifiable (la
+  trace ne nomme pas les outils), la copie est restée inchangée. Ce qui a manqué à cet agent est
+  repris : `confier.sh --modeles` (liste des modèles sans `agy` au PATH), modèle d'un second avis,
+  durée d'une tâche, `git fetch` avant ou après la tâche, toute tâche confiée notée au journal,
+  chemins du poste retirés de l'entrée, mention « Agent » accentuée dans l'en-tête de la consigne.
+  L'avis d'Antigravity sur `SOCLE.md` § 1 attend la décision de l'utilisateur : le socle ne change
+  pas.
+- **Preuve / vérification** : `confier.sh --modeles` liste les dix modèles du compte ; tâche
+  factice relancée (code 0, mention accentuée dans la consigne) ; corps du skill à 98 lignes ;
+  décisions D-01 à D-10 identiques à l'octet près ; installation essayée dans un dossier personnel
+  vide : 14 skills chez Claude, 13 chez Antigravity ; `depot-public/controle.sh` : rien à signaler.
+- **Apps à prévenir** : aucune.
+
+## 2026-11-25 — [socle] Second avis sur la section 1 de SOCLE.md (« Parle peu »)
+- **Type** : transverse
+- **Agent** : Antigravity (tâche confiée par Claude)
+- **Quoi** : relecture de `SOCLE.md` § 1 au regard de `AGENTS.md` § 5.G, `docs/methode-de-travail/README.md` § 4, `skills/mode-silencieux/SKILL.md`, `installation/antigravity-entete.md` et des consignes du harnais Antigravity. 5 points relevés (question directe oubliée, bilan final rigide face aux échecs/relectures/délégations et liens fichiers Antigravity, conflit avec `update_steps` et jargon « outil », ligne de point d'étape ambiguë ou de trop, journal supposé existant et forme impersonnelle) avec réécritures en une ligne à la première personne, plus 3 points à conserver.
+- **Preuve / vérification** : lecture directe des fichiers du dossier et des consignes du harnais Antigravity ; aucune modification ni commande exécutée ; consignes internes de Claude Code non vérifiables dans ce dossier.
+- **Apps à prévenir** : aucune.
+
 ## 2026-11-25 — [deleguer-antigravity] Pont Antigravity, P1.5 : skill de délégation, relecture confiée à Antigravity
 
 - **Type** : ajout

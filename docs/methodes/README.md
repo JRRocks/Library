@@ -11,6 +11,7 @@ et un « Historique des retours d'usage » où l'on ajoute des lignes sans jamai
 | Fiche | À quoi ça sert | Statut |
 |---|---|---|
 | [`captures-compose-robolectric.md`](captures-compose-robolectric.md) | Voir un écran Compose réel en PNG depuis une session cloud, sans émulateur : Robolectric en rendu natif, gabarit de test prêt à copier, pièges de stabilité | ✅ méthode de base (Popote, rendu constaté fidèle le 2026-09-29) · 🟡 extensions du Carnet (sombre, police 130 et 200 %, 412 dp, paysage) et de Popote (plusieurs tailles dans une classe) |
+| [`pont-antigravity.md`](pont-antigravity.md) | Faire travailler Claude Code et Antigravity CLI ensemble : mêmes règles et mêmes skills posés chez les deux par l'installeur ; tâche confiée par Claude avec ses garde-fous (copie du projet, bac à sable, ni push ni publication ni suppression), compte rendu, entrée de journal | ✅ PC Windows, relecture confiée et rapportée le 2026-11-25 · 🟡 tâche de code avec une vraie compilation, poste sans bac à sable, second PC |
 | [`android-en-session-cloud.md`](android-en-session-cloud.md) | Compiler, tester et livrer une app Android depuis claude.ai/code : SDK dans le conteneur ou par hook, miroir Maven contre les 429, tests purs sans Gradle, Rust et Node, livraison d'un APK de plus de 30 Mio, pièges de CI GitHub Actions | ✅ compilation et tests en session, APK de CI installé sur téléphone · 🟡 livraison par `release/` et par pré-version |
 
-Dernière mise à jour : 2026-10-27
+Dernière mise à jour : 2026-11-25

@@ -5,7 +5,7 @@
 >
 > Légende des statuts : ✅ Éprouvé · 🟡 Testé · ⚠️ À patcher · 🔬 Candidat · ⛔ Obsolète
 
-Dernière mise à jour : 2026-11-09
+Dernière mise à jour : 2026-11-25
 
 ---
 
@@ -57,6 +57,7 @@ Dernière mise à jour : 2026-11-09
 | Voir un écran Compose sans émulateur ni téléphone (PNG) | [`docs/methodes/captures-compose-robolectric.md`](docs/methodes/captures-compose-robolectric.md) |
 | Compiler ou tester une app Android depuis une session cloud, contourner le 429 de Maven Central, lancer des tests Kotlin purs sans Gradle | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) |
 | Faire arriver sur le téléphone un APK de plus de 30 Mio | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) § 5 |
+| Confier une relecture, un second avis ou une tâche de code à Antigravity (Gemini), avec ses garde-fous | skill [`deleguer-antigravity`](skills/deleguer-antigravity/SKILL.md), fiche [`docs/methodes/pont-antigravity.md`](docs/methodes/pont-antigravity.md) |
 | Lire un fichier Excel `.xlsx` sans bibliothèque | 🔬 candidat InnovAdapt (§ 5) ou Popote `ImportBase` |
 | Lire ou écrire du GPX ou du KML, convertir UTM, MGRS ou Lambert 93 | 🔬 candidats ToolMap (§ 5) |
 | Appeler un LLM avec une sortie JSON structurée, laisser un LLM explorer des données locales sous plafond de tokens | 🔬 candidats Activity-track (§ 5) |
@@ -85,6 +86,7 @@ Dernière mise à jour : 2026-11-09
 | `ApplicationExitInfo`, tombstone, `REASON_CRASH_NATIVE` | `rapport-plantage` |
 | `android:process`, processus séparé | `rapport-plantage` |
 | Almanach, éphémérides, NOAA | `astro-soleil-lune` |
+| Antigravity, `agy`, Gemini, second avis, `git worktree`, bac à sable, `--settings`, `GIT_ALLOW_PROTOCOL` | skill `deleguer-antigravity`, [`docs/methodes/pont-antigravity.md`](docs/methodes/pont-antigravity.md) |
 | APK, sideload, sources inconnues, `REQUEST_INSTALL_PACKAGES` | `maj-auto-github` |
 | `AuthorizationClient`, Identity, OAuth Android, SHA-1 | `google-drive-appdata` |
 | Bluetooth, lecteur de carte, TPE | `paiement-sumup` |
@@ -329,6 +331,7 @@ Revue la plus récente par dépôt ; les précédentes sont dans le [`JOURNAL.md
 | [`docs/ui-ux/README.md`](docs/ui-ux/README.md) | Dossier UI/UX : 41 chapitres (principes, heuristiques, lois de l'UX, couleur et contraste, typographie, composants, mobile et Android, accessibilité WCAG 2.2, éthique, glossaire, check-lists), 202 sources avec URL, images libres de droits | 🔬 Rédigé à partir de sources publiques, non éprouvé en réel ; volume réel annoncé dans le README (en deçà des 200 pages visées) |
 | [`docs/methodes/captures-compose-robolectric.md`](docs/methodes/captures-compose-robolectric.md) | Écran Compose réel en PNG sans émulateur (Robolectric en rendu natif) : gabarit de test vérifié en session, variantes sombre, police, largeurs, paysage, pièges de stabilité | ✅ méthode de base (Popote, 2026-09-29) · 🟡 extensions (Carnet de recette, plusieurs tailles de Popote) |
 | [`docs/methodes/android-en-session-cloud.md`](docs/methodes/android-en-session-cloud.md) | Compiler, tester et livrer une app Android depuis claude.ai/code : SDK, miroir Maven contre les 429, tests purs sans Gradle, Rust, Node, Python, APK de plus de 30 Mio, pièges de CI GitHub Actions, clones superficiels | ✅ compilation et tests en session, APK de CI installé sur téléphone · 🟡 livraison par `release/` ou pré-version |
+| [`docs/methodes/pont-antigravity.md`](docs/methodes/pont-antigravity.md) | Faire travailler Claude Code et Antigravity CLI ensemble : règles et skills posés chez les deux par l'installeur, tâche confiée par Claude avec ses garde-fous (copie du projet, bac à sable, règles de refus, transports git coupés), compte rendu, entrée de journal ; décisions D-01 à D-11, constats datés | ✅ PC Windows, relecture confiée et rapportée le 2026-11-25 · 🟡 tâche de code avec une vraie compilation, poste sans bac à sable, second PC |
 | [`docs/methode-de-travail/README.md`](docs/methode-de-travail/README.md) | Ma méthode de travail : qui fait quoi, déroulé d'un changement, origine de chaque règle, écarts entre projets, constats de la revue du 2026-11-09 | 🟡 Règles déjà appliquées dans au moins un projet ; leur réunion en règles communes n'est pas encore éprouvée |
 | [`docs/projets-externes/README.md`](docs/projets-externes/README.md) | Registre des projets déjà publiés (GitHub, Codeberg, F-Droid) repérés pour mes applications : besoin, lien, comment l'essayer, licence, dernière activité, état | 🔬 Chaque ligne est vérifiée sur la page du projet (existence, licence, activité) ; aucun n'est encore essayé ni intégré |
 

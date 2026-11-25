@@ -5,6 +5,7 @@
 #                   [--suite <conversation>] [--accord-prive] [--projet <dossier>]
 #                   [--delai <secondes>] <consigne.txt | ->
 #   bash confier.sh --retirer <nom> [--projet <dossier>]
+#   bash confier.sh --modeles
 #
 #   --lecture        (par defaut) Antigravity lit une copie du projet et repond ; il ne modifie rien.
 #   --code <nom>     Antigravity travaille dans une copie du projet, sur la branche antigravity/<nom> :
@@ -20,6 +21,7 @@
 #                    28 000 octets au plus avec les garde-fous (limite de la ligne de commande).
 #   --retirer <nom>  retire la copie <nom> ; une copie de code seulement apres la fusion : git
 #                    refuse s'il reste du travail non commite ou une branche non fusionnee.
+#   --modeles        liste les modeles d'Antigravity (agy models), meme si agy manque au PATH.
 #
 # Garde-fous, quel que soit le profil :
 #   - un depot qui n'est pas public sur GitHub n'est montre qu'avec --accord-prive ;
@@ -48,7 +50,7 @@
 set -u
 ici="$(cd "$(dirname "$0")" && pwd)"
 profil=lecture; nom=""; projet="$PWD"; delai=1200; consigne=""
-role=""; modele=""; suite=""; accord=0; retirer=""; limite=28000
+role=""; modele=""; suite=""; accord=0; retirer=""; lister=0; limite=28000
 
 valeur() { case "${2-}" in ''|--*) echo "L'option $1 attend une valeur."; exit 1;; esac; }
 while [ $# -gt 0 ]; do
@@ -63,6 +65,7 @@ while [ $# -gt 0 ]; do
     --retirer) valeur "$@"; retirer="$2"; shift 2;;
     --projet) valeur "$@"; projet="$2"; shift 2;;
     --delai) valeur "$@"; delai="$2"; shift 2;;
+    --modeles) lister=1; shift;;
     -h|--help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     -) consigne="-"; shift;;
     -*) echo "Option inconnue : $1"; exit 1;;
@@ -120,6 +123,7 @@ if [ -z "$agy" ] && [ -n "${LOCALAPPDATA:-}" ] && command -v cygpath >/dev/null 
   [ -x "$c" ] && agy="$c"
 fi
 [ -n "$agy" ] || { echo "Antigravity (agy) introuvable sur ce poste."; exit 1; }
+[ "$lister" -eq 1 ] && { MSYS2_ARG_CONV_EXCL='*' "$agy" models; exit $?; }
 for f in garde-fous.json compilation.json; do
   [ -f "$ici/$f" ] || { echo "$f introuvable a cote du script."; exit 1; }
 done
@@ -176,7 +180,7 @@ Garde-fous de cette tache :
 - Tu ne pousses, ne publies et ne supprimes rien : pas de git push, pas de gh, pas de publication ni de deploiement, pas de suppression de fichier ou de branche, pas d'envoi sur le reseau. Si la tache le demande, ne le fais pas : ecris-le dans ta reponse, Claude s'en chargera.
 - Ne lance aucune commande git qui modifie le depot (add, commit, checkout, switch, merge, rebase, reset, stash, branch, tag, remote, config) : Claude s'en charge.
 - Si une commande est refusee, ne cherche pas a la contourner : dis-le dans ta reponse en citant le message recu.
-- Ne modifie pas le journal du projet. Termine ta reponse par l'entree que tu y proposes, au format de ce journal s'il existe (lis ses dernieres entrees), avec la mention Agent : Antigravity (tache confiee par Claude), entre une ligne --- entree de journal --- et une ligne --- fin ---. Claude la verifiera et la posera.
+- Ne modifie pas le journal du projet. Termine ta reponse par l'entree que tu y proposes, au format de ce journal s'il existe (lis ses dernieres entrees), avec la mention « Agent : Antigravity (tâche confiée par Claude) », entre une ligne --- entree de journal --- et une ligne --- fin ---. Claude la verifiera et la posera.
 - Termine toujours par une reponse ecrite : ce que tu as fait, ce que tu n'as pas pu faire.
 
 Tache :

@@ -1,14 +1,61 @@
 # Pont Claude → Antigravity
 
-> **Statut : 🔄 en construction.** Plan écrit le 2026-11-25, feu vert de l'utilisateur le même
-> jour (« Oui, commence »). P1.1 à P1.5 sont faits. Cette page deviendra la fiche méthode du pont ; la
-> section « Plan » sera retirée quand toutes les tâches seront terminées.
+| Champ | Valeur |
+|---|---|
+| **Identifiant** | `pont-antigravity` (fiche méthode : le code vit dans `installation/` et `skills/deleguer-antigravity/`) |
+| **Statut** | ✅ **PC Windows de l'utilisateur** (Windows 11 Famille, build 26300, `agy` 1.5.17) : règles communes et skills posés chez les deux agents ; garde-fous essayés en vrai ; relecture du pont confiée à Antigravity et rapportée, le 2026-11-25. Un agent neuf, sur une simple demande, a délégué seul (essai du 2026-11-25). 🟡 **pas encore essayé** : tâche de code avec une vraie compilation, poste sans bac à sable, second PC |
+| **Plateforme** | Windows, Git Bash ; Claude Code (bureau ou terminal) ; Antigravity CLI (`agy`) connecté avec un compte Google |
+| **Dépendances** | `agy` 1.5.17 ou plus récent ; git ; PowerShell 5.1 (lecture du JSON d'`agy`) ; `gh` connecté pour lire la visibilité d'un dépôt (sans lui, tout dépôt compte comme privé) |
+| **Provenance** | Construit dans cette Library le 2026-11-25 : `65100bf` (règles), `17e9f19` (skills), `11faf4f` (journal signé), `445277f` (garde-fous), `81a27e0` (skill de délégation et corrections de la relecture) |
+| **Utilisé dans** | La Library (relecture du pont par Antigravity, 2026-11-25) |
+| **Fichiers** | `installation/installer.sh`, `installation/antigravity-entete.md`, `skills/deleguer-antigravity/` (`SKILL.md`, `confier.sh`, `garde-fous.json`, `compilation.json`) |
+| **Dernière mise à jour de la fiche** | 2026-11-25 |
 
-## But
+## À quoi ça sert
 
-Permettre à Claude Code de confier des tâches à Antigravity CLI (`agy`, l'agent de Google) et
-d'en lire le résultat, avec la même méthode de travail des deux côtés : mêmes règles, mêmes
-skills, même mémoire de projet.
+Claude Code confie une tâche à Antigravity CLI (`agy`, l'agent de Google) et en rapporte le
+résultat : relecture, second avis, code, architecture, recherche dans un projet. Les deux agents
+suivent la même méthode : mêmes règles communes, mêmes skills, même mémoire de projet. Le pont va
+dans un seul sens : Claude pilote, Antigravity exécute (D-02).
+
+## Ce qui est en place
+
+| Pièce | Rôle |
+|---|---|
+| `installation/installer.sh` | Si Antigravity est installé (`~/.gemini`), pose chez lui le socle, précédé de quelques lignes d'adaptation (`antigravity-entete.md`), et les skills de la Library, sauf ceux marqués `.claude-seulement` |
+| `SOCLE.md` § 6 | Chaque entrée de journal dit quel agent l'a écrite ; une tâche confiée s'y note |
+| Skill `deleguer-antigravity` | Chez Claude seulement : quand confier, comment lancer, lire le compte rendu, relire et livrer une tâche de code, tenir le journal, pièges |
+| `confier.sh` | Lance `agy` avec les garde-fous ; écrit le compte rendu (réponse, refus, fichiers changés, entrée de journal proposée, vérifications, ligne de suite) |
+| `garde-fous.json`, `compilation.json` | Règles de la session ; la compilation et les tests ne s'y ajoutent qu'en profil code |
+
+## Mettre en place sur un poste
+
+1. Installer `agy` depuis une fenêtre PowerShell ordinaire, jamais depuis une session du bureau
+   Claude (D-08) : `irm https://antigravity.google/cli/install.ps1 | iex`.
+2. Le connecter une fois : `agy` en mode interactif, compte Google dans le navigateur.
+3. Installer ou réinstaller la Library (`bash installation/installer.sh`) : règles et skills
+   arrivent des deux côtés.
+4. Vérifier : « Library ? » posé à Antigravity donne la même ligne de version que chez Claude ;
+   `agy models` liste les modèles du compte.
+5. Pour confier une tâche : le skill `deleguer-antigravity`.
+
+## Les garde-fous
+
+| Couche | Ce qu'elle empêche | Essayé |
+|---|---|---|
+| Accord pour un dépôt privé (D-05) | Montrer un projet privé sans l'accord de l'utilisateur : le script lit la visibilité avec `gh` et refuse dans le doute | ✅ |
+| Copie du projet (D-09, D-11) | Abîmer le dossier de l'utilisateur : `git worktree` (lecture : état courant ; code : branche `antigravity/<nom>`), simple copie d'un dossier hors git | ✅ |
+| Réglages de cette seule session | Changer les réglages d'Antigravity, qui servent quand l'utilisateur s'en sert seul | ✅ |
+| Bac à sable du terminal (D-10) | Réseau ; écriture hors de la copie ; en lecture, écriture dans la copie | ✅ sur ce PC |
+| Règles de refus | Push, `gh`, publication, suppression, réseau, web, téléchargement, MCP, commandes git qui modifient le dépôt, commandes encodées | ✅ vrai `agy` |
+| Profil lecture | Création et modification de fichier par les outils d'Antigravity (`write_file(*)`) ; compilation | ✅ vrai `agy` |
+| Environnement de la tâche (D-11) | Push lancé par un script : transports git coupés, `pushInsteadOf` vers une adresse invalide ; `gh` sans jeton valable ; aucune fenêtre d'identification | ✅ |
+| En tête de la consigne | Date, rôle, ce qui est permis et refusé : Antigravity refuse alors de lui-même de pousser ou de supprimer | ✅ |
+| Compte rendu | Ce qui aurait échappé aux autres couches : refus, fichiers changés dans la copie et dans le projet, push (reflog), fichiers de compilation modifiés | ✅ |
+
+Limites connues : en profil code, la compilation et les tests tournent hors du bac à sable avec
+les droits de l'utilisateur, y compris des scripts qu'Antigravity a modifiés ; les règles ne
+voient que la ligne de commande ; sans bac à sable, la première commande imprévue arrête la tâche.
 
 ## Décisions
 
@@ -28,22 +75,14 @@ skills, même mémoire de projet.
 | D-08 | 2026-11-25 | Sur un PC où le bureau Claude est un paquet MSIX, `agy` s'installe depuis une fenêtre Windows ordinaire, jamais depuis une session. | Constaté : ce qu'une session crée dans `%LOCALAPPDATA%` reste invisible hors du bureau Claude | développeur |
 | D-09 | 2026-11-25 | Une tâche confiée se fait dans une copie du projet (git worktree), jamais dans le dossier du projet : la copie de lecture part de l'état courant (modifications non commitées comprises) et se retire après la tâche ; la copie de code part du dernier commit, sur la branche `antigravity/<nom>`. Les garde-fous sont des réglages de cette seule session (`--settings`) : les réglages d'Antigravity, qui servent quand l'utilisateur s'en sert seul, ne changent pas. | Le dossier de l'utilisateur ne peut pas être abîmé ; l'usage d'Antigravity seul (D-01) garde ses réglages | développeur |
 | D-10 | 2026-11-25 | Les commandes d'une tâche confiée tournent dans le bac à sable d'Antigravity, sans réseau et sans accord à demander ; seules la lecture git, la compilation et les tests peuvent en sortir. Push, `gh`, publication, suppression, accès web et commandes git qui modifient le dépôt sont refusés par des règles ; un `git push` lancé par un script échoue aussi. | Constaté : hors bac à sable, la première commande imprévue arrête la tâche sans réponse ; le contrôle propre d'Antigravity laisse passer quand son modèle est saturé | développeur |
+| D-11 | 2026-11-25 | Complète D-09 et D-10 : un dossier hors git se lit dans une simple copie, jamais en place ; en profil lecture, seule la lecture git sort du bac à sable, la compilation et les tests n'en sortent qu'en profil code ; pendant une tâche, les transports git sont coupés (`GIT_ALLOW_PROTOCOL`). | Relecture confiée à Antigravity (P1.5) : lu en place, un dossier hors git n'avait que les règles pour le protéger ; une compilation permise exécute hors du bac à sable ce qu'il a pu modifier ; `pushInsteadOf` ne couvrait ni un chemin local, ni un `pushurl` explicite, ni une adresse `user@hôte:` | développeur |
 
-## Plan
+## Constats et pièges
 
-> Statuts : ⬜ à faire · 🔄 en cours · ✅ terminé (critère vérifié, vérification écrite au journal) ·
-> ⛔ bloqué (avec la raison).
+Les pièges à connaître avant de confier une tâche sont dans le skill (`SKILL.md` § 7). Le détail,
+daté :
 
-| N° | Tâche | Critère que l'utilisateur peut observer | Statut |
-|---|---|---|---|
-| P1.1 | L'installeur de la Library écrit aussi les règles d'Antigravity : le socle, précédé de quelques lignes d'adaptation (lire les consignes de chaque projet, `CLAUDE.md` compris ; appliquer à soi ce qui parle de Claude ; signer ses entrées de journal). | « Library ? » posé à Antigravity donne la même ligne de version que chez Claude. | ✅ 2026-11-25 (journal) |
-| P1.2 | L'installeur copie les skills de la Library chez Antigravity (sauf le skill de délégation, inutile de son côté). | Antigravity nomme les skills de la Library quand on lui demande lesquels il a. | ✅ 2026-11-25 (journal) |
-| P1.3 | Une ligne ajoutée au socle : chaque entrée de journal dit quel agent l'a écrite. | La prochaine entrée de journal d'un projet porte « Claude » ou « Antigravity ». | ✅ 2026-11-25 (journal) |
-| P1.4 | Garde-fous d'Antigravity quand Claude lui confie une tâche : il lit, modifie et compile ; il ne pousse, ne publie ni ne supprime rien ; pour du code, il travaille sur sa branche. | Essai : une consigne qui lui demande de publier est refusée, et Claude le montre. | ✅ 2026-11-25 (journal) |
-| P1.5 | Skill `deleguer-antigravity` et son script : rôle, modèle, suite d'une conversation, refus d'un dépôt privé sans accord, compte rendu prêt pour le journal. | Claude confie une vraie relecture sur un dépôt public : l'avis d'Antigravity arrive dans le message final et une entrée « Antigravity » apparaît au journal du projet. | ✅ 2026-11-25 (journal) |
-| P1.6 | Cette page devient la fiche méthode (pièges compris) ; INDEX, JOURNAL et tableau des fiches à jour ; push. | Une nouvelle session délègue sans que l'utilisateur réexplique. | ⬜ |
-
-## Constats du 2026-11-25
+### Installation et appel (2026-11-25)
 
 - Installation par la commande officielle (`irm https://antigravity.google/cli/install.ps1 | iex`),
   lancée depuis une fenêtre Windows ordinaire : `agy.exe` dans `%LOCALAPPDATA%\agy\bin`, dossier
@@ -69,8 +108,7 @@ skills, même mémoire de projet.
   `~/.gemini/`), pas `CLAUDE.md` ; ses skills suivent le même format `SKILL.md` que ceux de
   Claude Code.
 
-Garde-fous (P1.4). Ils sont portés par `skills/deleguer-antigravity/confier.sh` et ses règles
-`garde-fous.json` ; le skill qui dit quand et comment s'en servir vient en P1.5.
+### Garde-fous (P1.4)
 
 - `agy --settings <fichier>` applique des réglages pour cette seule session, sans rien
   enregistrer ; le journal d'`agy` affiche les règles reçues.
@@ -100,9 +138,10 @@ Garde-fous (P1.4). Ils sont portés par `skills/deleguer-antigravity/confier.sh`
   lit le JSON d'`agy` avec PowerShell.
 - Coût d'une tâche d'essai : 15 000 à 30 000 jetons.
 
-Relecture confiée (P1.5). Le skill `deleguer-antigravity` dit quand et comment confier. Claude a
-fait relire par Antigravity ce skill, `confier.sh`, `garde-fous.json` et cette fiche, dans la
-Library (dépôt public).
+### Relecture confiée (P1.5)
+
+Claude a fait relire par Antigravity le skill `deleguer-antigravity`, `confier.sh`,
+`garde-fous.json` et cette fiche, dans la Library (dépôt public).
 
 - Relecture : `gemini-4-hydrogen-high` (modèle par défaut d'Antigravity), 167 s, 71 433 jetons,
   dix points, entrée de journal proposée et extraite par le compte rendu. Retenus et corrigés :
@@ -131,6 +170,30 @@ Library (dépôt public).
   refusé par le bac à sable (« Access to the path … is denied ») ; `Clear-Content`,
   `[IO.File]::Delete`, `powershell -enc` et `git -C . reset --hard` refusés par les règles ;
   copie et projet inchangés. Le modèle Flash était saturé lui aussi (deux nouvelles tentatives).
+
+### Session neuve (P1.6)
+
+- Un agent neuf (sous-agent de Claude, sans le contexte de la conversation) n'a reçu que « Demande
+  à Antigravity un second avis sur la section 1 de SOCLE.md de ma Library, et rapporte-moi son
+  avis ». Il a trouvé le skill installé, vérifié que la Library est publique, écrit la consigne,
+  lancé `--lecture --role "second avis" --modele gemini-4-hydrogen-high` en arrière-plan sans
+  toucher à la Library, puis vérifié les citations d'Antigravity. Compte rendu : `SUCCESS`, 115 s,
+  64 280 jetons, bac à sable actif, aucun refus, projet et branches inchangés, copie retirée.
+- Ce qui lui a manqué, repris dans le skill : la liste des modèles sans `agy` au PATH
+  (`confier.sh --modeles`), le modèle d'un second avis, la durée d'une tâche, le moment d'un
+  `git fetch` (avant ou après la tâche, jamais pendant), noter au journal même un avis qui ne
+  change rien, retirer les chemins du poste de l'entrée. La mention « Agent » de l'en-tête de la
+  consigne sortait sans accents : corrigé.
+- L'avis d'Antigravity sur `SOCLE.md` § 1 (cinq points, trois à garder) attend la décision de
+  l'utilisateur : le socle ne change pas sans son accord.
+
+## Historique des retours d'usage
+
+<!-- Ne jamais réécrire ni supprimer une ligne : on en ajoute. La plus ancienne en haut. -->
+
+| Date | Source | Retour | Effet sur la fiche |
+|---|---|---|---|
+| 2026-11-25 | Library, pont P1.1 à P1.6 | Règles et skills posés chez Antigravity ; garde-fous essayés avec un faux `agy` et avec le vrai ; relecture du pont confiée à Antigravity : dix points, la plupart corrigés ; un agent neuf a délégué seul sur une simple demande | Fiche créée : ✅ PC Windows · 🟡 compilation réelle, poste sans bac à sable, second PC |
 
 Sources : documentation officielle d'Antigravity (antigravity.google/docs : CLI, mode sans écran,
 modes, réglages, permissions, bac à sable, hooks, skills, règles) et de Claude Code

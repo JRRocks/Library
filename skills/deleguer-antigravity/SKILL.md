@@ -24,9 +24,8 @@ constats et pièges : `~/.claude/library/docs/methodes/pont-antigravity.md`.
 
 ## 2. Avant de lancer
 
-1. **Dépôt privé** : il ne se montre qu'avec l'accord de l'utilisateur, pour ce projet (D-05).
-   Demande-le, puis ajoute `--accord-prive`. Un dépôt public sur GitHub se montre librement ; le
-   script vérifie la visibilité et refuse dans le doute.
+1. **Dépôt privé** : seulement avec l'accord de l'utilisateur pour ce projet, puis `--accord-prive`
+   (D-05). Public sur GitHub : libre ; le script vérifie et refuse dans le doute.
 2. **La consigne**, dans un fichier du dossier temporaire de la session : le but, les fichiers à
    lire, ce qui est attendu en retour (forme, longueur), le critère de réussite. Ni secret ni
    donnée personnelle. 28 000 octets au plus : Antigravity lit lui-même les fichiers et l'historique.
@@ -34,15 +33,14 @@ constats et pièges : `~/.claude/library/docs/methodes/pont-antigravity.md`.
    `--code <nom>` pour modifier, compiler et tester, sur la branche `antigravity/<nom>`.
 4. **Le rôle** (`--role`) : relecteur, second avis, codeur, architecte, sous-traitant. Il se
    choisit selon la tâche, les forfaits et les modèles du moment (D-01).
-5. **Le modèle** (`--modele`, liste donnée par `agy models`) :
+5. **Le modèle** (`--modele` ; la liste : `confier.sh --modeles`) :
 
 | Besoin | Modèle |
 |---|---|
-| Relecture, code, la plupart des tâches | `gemini-4-hydrogen-high` (celui d'Antigravity aujourd'hui) |
+| Relecture, second avis, code, la plupart des tâches | `gemini-4-hydrogen-high` (celui d'Antigravity aujourd'hui) |
 | Architecture, problème difficile | `gemini-4-hydrogen-xhigh` |
 | Question simple, tri, résumé, essai | `gemini-3.8-flash-medium` |
-
-Les modèles Claude proposés par Antigravity sont retirés le 2026-11-30 : ne pas s'y fier.
+| Modèles Claude proposés par Antigravity | à éviter : retirés le 2026-11-30 |
 
 ## 3. Lancer
 
@@ -55,8 +53,8 @@ bash $L/confier.sh --code <nom> --suite <conversation> --projet $P <suite.txt>
 bash $L/confier.sh --retirer <nom> --projet $P
 ```
 
-- Lance-la en arrière-plan et attends sa fin, sans toucher au projet (ni fichier ni `git fetch`) :
-  le compte rendu le prendrait pour une écriture d'Antigravity.
+- En arrière-plan : 2 à 5 minutes en général, 20 au plus (`--delai`). D'ici la fin, ni fichier ni
+  `git fetch` dans le projet (avant ou après) : le compte rendu y verrait une écriture d'Antigravity.
 - Le script pose seul les garde-fous : copie du projet (jamais le dossier lui-même), bac à sable
   sans réseau, règles de cette session, transports git coupés, date et interdits en tête de la
   consigne. N'ajoute jamais `--dangerously-skip-permissions` et ne touche pas aux réglages
@@ -84,9 +82,11 @@ bash $L/confier.sh --retirer <nom> --projet $P
 
 ## 6. Journal
 
+- Toute tâche confiée se note, même un avis qui ne change rien (socle § 6).
 - L'entrée proposée par Antigravity (« Agent : Antigravity (tâche confiée par Claude) ») : vérifie
-  ses faits, puis pose-la en haut du journal du projet, telle quelle ou corrigée en le disant.
-- La tienne, signée Claude : ce que tu as confié, à quel modèle, ce que tu en as repris (socle § 6).
+  ses faits, retire les chemins du poste (socle § 8), puis pose-la en haut du journal du projet,
+  telle quelle ou corrigée en le disant. La tienne, signée Claude : ce que tu as confié, à quel
+  modèle, ce que tu en as repris.
 
 ## 7. Pièges
 
@@ -97,6 +97,6 @@ bash $L/confier.sh --retirer <nom> --projet $P
   (`git grep upload`) est refusée, et Antigravity passe par ses outils de fichiers.
 - Bac à sable « non confirmé » (Windows trop ancien) : la première commande hors de la courte
   liste permise arrête la tâche. Garde alors des tâches de lecture.
-- `agy` manque au PATH d'une session ouverte avant son installation : le script le trouve seul.
-- Installer ou mettre à jour `agy` : jamais depuis une session du bureau Claude (D-08).
+- `agy` hors du PATH (session ouverte avant son installation) : le script le trouve seul, et
+  `--modeles` liste les modèles. L'installer ou le mettre à jour : jamais depuis une session (D-08).
 - Les traces (`%TEMP%\antigravity`) contiennent l'adresse du compte Google : jamais dans un dépôt.
