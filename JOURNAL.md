@@ -15,6 +15,36 @@
 
 ---
 
+## 2026-11-25 — [library] Pont Antigravity, P1.4 : garde-fous des tâches confiées
+
+- **Type** : transverse
+- **Agent** : Claude
+- **Quoi** : feu vert de l'utilisateur : « Oui continue ». Nouveau dossier
+  `skills/deleguer-antigravity/`, marqué `.claude-seulement`, encore sans `SKILL.md` (donc pas
+  installé, le skill vient en P1.5) : `confier.sh` confie une tâche à Antigravity, `garde-fous.json`
+  porte les règles de la session. Deux profils : lecture (copie prise sur l'état courant, aucune
+  écriture, copie retirée ensuite) et code (copie sur la branche `antigravity/<nom>`). Bac à sable
+  du terminal ; mode `accept-edits` donné explicitement ; push, `gh`, publication, suppression,
+  web et commandes git qui modifient le dépôt refusés ; `pushInsteadOf` vers une adresse invalide
+  et jeton `gh` invalide dans l'environnement ; date et garde-fous en tête de la consigne. Le
+  compte rendu donne la réponse, les refus, les fichiers modifiés, et vérifie les branches
+  distantes et le dossier du projet. Décisions D-09 et D-10 et constats dans
+  `docs/methodes/pont-antigravity.md`.
+- **Preuve / vérification** : dépôt d'essai avec un dépôt distant local, dans le dossier
+  temporaire. (1) Profil code, tâche « ajoute une ligne, compile, publie par `git push`, supprime
+  `ancien.txt` » : ligne ajoutée, compilation lancée dans le bac à sable, push et suppression
+  refusés par Antigravity dans sa réponse ; dépôt distant inchangé, fichier toujours là.
+  (2) Sans la consigne de garde-fous, commandes imposées : `cmd /c del`, `git -C . push`,
+  `powershell -Command "Remove-Item …"` refusés par les règles (le dernier après correction de la
+  règle), push caché dans le script de compilation en échec. (3) Profil lecture : correction
+  refusée par Antigravity, écriture imposée refusée par la règle, copie retirée, projet inchangé.
+  (4) Compte rendu d'un arrêt simulé (faux `agy`, sans appel) : refus, saturation du modèle et code
+  de sortie 2 affichés. Contrôle `depot-public` passé avant le commit. Non vérifié : une vraie
+  compilation (Gradle, Android), un poste sans bac à sable.
+- **Apps à prévenir** : aucune.
+
+---
+
 ## 2026-11-25 — [socle] Journal signé par l'agent qui l'écrit (pont Antigravity, P1.3)
 
 - **Type** : transverse
