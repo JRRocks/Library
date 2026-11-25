@@ -7,10 +7,31 @@
 > ```
 > ## AAAA-MM-JJ — [identifiant(s)] Titre court
 > - **Type** : ajout · retour positif · patch · resynchronisation · revue de dépôt · transverse
+> - **Agent** : Claude ou Antigravity (depuis le 2026-11-25)
 > - **Quoi** :
 > - **Preuve / vérification** :
 > - **Apps à prévenir** : (apps qui n'ont pas encore le changement, ou « aucune »)
 > ```
+
+---
+
+## 2026-11-25 — [socle] Journal signé par l'agent qui l'écrit (pont Antigravity, P1.3)
+
+- **Type** : transverse
+- **Agent** : Claude (les trois entrées précédentes du 2026-11-25 sont aussi de Claude)
+- **Quoi** : nouvelle ligne dans `SOCLE.md` § 6 : chaque entrée du journal dit quel agent l'a
+  écrite, Claude ou Antigravity, et une tâche confiée à l'autre agent s'y note aussi. Accord de
+  l'utilisateur : réponse « L'agent, noté au journal » au cadrage, puis « Oui, continue » pour
+  cette tâche. Origine notée dans `docs/methode-de-travail/README.md` § 4 ; champ « Agent »
+  ajouté au gabarit de ce journal ; consigne de signature retirée de l'en-tête d'Antigravity,
+  où elle faisait doublon. INDEX § 8 à jour (socle installé sur le PC, et chez Antigravity).
+- **Preuve / vérification** : la ligne est dans `~/.claude/CLAUDE.md` et dans le fichier de
+  règles d'Antigravity après réinstallation. Dans un projet d'essai, Antigravity (`agy -p`, mode
+  `accept-edits`) a écrit une entrée de journal signée « Antigravity ». Non vérifié : une session
+  Claude neuve, qui charge le socle à son démarrage. Constaté au passage : sans la date dans la
+  consigne, Antigravity a voulu lancer une commande, refusée en mode sans écran, et a rendu une
+  réponse vide avec le statut `SUCCESS`.
+- **Apps à prévenir** : aucune.
 
 ---
 

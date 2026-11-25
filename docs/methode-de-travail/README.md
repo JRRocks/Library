@@ -79,6 +79,7 @@ Treize skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `re
 | Application en service : privé par défaut, publication sur feu vert donné pour cette version | Suivie-Popote-Cie |
 | Chercher un moteur dans la Library avant d'en écrire un | `AGENTS.md` de cette Library |
 | Ne jamais deviner une demande : au moindre doute, des questions jusqu'à ce qu'il ne reste aucune ambiguïté | Demande du 2026-11-10 : « Si il se pose la question, c'est que je n'ai pas été assez clair » (skill `lever-le-doute`) |
+| Chaque entrée du journal dit quel agent l'a écrite ; une tâche confiée à l'autre agent s'y note | Pont Claude → Antigravity, 2026-11-25 : réponse « L'agent, noté au journal », puis « Oui, continue » pour cette règle ([`pont-antigravity.md`](../methodes/pont-antigravity.md), D-04) |
 
 ## 5. Là où mes projets divergent
 

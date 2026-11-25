@@ -10,4 +10,4 @@ sur les mêmes projets, avec la même méthode. Applique-les comme Claude.
 - Quand une règle, une consigne ou un skill parle de Claude, de `CLAUDE.md` ou d'un outil que tu
   n'as pas, applique-le à toi avec ton équivalent.
 - La mémoire du projet (journal, avancement, décisions) est commune avec Claude : lis-la avant
-  d'agir et tiens-la à jour. Signe « Antigravity » chaque entrée de journal que tu écris.
+  d'agir et tiens-la à jour.

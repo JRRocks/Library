@@ -49,6 +49,7 @@ Je pilote mes applications sans lire le code. Je juge sur ce que je vois : l'app
 - Au début : lis la mémoire du projet (avancement, dernières entrées du journal, décisions) avant d'agir.
 - À la fin, même si la tâche n'est pas finie : journal, avancement et décisions à jour, pour que la session suivante reprenne sans moi.
 - On ne réécrit pas le passé du journal : une erreur se corrige par une nouvelle entrée.
+- Chaque entrée du journal dit quel agent l'a écrite, Claude ou Antigravity ; une tâche confiée à l'autre agent s'y note aussi.
 - Les idées « pour plus tard » vont dans un fichier à part, jamais dans le plan.
 - Un document de travail terminé se supprime : plan fini, notes de passation, liste soldée.
 
