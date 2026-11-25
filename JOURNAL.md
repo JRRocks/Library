@@ -14,6 +14,38 @@
 
 ---
 
+## 2026-11-25 — [library] Pont Antigravity, P1.1 : Antigravity reçoit les règles communes
+
+- **Type** : transverse
+- **Quoi** : feu vert de l'utilisateur pour le plan du pont, avec ses mots : « Oui, commence ».
+  `installer.sh` pose aussi, si `~/.gemini` existe, le fichier de règles toujours actif
+  `~/.gemini/config/rules/library-socle.md` : un en-tête qui adresse les règles à Antigravity
+  ([`installation/antigravity-entete.md`](installation/antigravity-entete.md)), puis `SOCLE.md`
+  et la même ligne de version que pour Claude. `--retirer` l'enlève. Mode d'emploi
+  ([`installation/README.md`](installation/README.md)) et `AGENTS.md` § 4 à jour.
+- **Preuve / vérification** : sous Git Bash (Windows), installation dans deux dossiers d'essai
+  (avec et sans `~/.gemini`, deux passes, retrait), puis installation réelle sur le PC.
+  `agy -p "Library ?"` a rendu mot pour mot la ligne de version de Claude (`2026-11-10 75fc37e`,
+  version d'avant ce commit), et Antigravity répond qu'il signe « Antigravity » ses entrées de
+  journal. Coût : environ 2 000 jetons d'entrée de plus par appel d'Antigravity.
+- **Apps à prévenir** : aucune.
+
+---
+
+## 2026-11-25 — [methodes] Pont Claude → Antigravity : cadrage
+
+- **Type** : transverse (cadrage ; rien n'est encore posé par l'installeur)
+- **Quoi** : nouvelle page [`docs/methodes/pont-antigravity.md`](docs/methodes/pont-antigravity.md),
+  avec les décisions D-01 à D-08 et le plan P1.1 à P1.6, en attente du feu vert de l'utilisateur.
+  Demande de l'utilisateur, avec ses mots : « Ce qui faut surtout mettre en place, est le pont de
+  travail entr les 2 harnais ».
+- **Preuve / vérification** : Antigravity CLI 1.5.17 installé sur le PC de l'utilisateur et
+  connecté à son compte Google ; un appel sans écran lancé depuis une session Claude a répondu
+  (statut `SUCCESS`, 2,5 s).
+- **Apps à prévenir** : aucune.
+
+---
+
 ## 2026-11-10 — [skills] `lever-le-doute` : ne jamais deviner une demande
 
 - **Type** : ajout (skill demandé par l'utilisateur, mis en service directement, AGENTS.md § 5.F)

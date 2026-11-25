@@ -97,7 +97,7 @@ SOCLE.md                Règles communes, chargées au début de chaque session 
 skills/
   <nom>/SKILL.md        Skill installé par défaut dans chaque session
   _propositions/<nom>/  Skill proposé : attend l'accord de l'utilisateur, n'est pas installé
-installation/           Script qui pose SOCLE.md et skills/ dans ~/.claude (cloud et PC), et son mode d'emploi
+installation/           Script qui pose SOCLE.md et skills/ dans ~/.claude (cloud et PC), et SOCLE.md chez Antigravity s'il est installé ; son mode d'emploi
 docs/
   ui-ux/                Dossier de référence UI/UX (sources, chapitres, check-lists)
   methodes/             Fiches méthode : outillage éprouvé, sans code d'exécution (captures, build en session cloud…)
