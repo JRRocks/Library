@@ -1,7 +1,7 @@
 # Pont Claude → Antigravity
 
 > **Statut : 🔄 en construction.** Plan écrit le 2026-11-25, feu vert de l'utilisateur le même
-> jour (« Oui, commence »). P1.1 est fait. Cette page deviendra la fiche méthode du pont ; la
+> jour (« Oui, commence »). P1.1 et P1.2 sont faits. Cette page deviendra la fiche méthode du pont ; la
 > section « Plan » sera retirée quand toutes les tâches seront terminées.
 
 ## But
@@ -35,7 +35,7 @@ skills, même mémoire de projet.
 | N° | Tâche | Critère que l'utilisateur peut observer | Statut |
 |---|---|---|---|
 | P1.1 | L'installeur de la Library écrit aussi les règles d'Antigravity : le socle, précédé de quelques lignes d'adaptation (lire les consignes de chaque projet, `CLAUDE.md` compris ; appliquer à soi ce qui parle de Claude ; signer ses entrées de journal). | « Library ? » posé à Antigravity donne la même ligne de version que chez Claude. | ✅ 2026-11-25 (journal) |
-| P1.2 | L'installeur copie les skills de la Library chez Antigravity (sauf le skill de délégation, inutile de son côté). | Antigravity nomme les skills de la Library quand on lui demande lesquels il a. | ⬜ |
+| P1.2 | L'installeur copie les skills de la Library chez Antigravity (sauf le skill de délégation, inutile de son côté). | Antigravity nomme les skills de la Library quand on lui demande lesquels il a. | ✅ 2026-11-25 (journal) |
 | P1.3 | Une ligne ajoutée au socle : chaque entrée de journal dit quel agent l'a écrite. | La prochaine entrée de journal d'un projet porte « Claude » ou « Antigravity ». | ⬜ |
 | P1.4 | Garde-fous d'Antigravity quand Claude lui confie une tâche : il lit, modifie et compile ; il ne pousse, ne publie ni ne supprime rien ; pour du code, il travaille sur sa branche. | Essai : une consigne qui lui demande de publier est refusée, et Claude le montre. | ⬜ |
 | P1.5 | Skill `deleguer-antigravity` et son script : rôle, modèle, suite d'une conversation, refus d'un dépôt privé sans accord, compte rendu prêt pour le journal. | Claude confie une vraie relecture sur un dépôt public : l'avis d'Antigravity arrive dans le message final et une entrée « Antigravity » apparaît au journal du projet. | ⬜ |
@@ -54,7 +54,7 @@ skills, même mémoire de projet.
   identiques) et fonctionne directement.
 - Appel sans écran : `agy -p "<consigne>" --output-format json` a répondu `"status":"SUCCESS"` en
   2,5 s. Même une réponse d'un mot coûte environ 11 000 jetons d'entrée (consignes fixes
-  d'Antigravity).
+  d'Antigravity) ; environ 13 000 avec les règles communes, 15 000 avec en plus les skills.
 - Modèles visibles avec ce compte : Gemini 4 Hydrogen (low à xhigh), Gemini 3.8 Flash, Claude
   Sonnet 4.6 et Opus 4.6 (retirés le 2026-11-30 selon la documentation de Google), GPT-OSS 120B.
 - Selon la documentation, Antigravity lit `AGENTS.md` et `GEMINI.md` (dans le projet et dans

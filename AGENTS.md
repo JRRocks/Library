@@ -97,7 +97,7 @@ SOCLE.md                Règles communes, chargées au début de chaque session 
 skills/
   <nom>/SKILL.md        Skill installé par défaut dans chaque session
   _propositions/<nom>/  Skill proposé : attend l'accord de l'utilisateur, n'est pas installé
-installation/           Script qui pose SOCLE.md et skills/ dans ~/.claude (cloud et PC), et SOCLE.md chez Antigravity s'il est installé ; son mode d'emploi
+installation/           Script qui pose SOCLE.md et skills/ dans ~/.claude (cloud et PC), et SOCLE.md et skills/ chez Antigravity s'il est installé ; son mode d'emploi
 docs/
   ui-ux/                Dossier de référence UI/UX (sources, chapitres, check-lists)
   methodes/             Fiches méthode : outillage éprouvé, sans code d'exécution (captures, build en session cloud…)
@@ -204,13 +204,15 @@ la prochaine app héritera du bug.
 
 ### 5.F Ajouter ou modifier un skill
 
-Un skill est une procédure que Claude Code charge quand la situation se présente. Sa
-description reste en contexte dans toutes les sessions ; son corps n'est lu qu'à l'usage.
+Un skill est une procédure que Claude Code (et Antigravity, s'il est installé) charge quand la
+situation se présente. Sa description reste en contexte dans toutes les sessions ; son corps
+n'est lu qu'à l'usage.
 
 1. Un dossier par skill : `<nom>/SKILL.md`. En-tête : `name` (le nom du dossier, en minuscules
    et tirets) et `description` (ce qu'il fait, quand l'utiliser, avec les mots que l'utilisateur
    emploie ; 1 536 caractères au plus, sans `: ` au milieu de la phrase). Corps : visez moins de
-   100 lignes.
+   100 lignes. Un skill qui n'a de sens que pour Claude porte en plus un fichier vide
+   `.claude-seulement` : l'installeur ne le pose pas chez Antigravity.
 2. **Un skill proposé par une session va dans `skills/_propositions/`.** Il ne passe dans
    `skills/` que sur accord explicite de l'utilisateur, noté au JOURNAL avec ses mots. Seul
    `skills/` est installé.

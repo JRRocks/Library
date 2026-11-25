@@ -14,6 +14,24 @@
 
 ---
 
+## 2026-11-25 — [library] Pont Antigravity, P1.2 : Antigravity reçoit les skills
+
+- **Type** : transverse
+- **Quoi** : `installer.sh` copie aussi les skills de la Library dans `~/.gemini/config/skills/`,
+  avec les mêmes règles que pour Claude (marque `.library`, un skill du même nom posé autrement
+  est gardé, `--retirer` les enlève). Nouvelle convention : un skill qui porte un fichier vide
+  `.claude-seulement` n'est pas posé chez Antigravity (`AGENTS.md` § 5.F). L'en-tête
+  d'Antigravity lui dit que ces skills sont aussi les siens.
+- **Preuve / vérification** : sous Git Bash (Windows), sur une copie de la Library dans un dossier
+  d'essai : 12 skills posés sur 14 (un skill d'essai `.claude-seulement` écarté, un skill
+  personnel du même nom gardé), deux passes, puis retrait qui laisse le skill personnel ; sans
+  `~/.gemini`, rien n'est posé. Sur le PC, `agy -p` nomme les treize skills de la Library et
+  résume `lever-le-doute` en lisant son fichier. Un appel d'Antigravity coûte maintenant environ
+  15 000 jetons d'entrée.
+- **Apps à prévenir** : aucune.
+
+---
+
 ## 2026-11-25 — [library] Pont Antigravity, P1.1 : Antigravity reçoit les règles communes
 
 - **Type** : transverse

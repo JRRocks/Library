@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Installe la Library dans le dossier de configuration de Claude Code (~/.claude) :
 # les regles communes (SOCLE.md) et les skills (skills/).
-# Si Antigravity est installe sur le poste (~/.gemini), il recoit aussi les regles communes.
+# Si Antigravity est installe sur le poste (~/.gemini), il recoit aussi les regles communes
+# et les skills, sauf ceux qui portent le fichier .claude-seulement.
 #
 #   bash installation/installer.sh            installe ou met a jour
 #   bash installation/installer.sh --retirer  retire tout ce que la Library a pose
@@ -10,7 +11,8 @@
 # Il ne touche qu'a ce qu'il a lui-meme installe :
 #   - dans ~/.claude/CLAUDE.md : seulement le bloc entre les deux reperes LIBRARY ;
 #   - dans ~/.claude/skills/   : seulement les dossiers qui portent le fichier .library ;
-#   - dans ~/.gemini/config/rules/ : seulement le fichier library-socle.md.
+#   - dans ~/.gemini/config/rules/  : seulement le fichier library-socle.md ;
+#   - dans ~/.gemini/config/skills/ : seulement les dossiers qui portent le fichier .library.
 # Les skills ranges dans skills/_propositions/ ne sont pas installes.
 # Les messages sont sans accents pour s'afficher partout.
 
@@ -27,11 +29,16 @@ GEMINI="${HOME:-/root}/.gemini"
 REGLES_AGY="$GEMINI/config/rules/library-socle.md"
 ENTETE_AGY="$SRC/installation/antigravity-entete.md"
 MARQUE_AGY="<!-- Fichier pose par la Library (installation/installer.sh). Ne pas modifier ici. -->"
+SKILLS_AGY="$GEMINI/config/skills"
+SEUL_CLAUDE=".claude-seulement"
 
 if [ "${1:-}" = "--retirer" ]; then
   if [ -f "$REGLES_AGY" ] && grep -qF "$MARQUE_AGY" "$REGLES_AGY"; then
     rm -f "$REGLES_AGY" && echo "Regles communes retirees d'Antigravity ($REGLES_AGY)."
   fi
+  for ancien in "$SKILLS_AGY"/*/; do
+    [ -f "${ancien}${MARQUE}" ] && rm -rf "$ancien"
+  done
   for ancien in "$DEST/skills"/*/; do
     [ -f "${ancien}${MARQUE}" ] && rm -rf "$ancien"
   done
@@ -119,10 +126,34 @@ cat "$nouveau" > "$MEMOIRE"
 rm -f "$bloc" "$nouveau"
 
 # --- 3. Antigravity --------------------------------------------------------
-# Seulement si Antigravity est installe (dossier ~/.gemini). Il recoit les memes
-# regles communes et la meme ligne de version, precedees d'un en-tete qui les lui
-# adresse, dans un fichier de regles toujours actif qui appartient a la Library.
+# Seulement si Antigravity est installe (dossier ~/.gemini). Il recoit :
+#  - les skills, avec les memes regles que pour Claude (marque .library, un skill du
+#    meme nom pose autrement est garde), sauf ceux qui portent .claude-seulement ;
+#  - les memes regles communes et la meme ligne de version, precedees d'un en-tete
+#    qui les lui adresse, dans un fichier de regles toujours actif.
 if [ -d "$GEMINI" ]; then
+  if mkdir -p "$SKILLS_AGY"; then
+    for ancien in "$SKILLS_AGY"/*/; do
+      [ -f "${ancien}${MARQUE}" ] && rm -rf "$ancien"
+    done
+    poses_agy=0
+    ignores_agy=""
+    for dossier in "$SRC/skills"/*/; do
+      [ -f "${dossier}SKILL.md" ] || continue
+      [ -f "${dossier}${SEUL_CLAUDE}" ] && continue
+      nom="$(basename "$dossier")"
+      cible="$SKILLS_AGY/$nom"
+      if [ -e "$cible" ]; then
+        ignores_agy="$ignores_agy $nom"
+        continue
+      fi
+      cp -R "$dossier" "$cible" && : > "$cible/$MARQUE" && poses_agy=$((poses_agy + 1))
+    done
+    echo "Antigravity : $poses_agy skill(s) poses dans $SKILLS_AGY."
+    [ -z "$ignores_agy" ] || echo "Antigravity : skills gardes tels quels (meme nom, pas poses par la Library) :$ignores_agy"
+  else
+    echo "Antigravity : dossier $SKILLS_AGY impossible a creer, aucun skill pose." >&2
+  fi
   if [ -f "$ENTETE_AGY" ] && mkdir -p "$(dirname "$REGLES_AGY")"; then
     {
       printf -- '---\ntrigger: always_on\n---\n\n'

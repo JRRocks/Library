@@ -5,7 +5,7 @@ L'installation pose dans Claude Code, pour **chaque** session, quel que soit le 
 - les **règles communes** ([`SOCLE.md`](../SOCLE.md)), chargées au démarrage ;
 - les **skills** du dossier [`skills/`](../skills/) (ceux de `skills/_propositions/` attendent mon accord et ne sont pas installés) ;
 - une **copie de la Library** dans `~/.claude/library/` : catalogue des moteurs, fiches méthode, dossier UI/UX ;
-- si **Antigravity** est installé sur le poste (dossier `~/.gemini`), les **mêmes règles communes** pour lui, précédées d'un en-tête qui les lui adresse ([`antigravity-entete.md`](antigravity-entete.md)). Voir [`docs/methodes/pont-antigravity.md`](../docs/methodes/pont-antigravity.md).
+- si **Antigravity** est installé sur le poste (dossier `~/.gemini`), les **mêmes règles communes** pour lui, précédées d'un en-tête qui les lui adresse ([`antigravity-entete.md`](antigravity-entete.md)), et les **mêmes skills**, sauf ceux qui n'ont de sens que pour Claude (ils portent un fichier `.claude-seulement`). Voir [`docs/methodes/pont-antigravity.md`](../docs/methodes/pont-antigravity.md).
 
 Rien n'est à refaire projet par projet.
 
@@ -54,7 +54,8 @@ Le plus simple : demander à Claude, sur le PC, « installe ma Library » ou « 
 | `~/.claude/CLAUDE.md` | Un bloc délimité par deux repères `LIBRARY` reçoit les règles communes. Le reste du fichier est conservé. S'il existait déjà, une copie `CLAUDE.md.avant-library` est gardée la première fois |
 | `~/.claude/skills/<nom>/` | Un dossier par skill, marqué d'un fichier `.library`. Un skill retiré de la Library disparaît à l'installation suivante. Un skill du même nom posé autrement n'est jamais écrasé |
 | `~/.claude/library/` | Le clone de la Library |
-| `~/.gemini/config/rules/library-socle.md` | Seulement si `~/.gemini` existe (Antigravity installé) : un fichier de règles toujours actif, posé en entier par la Library (en-tête pour Antigravity, règles communes, ligne de version). Rien d'autre n'est touché dans `~/.gemini` |
+| `~/.gemini/config/rules/library-socle.md` | Seulement si `~/.gemini` existe (Antigravity installé) : un fichier de règles toujours actif, posé en entier par la Library (en-tête pour Antigravity, règles communes, ligne de version) |
+| `~/.gemini/config/skills/<nom>/` | Seulement si `~/.gemini` existe : un dossier par skill, marqué `.library`, comme pour Claude. Un skill qui porte `.claude-seulement` n'y est pas posé ; un skill du même nom posé autrement n'est jamais écrasé. Rien d'autre n'est touché dans `~/.gemini` |
 
 Pour tout retirer : `bash ~/.claude/library/installation/installer.sh --retirer`, puis supprimer le script de l'environnement cloud.
 
@@ -72,3 +73,4 @@ Déplacer son dossier de `skills/_propositions/` vers `skills/`, faire entrer le
 | Clone d'un dépôt public non joint à la session | **Constaté le 2026-11-09** pendant le script de démarrage, dans une session neuve sans aucun dépôt joint |
 | `installer.sh` sous Git Bash (Windows) | **Vérifié le 2026-11-25** sur un PC : dossiers d'essai avec et sans `~/.gemini` (deux passes, retrait), puis installation réelle |
 | Règles communes lues par Antigravity CLI (`agy`) | **Constaté le 2026-11-25** : `agy -p "Library ?"` rend mot pour mot la ligne de version de Claude, et Antigravity sait qu'il signe « Antigravity » ses entrées de journal |
+| Skills de la Library vus par Antigravity CLI | **Constaté le 2026-11-25** : `agy -p` nomme les treize skills et résume `lever-le-doute` en lisant son fichier |
