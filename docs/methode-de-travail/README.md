@@ -4,7 +4,7 @@
 |---|---|
 | **Statut** | 🟡 Relevée le 2026-11-09 par lecture de tous les dépôts du compte et des consignes du Drive. Les règles citées sont déjà appliquées dans au moins un projet ; leur réunion en règles communes attend d'être éprouvée |
 | **Sources** | `CLAUDE.md`, journaux, décisions et consignes de ToolMap, SuivieMAT, ScanList, Suivie-Popote-Cie, Activity-track, Scam-Stop, InnovAdapt-CRM, Learn-UI-UX, Android-Suntrack ; `CLAUDE.md` du dossier Drive des projets ; `AGENTS.md` de cette Library |
-| **Dernière mise à jour** | 2026-11-09 |
+| **Dernière mise à jour** | 2026-11-26 |
 
 ## À quoi sert ce document
 
@@ -24,13 +24,13 @@ Les consignes d'un projet passent avant les règles communes quand elles sont pl
 
 - **Moi** : je décide, je choisis entre des variantes, j'essaie sur mon téléphone. Je ne lis pas le code. Mes demandes tiennent en une ligne ou un court paragraphe, souvent avec une capture ou un exemple, et un résultat que je peux observer.
 - **La session** : elle fait, vérifie, consigne et livre. Elle me parle peu : une question, un choix, un résultat.
-- **Le master dev** : une session qui ne code dans aucune application. Elle fait le tour des projets, tient cette Library et me propose des évolutions.
+- **Le Master** : la seule session qui me parle quand d'autres travaillent en parallèle ; elle ne code dans aucune application. Elle relaie leurs questions, fait le tour des projets, tient cette Library et me propose des évolutions (skill `master`).
 
 ## 2. Où se fait le travail
 
 | Lieu | Ce qu'il permet | Ce qu'il ne permet pas |
 |---|---|---|
-| Session cloud (téléphone, navigateur) | Coder, tester la logique, compiler après installation du SDK, lancer la CI, produire des aperçus et des rendus d'écran | Pas d'émulateur. Pas de miroir Drive. Un APK trop lourd ne passe pas en pièce jointe : il faut un lien |
+| Session cloud (téléphone, navigateur) | Coder, tester la logique, compiler après installation du SDK, lancer la CI, produire des aperçus et des rendus d'écran ; un émulateur logiciel lent (Android 9) | Pas d'Android récent ni de services Google. Pas de miroir Drive. Un APK trop lourd ne passe pas en pièce jointe : il faut un lien |
 | PC Windows (deux postes) | Android Studio, émulateur, compilation locale, miroir Drive | Les deux postes n'ont pas les mêmes chemins ni le même nom de lecteur Drive |
 | Mon téléphone | La seule vérité pour le GPS, la caméra, le NFC, les capteurs, deux appareils ensemble, l'écran éteint | Je n'y vois que ce qu'on m'a livré |
 
@@ -51,9 +51,9 @@ Un projet vit donc à trois endroits : GitHub (toutes ses branches), le miroir D
 | 9 | Sauvegarder : GitHub, puis miroir Drive depuis le PC | `copie-recente`, `depot-public` |
 | 10 | Un message final court | `mode-silencieux` |
 
-Autour de ce déroulé : `lever-le-doute` à chaque demande (au moindre doute, une question plutôt qu'une supposition), `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `deleguer-antigravity` pour confier une tâche à Antigravity, `master-dev` pour tenir l'ensemble.
+Autour de ce déroulé : `lever-le-doute` à chaque demande (au moindre doute, une question plutôt qu'une supposition), `nouveau-projet` pour démarrer, `revue-langages` pour choisir ou remettre en cause le langage de chaque domaine, `depannage-ci` quand la compilation casse, `deleguer-antigravity` pour confier une tâche à Antigravity, `master` pour tenir l'ensemble.
 
-Quatorze skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `recherche-github` ajoutés le même jour, `lever-le-doute` le 2026-11-10, `deleguer-antigravity` le 2026-11-25, chez Claude seulement). `copie-recente` et `master-dev` restent des propositions (`skills/_propositions/`) : leurs règles tiennent pour l'instant dans [`SOCLE.md`](../../SOCLE.md) § 7 et dans [`AGENTS.md`](../../AGENTS.md).
+Seize skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `recherche-github` ajoutés le même jour, `lever-le-doute` le 2026-11-10, `deleguer-antigravity` le 2026-11-25, chez Claude seulement, `master` et `copie-recente` le 2026-11-26). Il ne reste aucune proposition dans `skills/_propositions/`.
 
 ## 4. Les règles et leur origine
 
@@ -80,6 +80,17 @@ Quatorze skills sont installés (dix depuis le 2026-11-09, `revue-langages` et `
 | Chercher un moteur dans la Library avant d'en écrire un | `AGENTS.md` de cette Library |
 | Ne jamais deviner une demande : au moindre doute, des questions jusqu'à ce qu'il ne reste aucune ambiguïté | Demande du 2026-11-10 : « Si il se pose la question, c'est que je n'ai pas été assez clair » (skill `lever-le-doute`) |
 | Chaque entrée du journal dit quel agent l'a écrite ; une tâche confiée à l'autre agent s'y note | Pont Claude → Antigravity, 2026-11-25 : réponse « L'agent, noté au journal », puis « Oui, continue » pour cette règle ([`pont-antigravity.md`](../methodes/pont-antigravity.md), D-04) |
+| Avant un essai qui prend la souris ou le clavier, une pause demandée aux autres sessions, puis la reprise | MacroHUD, 2026-11-20 : « Assure toi de leur demander un halte le temps de tes tests pour ne pas obtenir de fausse réponse » |
+| Prévenir avant de lancer un programme qui ouvre une fenêtre ou un vrai clic | 2026-11-22 : « J'ai un programme en premier plan à ne pas déranger. Donc préviens moi lorsque tu as besoin de lance une tâche sur windows » |
+| Une seule tâche lourde à la fois, mémoire sous 90 % ; l'émulateur seulement pendant les tests | 2026-11-25 : « de ne pas montée à 90% de ram, et si plusieurs session Claude travail, qu'elle le fasse chaqu'une leur tour […] quitte à être plus lent » ; ToolMap, 2026-11-13 : « faire tourner l'emulateur uniquement lors des tests, et ferme le quand inutiliser » |
+| Un résultat attendu vient d'un outil de calcul figé, jamais de la session | Suivie-Popote-Cie, 2026-11-12 : « Aucun résultat dois êtres prédéfini par toi, elles doivent toujours passer par un outils de calculations intangible » |
+| Les fichiers d'essai sont souvent les seules copies : travailler sur une copie, rendre l'original à l'identique, garder une copie datée avant de modifier hors GitHub | 2026-11-20 : « S'agissant également de mes seules copies, tu devras les ramener à ce fichier d'origine pour les futurs tests » ; 2026-11-11 : « Avant de faire des changements, garde cette version enregistrée au cas où il faut faire un backup » |
+| Une question restée sans réponse se repose, sans recommandation d'office ; une image par question | 2026-11-13 et 2026-11-19 (skills `apercu-avant-code`, `cadrage`) |
+| Une revue de l'existant n'est pas une refonte ; chaque visuel dit pourquoi | 2026-11-14 : « Explique toi lorsque tu me propose les visu » |
+| Toute version publiée est un APK de release ; le debug reste pendant la conception | ToolMap, 2026-11-10 (skill `livraison`) |
+| Une seule session me parle quand d'autres travaillent : le Master | Suivie-Popote-Cie, 2026-11-12 ; ToolMap, 2026-11-13 : « Tu es le master session, c'est à toi de communiquer avec moi » (skill `master`) |
+
+Ces lignes ont été relevées le 2026-11-26 dans les sessions depuis le 2026-11-09 et acceptées le même jour ; deux règles proposées ont été retirées à sa demande : « C'était un cas particulier, retire ces règles ».
 
 ## 5. Là où mes projets divergent
 

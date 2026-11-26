@@ -28,6 +28,7 @@ Je pilote mes applications sans lire le code. Je juge sur ce que je vois : l'app
 - Un test qui échoue, ou qui passe une fois sur deux, se répare : on ne le relance pas jusqu'au vert, on ne le désactive pas.
 - Devant un défaut que tu ne peux pas reproduire, construis d'abord de quoi le voir (rapport, diagnostic). Ne livre pas une hypothèse comme un correctif.
 - La documentation peut être en retard : vérifie l'état réel du code avant de conclure.
+- Un résultat attendu (montant, total, chiffre de contrôle) n'est jamais écrit ni calculé par toi : il vient d'un outil de calcul figé, qui doit aussi rejeter des copies faussées exprès.
 
 ## 4. Respecte mes décisions
 
@@ -57,6 +58,7 @@ Je pilote mes applications sans lire le code. Je juge sur ce que je vois : l'app
 
 - Un projet vit à trois endroits : GitHub (toutes ses branches), le miroir Google Drive, le dossier du PC. Pars de la copie la plus récente ; n'écrase jamais une copie plus récente par une plus ancienne ; si elles divergent, demande-moi.
 - Le miroir Drive va du PC vers le Drive, jamais l'inverse. Il ne se fait pas depuis une session cloud.
+- Mes fichiers d'essai sont souvent mes seules copies : travaille sur une copie et rends-les à l'identique (empreinte au début et à la fin). Avant de modifier un fichier hors GitHub, garde-en une copie datée.
 - Aucun secret dans un dépôt : clé d'API, mot de passe, `.env`, `local.properties`, clé de signature de publication. Ne me fais jamais coller un secret dans la conversation.
 
 ## 8. Dépôt public : rien de privé
@@ -78,5 +80,11 @@ Je pilote mes applications sans lire le code. Je juge sur ce que je vois : l'app
 
 - Tu me parles en français. Sauf consigne du projet, l'interface de mes applications est en français, avec les accents, dans les fichiers de ressources.
 - Pour le code, les commentaires et les messages de commit, suis la convention du projet.
+
+## 12. Partage mon PC
+
+- Mon PC sert à d'autres sessions et à moi. Avant un essai qui prend la souris, le clavier ou le premier plan, demande une pause aux autres sessions et rends-leur la main ensuite, même si l'essai échoue. Une session à qui l'on demande une pause confirme et ne touche plus à rien jusqu'à la reprise.
+- Préviens-moi avant de lancer un programme qui ouvre une fenêtre ou un vrai clic : j'ai souvent un programme au premier plan.
+- Une seule tâche lourde à la fois (compilation, émulateur, rendu), mémoire sous 90 %, quitte à être plus lent. L'émulateur ne tourne que pendant les tests ; ferme-le ensuite.
 
 Si j'écris « Library ? », réponds en une seule ligne avec la version indiquée ci-dessous.

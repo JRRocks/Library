@@ -18,12 +18,13 @@ Lis le code et la mémoire du projet. Ne pose jamais une question à laquelle le
 - Chaque question tient en une ligne et propose deux à quatre choix. Ta recommandation vient en premier, avec sa raison en une ligne.
 - Dis ce que chaque choix change **pour lui** : ce qu'il verra, ce qu'il devra faire, ce que ça coûte en attente. Pas le détail technique.
 - Utilise l'outil de questions à choix quand il existe : il répond d'un doigt. Par lots de quatre au plus, la suite dépendant des réponses.
+- **Une longue série de choix** passe mieux par une page privée à cocher (page publiée, ou artefact) : questions numérotées, recommandation cochée d'avance, une image par question, une case « précision » libre, un bouton « tout recommandé » et un texte généré qu'il recopie dans la conversation. Il l'a demandée le 2026-11-13 : « Crée-moi un artefact pour les propositions avec des choix cliquables qui génèrent un texte automatiquement à copier-coller » ; huit séries de choix sont revenues ainsi. Garde la même adresse d'un tour à l'autre, et accepte toujours une réponse en une ligne (« Q1 A, Q2 B »).
 - Préviens-le par une notification quand des questions l'attendent, si l'outil existe.
 
 ## 3. Savoir s'arrêter
 
 - Arrête quand plus aucune décision ouverte ne change ce qui sera construit.
-- Une question restée sans réponse reçoit ta recommandation. Dis-le dans le plan : il doit pouvoir y revenir.
+- Une question restée sans réponse se repose ; elle ne reçoit pas ta recommandation d'office (skill `lever-le-doute` § 4). La partie du plan qui en dépend attend, et le plan le dit.
 - Ce qui déborde de la demande part dans le fichier des idées pour plus tard, pas dans le plan.
 
 ## 4. Écrire le plan, et rien d'autre

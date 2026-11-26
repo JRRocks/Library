@@ -352,7 +352,7 @@ Posés dans chaque session par [`installation/`](installation/README.md), et che
 
 ### Skills installés par défaut (`skills/`)
 
-Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `recherche-github` demandés par lui ; les neuf autres choisis parmi onze propositions). `lever-le-doute` demandé par lui le 2026-11-10. `deleguer-antigravity` accepté par lui le 2026-11-25 avec le plan du pont (« Oui, commence », puis « Oui, continue tout les étapes ne t'arrête pas ») ; il n'est posé que chez Claude.
+Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `recherche-github` demandés par lui ; les neuf autres choisis parmi onze propositions). `lever-le-doute` demandé par lui le 2026-11-10. `deleguer-antigravity` accepté par lui le 2026-11-25 avec le plan du pont (« Oui, commence », puis « Oui, continue tout les étapes ne t'arrête pas ») ; il n'est posé que chez Claude. `master` (ancienne proposition `master-dev`) et `copie-recente` mis en service sur son accord du 2026-11-26 (« Oui, et quel se nomme Master », « oui »).
 
 | Skill | Ce qu'il fait | D'où vient le besoin |
 |---|---|---|
@@ -369,16 +369,13 @@ Accord de l'utilisateur le 2026-11-09 (`mode-silencieux`, `revue-langages` et `r
 | [`revue-langages`](skills/revue-langages/SKILL.md) | Revue d'un projet domaine par domaine (interface, graphisme, moteur, fichiers, base, réseau, sécurité) : le langage utilisé est-il le plus efficace et le plus robuste ? Propose un changement là où il se mesure, application hybride comprise (moteur Rust sous une interface Kotlin), avec une grille par domaine et un gabarit de rapport | Demande de l'utilisateur le 2026-11-09 : ses applications sont surtout en Kotlin, sans moteur Rust |
 | [`recherche-github`](skills/recherche-github/SKILL.md) | Chercher un projet déjà publié qui répond à un besoin, le trier (licence, activité, poids, fiabilité), le faire essayer tel quel, puis proposer comment l'intégrer ; guide des licences ; outil `releve.sh` (licence, dernier commit et dernières versions d'un dépôt, sans API) ; tient le registre [`docs/projets-externes/`](docs/projets-externes/README.md) | Demande de l'utilisateur le 2026-11-09, avec l'exemple d'un dépôt de colorisation trouvé pour son fork de Mihon |
 | [`deleguer-antigravity`](skills/deleguer-antigravity/SKILL.md) | Confier une tâche à Antigravity (relecture, second avis, code, architecture) avec ses garde-fous : copie du projet, bac à sable, ni push ni publication ni suppression ; rôle, modèle, suite d'une conversation, accord pour un dépôt privé, entrée de journal. Réservé à Claude (`.claude-seulement`) | Pont Claude → Antigravity, 2026-11-25 ([`pont-antigravity.md`](docs/methodes/pont-antigravity.md)) |
+| [`master`](skills/master/SKILL.md) | La seule session qui parle à l'utilisateur quand d'autres travaillent en parallèle : rôles, questions relayées, un seul écrivain par dossier, rapports des sessions cloud lus sur leur branche, consigne déposée quand il pilote à distance ; tour des projets et tenue de cette Library | Rôle demandé le 2026-11-09 ; « Tu es le master session, c'est à toi de communiquer avec moi » (ToolMap, 2026-11-13), suivi dans quatre projets |
+| [`copie-recente`](skills/copie-recente/SKILL.md) | Trouver la copie la plus récente (GitHub toutes branches, Drive, PC), mettre les autres à jour sans rien écraser ; miroir Drive vérifié (simulation avant et après, empreinte de l'APK) | `CLAUDE.md` du dossier Drive et ToolMap (2026-10-28) ; miroirs de Popote (2026-11-22 au 25) |
 | [`lever-le-doute`](skills/lever-le-doute/SKILL.md) | Ne jamais deviner une demande : au moindre doute sur ce qui est demandé (quoi, où, jusqu'où, résultat attendu), s'arrêter et poser des questions à choix jusqu'à ce qu'il ne reste aucune ambiguïté ; le « comment » technique reste le travail de Claude | Demande de l'utilisateur le 2026-11-10 |
 
 ### Skills proposés (`skills/_propositions/`, non installés)
 
-Proposés le 2026-11-09 et non retenus pour l'instant.
-
-| Skill | Ce qu'il fait | D'où vient le besoin |
-|---|---|---|
-| [`copie-recente`](skills/_propositions/copie-recente/SKILL.md) | Trouver la copie la plus récente (GitHub toutes branches, Drive, PC), mettre les autres à jour sans rien écraser, miroir Drive | `CLAUDE.md` du dossier Drive et ToolMap (2026-10-28) |
-| [`master-dev`](skills/_propositions/master-dev/SKILL.md) | Session qui ne code pas : tour des projets, tenue de la Library, bilan court et propositions | Rôle demandé par l'utilisateur le 2026-11-09 |
+Aucun depuis le 2026-11-26 : les deux propositions du 2026-11-09 sont en service (`master`, `copie-recente`).
 
 Mots-clés : skill, règles communes, socle, consignes par défaut, méthode de travail, silence, livraison, APK, aperçu,
-variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master dev, session maître, revue des langages, Rust, moteur natif, application hybride, recherche GitHub, projet existant, licence, veille, doute, ambiguïté, supposition, question, demande floue.
+variantes, journal, décisions, miroir Drive, dépôt public, recette, CI, master, master dev, session maître, sessions en parallèle, session cloud, PC partagé, mémoire du PC, halte des sessions, revue des langages, Rust, moteur natif, application hybride, recherche GitHub, projet existant, licence, veille, doute, ambiguïté, supposition, question, demande floue.

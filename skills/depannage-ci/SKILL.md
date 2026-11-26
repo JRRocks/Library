@@ -1,6 +1,6 @@
 ---
 name: depannage-ci
-description: Diagnostiquer une compilation Android ou une CI GitHub Actions qui échoue, à partir des pannes déjà rencontrées sur ces projets et de leur parade. À utiliser quand une exécution est rouge, reste en attente ou ne démarre pas, quand l'APK n'apparaît pas, quand Gradle échoue (429, SDK absent, mémoire), quand un test passe une fois sur deux, ou quand l'émulateur ne répond pas.
+description: Diagnostiquer une compilation Android ou une CI GitHub Actions qui échoue, à partir des pannes déjà rencontrées sur ces projets et de leur parade. À utiliser quand une exécution est rouge, reste en attente ou ne démarre pas, quand l'APK n'apparaît pas, quand Gradle échoue (429, SDK absent, mémoire), quand une commande est coupée sur le PC (code 99, mémoire pleine), quand un test passe une fois sur deux ou ne finit jamais, ou quand l'émulateur ne répond pas, y compris en session cloud.
 ---
 
 # Dépanner une compilation ou une CI
@@ -41,6 +41,10 @@ Le détail éprouvé (installation du SDK, miroir Maven, livraison d'un APK de p
 | `./gradlew: Permission denied` | Bit exécutable perdu au clone | `chmod +x gradlew` |
 | `JAVA_HOME is not set` sous Windows | `java` absent du PATH | `JAVA_HOME` = le JDK fourni par Android Studio |
 | Gradle tué, mémoire insuffisante | Trop de tâches en parallèle | `--max-workers=2` |
+| PC lent ou mémoire pleine pendant une compilation | Démons Gradle (3 à 4 Go) et Kotlin (2 Go) gardés des heures | Réglage « mi-régime » commun dans `~/.gradle/gradle.properties`, qui passe avant ceux des projets : `org.gradle.jvmargs=-Xmx1536m -XX:+UseG1GC -XX:G1PeriodicGCInterval=30000`, `kotlin.daemon.jvmargs=-Xmx1g …` (mêmes options), `org.gradle.workers.max=6`, `org.gradle.priority=low`, `org.gradle.daemon.idletimeout=600000`. Mesuré le 2026-11-22 : 2,7 Go au repos au lieu de 5,1. Un projet qui réclame plus reçoit une option ponctuelle, sans toucher au réglage commun |
+| Commande coupée sur le PC, code 99 (ou 75 : jamais lancée) | Garde « tour de rôle » du PC : mémoire au-delà de 90 % pendant 15 s (ou une autre session avait la main depuis trop longtemps) | Ce n'est pas le code : lis son message et son journal, ferme ce qui pèse, puis relance |
+| Python de uv : « Missing expected target directory for Python minor version link » sous Windows | Dossier créé directement sous `%LOCALAPPDATA%`, dont les droits hérités gênent uv | Caches de uv et de Python sous `%USERPROFILE%\.cache\<outil>` |
+| Tests rouges sur le PC, verts en CI, autour d'un remplacement de fichier | `File.renameTo` ne remplace pas un fichier existant sous Windows | `Files.move(source, cible, REPLACE_EXISTING, ATOMIC_MOVE)` |
 | Hôte refusé par le réseau de la session | Politique réseau de l'environnement cloud | Ne contourne pas : dis quel hôte manque. Vérifie avec la CI |
 | Fins de ligne ou caractères abîmés entre Windows et le cloud | Conversion automatique de git | `core.autocrlf=false`, fins de ligne `lf` |
 | Numéro de version automatique faussé | Un outil de mise en forme a modifié les sources pendant la compilation | Lance la mise en forme seule d'abord, puis la compilation |
@@ -56,6 +60,7 @@ Un téléchargement volumineux (SDK, données de test, moteur d'itinéraire) se 
 | Plantage au lancement sur le téléphone, tests verts | Expression régulière acceptée par la JVM, refusée par Android | Échappe toutes les accolades littérales (`\{`, `\}`) ; garde un test qui le vérifie |
 | Un écran s'ouvre à la place d'un autre | Une route fixe correspond au modèle d'une autre route | Test qui vérifie qu'aucune route fixe n'est avalée par un modèle |
 | Nom de test refusé sur appareil | Espaces dans le nom d'une méthode de test instrumenté | Pas d'espace dans les noms des tests sur appareil |
+| Compilation qui ne finit jamais, mémoire du PC qui se remplit (14 h vues) | Test d'écran Compose qui attend un état stable qui n'arrive pas (curseur qui clignote, animation sans fin) ; avec l'horloge figée, `performScrollTo` boucle aussi | Fais défiler à la main et avance l'horloge toi-même ; pose un délai maximal sur les tâches de test Gradle (`timeout`, 20 min, 4 h pour les longues séries, réglable par une propriété : ToolMap, `build.gradle.kts`) |
 
 ## Émulateur (PC)
 
@@ -65,10 +70,16 @@ Un téléchargement volumineux (SDK, données de test, moteur d'itinéraire) se 
 | Chemin distant abîmé sous Git Bash (`secure_mkdirs() failed`) | Préfixe la commande par `MSYS_NO_PATHCONV=1` |
 | La base rapatriée ne contient pas les dernières écritures | Rapatrie aussi les fichiers `-wal` et `-shm` |
 | Capture d'écran corrompue | `adb exec-out`, pas `adb shell` |
-| APK refusé à l'installation | APK limité à l'architecture du téléphone : utilise l'APK complet sur l'émulateur |
+| APK refusé à l'installation (architecture) | Regarde `adb shell getprop ro.product.cpu.abilist`. Une image x86_64 récente avec Play Store (Android 16) traduit l'ARM 64 bits (`x86_64,arm64-v8a`) : l'APK exact du téléphone s'y installe et tourne (vu le 2026-11-22). Sans traduction (Android 9, émulateur du cloud) ou pour de l'ARM 32 bits : APK complet, ou ABI x86_64 ajoutée le temps d'une compilation |
 | `run-as` refusé | APK non debuggable : utilise la version de debug pour inspecter les données |
-| Émulateur plein, ou installations perdues | Enregistre un instantané une fois l'émulateur prêt ; installe l'APK réduit |
+| Émulateur plein, ou installations perdues | Installe l'APK réduit. N'enregistre pas d'instantané : la reprise d'un instantané a figé l'émulateur (`adb` muet, 2026-11-11). Démarrage à froid |
+| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | Signature différente de l'application installée : sauvegarde par l'application, désinstalle, restaure. Sur l'émulateur seulement, jamais sur son téléphone |
+| PC qui rame, mémoire au-delà de 90 % | L'émulateur ne tourne que pendant les tests (`SOCLE.md` § 12). Ferme-le ensuite (`adb emu kill`, puis `adb devices` vide), et `./gradlew --stop`. Jamais pendant une compilation, jamais l'émulateur d'une autre session. Sur un PC de 16 Go, un émulateur seul peut faire couper la garde (cinq fois le 2026-11-25) : ferme d'abord les autres programmes lourds |
+
+## Émulateur en session cloud
+
+Pas de `/dev/kvm`, mais l'émulateur démarre en émulation logicielle : `-accel off`, et `ANDROID_I_WANT_MY_TCG=yes` depuis l'émulateur 37.x. Android 9 x86_64 seulement, deux minutes de démarrage, plusieurs secondes par geste, sans NFC ni services Google, WebView 66 jamais mise à jour. Si `adb install` reste bloqué, `--no-streaming`. Un APK publié pour l'ARM n'y démarre pas : on y essaie le code recompilé, pas le fichier exact des clients. Arrête-le avant les suites de tests complètes. Source : Popote Compagnie, `docs/emulateur-cloud.md` (2026-11).
 
 ## Ce que l'émulateur et la session cloud ne remplacent pas
 
-GPS réel, capteurs, caméra, NFC, deux téléphones, écran éteint, batterie : seul le téléphone de l'utilisateur le montre. Une session cloud n'a pas d'émulateur. Dis-le dans le message final, point par point.
+GPS réel, capteurs, caméra, NFC, deux téléphones, écran éteint, batterie : seul le téléphone de l'utilisateur le montre. L'émulateur du cloud ne remplace pas non plus un Android récent : des défauts de WebView d'Android 16 lui ont échappé. Dis-le dans le message final, point par point.

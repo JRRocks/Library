@@ -15,6 +15,44 @@
 
 ---
 
+## 2026-11-26 — [socle][skills][library] Passe sur les sessions depuis le 2026-11-09 : règles, skills, `master` et `copie-recente` en service
+
+- **Type** : transverse
+- **Agent** : Claude
+- **Quoi** : demande de l'utilisateur : « Fait une passe dans toute mes sessions et met à jour
+  ccr-0190ac9b-h36zmh selon les nouveaux skill et mode opératoire ». La branche est d'abord
+  ramenée sur `main` (avance rapide, elle n'avait rien en propre). Relevé de ce que la Library
+  n'avait pas dans les sessions non archivées depuis le 2026-11-09, liste de trente points
+  soumise, puis tri par l'utilisateur le 2026-11-26.
+  Retenu : `SOCLE.md` § 3 (résultat attendu venu d'un outil de calcul figé), § 7 (fichiers
+  d'essai rendus à l'identique, copie datée avant de modifier hors GitHub), nouveau § 12 « Partage
+  mon PC » (pause des autres sessions pendant un essai souris ou clavier, prévenir avant de lancer
+  un programme, une tâche lourde à la fois sous 90 % de mémoire, émulateur seulement pendant les
+  tests). Skills complétés : `apercu-avant-code` (audit sans refonte, visuel qui dit pourquoi,
+  vraie police, une image par question, page envoyée aussi en image, question sans réponse
+  remontrée), `cadrage` (longue série sur une page à cocher, question sans réponse reposée),
+  `mode-silencieux` (relève muette), `lever-le-doute` (phrase à double sens), `depannage-ci`
+  (Gradle mi-régime et garde de tour de rôle, tests bloqués, émulateur et PC chargé, émulateur en
+  session cloud), `livraison` (exécutable Windows, Drive non monté, APK de release pour toute
+  version publiée, essai avant publication, branche de conception privée), `depot-public`
+  (fichiers privés hors dépôt, `git add` nommé, images), `recherche-github` (contrôle d'un
+  programme à installer sur le PC), `recette-telephone` (relire les anciens points). Fiche
+  `moteurs/maj-auto-github` : la version passerelle comme solution pour renommer l'APK publié
+  (« à garder comme solution de renommage d'apk ») ; le lien fixe vers la dernière version n'est
+  pas repris. Fiches `android-en-session-cloud` et `captures-compose-robolectric` corrigées.
+  `master-dev` devient `master` et passe en service avec `copie-recente` (« Oui, et quel se nomme
+  Master », « oui ») ; `skills/_propositions/` est vide. `docs/methode-de-travail` : rôle du
+  Master, seize skills, origine des nouvelles règles.
+  Retiré à sa demande : deux règles proposées pour le socle (« C'était un cas particulier, retire
+  ces règles »). Refusé : les points propres à un projet (« trop spécifique aux projets, ne fait
+  pas une généralité »). Les sessions archivées n'ont pas été relues.
+- **Preuve / vérification** : citations et dates relevées dans les transcriptions et vérifiées
+  avant écriture ; en-têtes des skills et longueur des corps contrôlés ; installation d'essai dans
+  un dossier vide ; `skills/depot-public/controle.sh` sur le diff. Rien n'est en service tant que
+  la branche n'est pas entrée dans `main`.
+- **Apps à prévenir** : toutes (le socle change pour chaque session après fusion et
+  réinstallation).
+
 ## 2026-11-25 — [library] Pont Antigravity, P1.6 : fiche méthode, essai par une session neuve
 
 - **Type** : transverse

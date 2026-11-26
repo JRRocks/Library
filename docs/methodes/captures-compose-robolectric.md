@@ -9,11 +9,12 @@
 | **Provenance** | Origine : [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé) @ `6149a81` (2026-10-26). Code de référence public : [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette) @ `8dc4820` (2026-10-26). Variante non Android : [JRRocks/InnovAdapt-CRM](https://github.com/JRRocks/InnovAdapt-CRM) (privé), branche `claude/android-rust-mobile` @ `d2c2f6e` |
 | **Utilisé dans** | Popote Compagnie (26 classes `Captures*Test`) · Carnet de recette (3 classes, 4 tests) |
 | **Fichiers d'origine** | Popote : `docs/decisions.md` l. 134-160, 2852-2929 et 3692-3722, `app-terrain/src/test/kotlin/fr/popote/terrain/capture/` (gabarit `CapturesOngletsTest.kt`, plusieurs tailles `CapturesComptoirTaillesTest.kt` et `CapturesPaysageTest.kt`, données fictives `DonneesExemple.kt`), `app-terrain/build.gradle.kts` l. 104-122 et 141-148, `EcransTest.kt` l. 102-109. Carnet : `app/src/test/kotlin/fr/jrrocks/carnetderecette/capture/{CapturesOngletsTest,CapturesLargeTest,CapturesPaysageTest}.kt`, `app/build.gradle.kts` l. 80-95 et 135-140, `outils/sdk-android.sh`, `.github/workflows/{tests,apercu}.yml` |
-| **Dernière mise à jour de la fiche** | 2026-10-27 |
+| **Dernière mise à jour de la fiche** | 2026-11-26 |
 
 ## À quoi ça sert
 
-Une session cloud (claude.ai/code) n'a pas de KVM, donc pas d'émulateur. Un test Robolectric
+Une session cloud (claude.ai/code) n'a pas de KVM : seul un émulateur logiciel y tourne, lent et
+limité à Android 9 (skill `depannage-ci`, « Émulateur en session cloud »). Un test Robolectric
 vert dit que l'écran ne plante pas, pas à quoi il ressemble. La méthode dessine l'écran réel
 (vrais composables, vrai thème, vraie police) dans un `Bitmap`, l'écrit en PNG sous
 `app/build/captures/`, et on le regarde avec `Read` avant de publier un APK. Elle ne remplace
@@ -252,3 +253,4 @@ class CapturesAccueilTest {
 | 2026-10-12 | Popote, CI | Cascade d'échecs Robolectric en suite complète ; `forkEvery = 1`, annulation du `viewModelScope`, arbre sémantique joint (`60d3b08`, `a926f77`, `af0a78b`) ; noms de test sans accent (`430a9a8`) ; imports inexistants (`3f0e67c`) | Pièges |
 | 2026-10-26 | Carnet de recette | Captures dès le lot 1 (`594ffef`), messages tirés du vrai code (`3ec1388`), thème sombre, police 130 et 200 %, 412 dp (`f5f8baf`), paysage (`8dc4820`) ; aucun essai sur téléphone | Extensions 🟡 |
 | 2026-10-27 | Catalogage Library | Fiche créée. Gabarit exécuté dans une session cloud sur un projet minimal (AGP 8.8.0, Kotlin 2.0.21, Robolectric 4.13, Gradle 8.14.3, JDK 21, pot Robolectric hors ligne) : `BUILD SUCCESSFUL`, 1 test, 0 échec, 4 PNG de 1080 × 2232 px (clair, réglages atteints par `taper`, sombre, police 200 %), relus à l'œil. Ce n'est pas une comparaison avec un téléphone. Contre-vérification : prénom fictif de l'exemple remplacé par un titre neutre, gabarit relancé tel qu'il est ici (`BUILD SUCCESSFUL` en 36 s, 1 test, 0 échec, 4 PNG) ; variante Popote « plusieurs tailles » ajoutée | Gabarit vérifié en session ; statuts inchangés |
+| 2026-11-26 | Revue des sessions | « Pas d'émulateur en session cloud » démenti : un émulateur logiciel lent (Android 9) y tourne (Popote, novembre 2026) | « À quoi ça sert » corrigé ; méthode inchangée |

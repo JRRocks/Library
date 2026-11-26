@@ -16,6 +16,7 @@ L'utilisateur pilote ses projets sans lire le code, souvent depuis son télépho
 - Les libellés qui accompagnent une commande restent courts et en mots simples : il les voit.
 - Un obstacle que tu peux lever seul (erreur, test rouge, outil qui échoue) ne se raconte pas : tu le lèves.
 - Si le système exige un point d'étape : une seule phrase, dix mots au plus, sans détail technique. Exemple : « Compilation en cours. »
+- **Une relève qui ne trouve rien n'écrit rien.** Une tâche planifiée ou une surveillance (branche d'une session cloud, CI, boîte de réception) se tait tant que rien n'a changé : ni « Rien de nouveau », ni « J'attends ». Elle n'écrit qu'à la première nouveauté, ou quand un délai qu'il a fixé est dépassé. Une relève toutes les 30 minutes a écrit 168 fois « Rien de nouveau côté cloud. » du 13 au 18 novembre 2026.
 
 ## Les trois moments où tu écris
 

@@ -9,7 +9,7 @@
 | **Provenance** | [JRRocks/Suivie-Popote-Cie](https://github.com/JRRocks/Suivie-Popote-Cie) (privé), commit `08c211a` (2026-10-12) ; `MiseAJour.kt`, `MiseAJourTest.kt` et `version.yml` identiques à `6149a81` (2026-10-26), hors patchs de la Library. Patch CI `Properties.load` repris de [JRRocks/Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette) (public), commit `f198fd3` (2026-10-26). Dépôt public des versions : [JRRocks/Popote-Compagnie](https://github.com/JRRocks/Popote-Compagnie) |
 | **Utilisé dans** | Popote Compagnie · Carnet de recette (intégré le 2026-10-26, variante « dépôt de code public » ; variante « à chaque ouverture » le 2026-11-09 ; aucune version publiée au 2026-10-27, aucune balise `v*` ni `apercu-*` ; toujours aucune version publiée le 2026-11-09 d'après la session du Carnet) |
 | **Fichiers d'origine** | Popote : `app-terrain/src/main/kotlin/fr/popote/terrain/maj/MiseAJour.kt`, `ui/MiseAJour.kt` (boîte de dialogue), `.github/workflows/version.yml`, `docs/publication.md`. Carnet : `.github/workflows/version.yml` et `apercu.yml`, `app/build.gradle.kts` (patch `Properties.load`), `ui/EtatsUi.kt` et `ui/AccueilViewModel.kt` (exemple d'interface) |
-| **Dernière mise à jour de la fiche** | 2026-11-09 |
+| **Dernière mise à jour de la fiche** | 2026-11-26 |
 
 ## À quoi ça sert
 
@@ -94,6 +94,34 @@ Popote, réellement en service (règle 6) : reprenez cette variante depuis le Ca
 | Téléchargement en `.part`, renommé à la fin | Un fichier interrompu n'est jamais pris pour un APK complet |
 | En-tête `User-Agent` **obligatoire** | GitHub répond 403 aux requêtes sans `User-Agent`, même anonymes |
 | 404 sur `/releases/latest` | Normal tant que rien n'a été publié, ce n'est pas une panne |
+
+## Renommer l'APK publié : la version passerelle (ToolMap)
+
+Une application installée ne cherche que les fichiers qui portent **son** nom (`NOM_APK` dans
+`src/MiseAJour.kt`). Renommer l'APK publié, ou changer de type de build (debug → release),
+coupe donc les mises à jour de toutes les installations existantes : leur code ne se corrige
+plus. Les faire réinstaller à la main a été refusé par l'utilisateur.
+
+La parade, demandée par l'utilisateur le 2026-11-10 (« Crée une passerelle […] 0.4.231 sera
+donc à garder pour que tout les utilisateurs pre-release est accès à cette passerelle ») :
+
+1. La **première version qui lit le nouveau nom** est la passerelle. Sa release porte le même
+   APK sous les **deux noms** : le nouveau, et une copie octet pour octet sous l'ancien. Sa
+   note le dit.
+2. Elle est **gardée en permanence** : la CI la saute quand elle retire les anciennes releases.
+   Elle doit rester parmi les releases que l'application lit (ToolMap n'en lit que dix :
+   `per_page=10`). Ne la supprime pas et ne la republie pas.
+3. Aucune autre release ne porte l'ancien nom.
+
+Une installation ancienne se voit proposer la passerelle (le plus haut fichier qu'elle sache
+lire), l'installe par-dessus (même clé, `versionCode` plus haut), puis la passerelle propose la
+dernière version : deux mises à jour à la suite, une seule fois. Écarté : le second nom dans
+chaque release (un nom faux à chaque publication, un téléversement double).
+
+Vu sur l'émulateur le 2026-11-10 : une 0.4.226 propose la passerelle 0.4.231 ; la CI l'a gardée
+à chaque publication (encore là le 2026-11-25). La seconde mise à jour, de la passerelle vers la
+dernière version, n'a pas été vue. Source : ToolMap, `docs/DECISIONS.md`, ADR-121 et ADR-122.
+`src/` inchangé : la passerelle se fait dans les releases, pas dans le code.
 
 ## Composants
 
@@ -314,3 +342,4 @@ test sont inchangés jusqu'à `797fae7` (2026-10-27).
 | 2026-10-27 | Revues InnovAdapt, Activity-track, SuivieMAT, Android-Suntrack, ToolMap | Pièges de CI vécus ailleurs : clé vérifiée trop tard et secrets interpolés (InnovAdapt `c5aba61`), quota d'artefacts (InnovAdapt `02dd5cd`, Activity-track run `38150625547`), `setup-android` cassé, minutes épuisées. Aucun de ces dépôts n'utilise le moteur | Tableau « Pièges de CI » ; `src/` inchangé pour ces points |
 | 2026-10-27 | Relecture de la Library | Effet de bord du patch d'annulation (une `Error` n'est plus avalée) ; parade de Popote aux minutes épuisées : runner auto-hébergé sur le PC (`2bd6298`, après la revue de `6149a81`) | Points de vigilance et « Pièges de CI » complétés ; section « Réglages éprouvés » ajoutée (gabarit) |
 | 2026-11-09 | Carnet de recette, demande de l'utilisateur | Vérifier la dernière version à chaque ouverture de l'app (lancement ou retour au premier plan), pas une fois par processus ; un échec réseau n'est plus retenu. Tests JVM, pas encore d'essai sur appareil | Section « Variante : vérifier à chaque ouverture » ; `src/` inchangé (version de Popote) |
+| 2026-11-10 | ToolMap (son propre moteur de mise à jour), demande de l'utilisateur | APK publié renommé (`ToolMap-debug-…` → `ToolMap-release-…`) : les installations existantes ne voyaient plus rien. Release passerelle 0.4.231 sous les deux noms, gardée en permanence ; vue sur l'émulateur (une 0.4.226 la propose), seconde mise à jour non vue | Section « Renommer l'APK publié : la version passerelle » (reprise le 2026-11-26) ; `src/` inchangé |

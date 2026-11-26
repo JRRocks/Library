@@ -9,13 +9,16 @@
 | **Provenance** | ToolMap, branche `sauvegarde/p16-2026-10-16` @ `eee8c6b` (historique gardé depuis le 2026-10-27 dans l'archive privée `JRRocks/ToolMap-Archive` ; état publié en public sans historique : [JRRocks/ToolMap](https://github.com/JRRocks/ToolMap) @ `a37dcab`) · [SuivieMAT](https://github.com/JRRocks/SuivieMAT) (public depuis le 2026-10-27), branche `claude/remove-scanlist-history-a5bqzh` @ `f8f3eaf` · Suivie-Popote-Cie (privé) @ `6149a81` · [Carnet-de-recette](https://github.com/JRRocks/Carnet-de-recette) (public) @ `8dc4820` · Activity-track (privé) @ `855773c` · Android-Suntrack (privé) @ `e5c94b4` · InnovAdapt-CRM (privé), branche `claude/android-rust-mobile` @ `d2c2f6e` |
 | **Utilisé dans** | ToolMap (hook SessionStart), SuivieMAT, Popote Compagnie, Carnet de recette ; tests Rust, Node et Python lancés en session lors des revues d'InnovAdapt et d'Activity-track |
 | **Fichiers d'origine** | ToolMap : `.claude/hooks/session-start.sh`, `.claude/settings.json`, `scripts/install-android-sdk.sh`, `scripts/gradle-init/cloud-mirror.init.gradle`, `docs/DECISIONS.md` (ADR-009, 045, 046, 047), `.github/workflows/ci.yml`, `docs/specs/release.md` § 1. SuivieMAT : `consignes/outils.md` § 6 bis, 6 ter et 8, `.github/workflows/{build-debug-apk,nettoyage-actions}.yml`, `app/build.gradle.kts` (`apk.phoneOnly`), `release/LISEZMOI.md`. Carnet : `outils/sdk-android.sh`, `CLAUDE.md` § « Compiler et tester », `.github/workflows/{version,apercu}.yml`, `docs/publication.md`. Popote : `docs/decisions.md` (section v131), `CLAUDE.md` |
-| **Dernière mise à jour de la fiche** | 2026-10-27 |
+| **Dernière mise à jour de la fiche** | 2026-11-26 |
 
 ## À quoi ça sert
 
 Travailler sur une app Android depuis un téléphone ou un navigateur, sans poste : compiler,
 lancer les tests, produire un APK et le faire arriver sur le téléphone. Une session cloud n'a
-ni SDK Android ni émulateur (pas de `/dev/kvm`). Les CLAUDE.md de ScanList et SuivieMAT disent
+ni SDK Android ni `/dev/kvm`. Un émulateur y démarre pourtant en émulation logicielle
+(`-accel off`, `ANDROID_I_WANT_MY_TCG=yes`) : Android 9 x86_64, lent, sans NFC ni services
+Google, constaté par Popote Compagnie en novembre 2026 (détail : skill `depannage-ci`,
+« Émulateur en session cloud »). Les CLAUDE.md de ScanList et SuivieMAT disent
 encore qu'un build y est « généralement pas exécutable » : c'est dépassé, SuivieMAT compile
 lui-même en session depuis le 2026-09-24 (`outils.md` § 6 ter), avec le SDK installé comme
 ci-dessous. Pour voir un écran sans émulateur, voir
@@ -166,7 +169,10 @@ Un APK de debug dépasse vite les 30 Mio qu'une session peut envoyer en pièce j
   SHA-256 du fichier). Il se télécharge depuis la page GitHub du fichier, sur le téléphone. En
   CI : `permissions: contents: write`, `paths-ignore: release/**` ; un push fait avec
   `GITHUB_TOKEN` ne relance pas de run. Chaque APK reste dans l'historique git, d'où
-  `-Papk.phoneOnly` (`abiFilters` arm64 seul) ; un tel APK ne s'installe pas sur un émulateur x86_64.
+  `-Papk.phoneOnly` (`abiFilters` arm64 seul) ; un tel APK ne s'installe pas sur un émulateur x86_64
+sans traduction de l'ARM (Android 9 du cloud, anciennes images). Une image x86_64 récente avec
+Play Store (Android 16 sur le PC) traduit l'ARM 64 bits : l'APK arm64 exact s'y installe et
+tourne (Popote, 2026-11-22).
 - **Pré-version GitHub `debug-<sha7>`** (ToolMap `ci.yml`, ADR-045 et 046) : les fichiers de
   release ne comptent pas dans le quota d'artefacts. Seule la dernière est gardée ; l'envoi en
   artefact devient non bloquant, et une étape finale échoue seulement si ni l'artefact ni la
@@ -236,3 +242,4 @@ Un APK de debug dépasse vite les 30 Mio qu'une session peut envoyer en pièce j
 | 2026-10-26 | Popote, SuivieMAT, Carnet | Suite complète Popote en session (716 s) ; APK 1.1 à 1.5 de SuivieMAT compilés en session et déposés dans `release/` faute de minutes ; script SDK du Carnet | Ordres de grandeur |
 | 2026-10-27 | Catalogage Library | Fiche créée à partir des revues du jour. Rejoué ici, dans le scratchpad : SDK en 22 s ; 429 constaté sur `repo.maven.apache.org`, miroir joignable ; projet Compose minimal compilé et testé sous Robolectric avec le script d'init ci-dessus et Gradle 8.14.3 du conteneur (`BUILD SUCCESSFUL` en 3 min 54 s à froid, 4 PNG produits) ; tests purs sans Gradle : `astro-soleil-lune`, 13 tests verts en 15 s. Contre-vérification : le bloc du § 1 écrivait `local.properties` dans le scratchpad au lieu du projet, corrigé puis rejoué (20 s) ; raison de l'ADR-047 ajoutée au § 5 ; tests `astro-soleil-lune` relancés, 13 verts en 9 s | — |
 | 2026-10-27 | Library, après publication des dépôts | ToolMap republié en public sans historique (`a37dcab`, ancien dépôt gardé en privé sous le nom `ToolMap-Archive`) ; SuivieMAT passé en public ; Popote compile désormais sur un runner auto-hébergé (`2bd6298`) | Provenance et pièges de CI complétés |
+| 2026-11-26 | Revue des sessions (Popote, novembre 2026) | Deux affirmations de la fiche démenties : un émulateur logiciel tourne en session cloud (Android 9, `-accel off`, `docs/emulateur-cloud.md` de Popote) ; l'image Android 16 x86_64 du PC traduit l'ARM 64 bits (`ro.product.cpu.abilist` = `x86_64,arm64-v8a`), l'APK exact s'y installe | « À quoi ça sert » et § 5 corrigés |

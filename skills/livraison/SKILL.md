@@ -39,8 +39,13 @@ Par le canal du projet. Les quatre qui existent :
 | APK déposé dans la branche par la CI | le lien de la page du fichier, et si l'APK correspond déjà au dernier commit ou si la CI compile encore |
 | Fichier envoyé dans la conversation | le fichier, avec une ligne qui nomme le changement |
 | Dossier Drive des APK (PC) | le chemin du fichier |
+| Exécutable Windows (PC) | le dossier où il est posé, et ce qu'il verra au premier lancement |
 
 Sans consigne du projet : donne un lien qui s'ouvre depuis un téléphone connecté à GitHub.
+
+**Drive pas monté.** Avant de déposer, vérifie que le lecteur Drive existe (`Test-Path`). Sinon, lance Google Drive pour ordinateur (`C:\Program Files\Google\Drive File Stream\launch.bat`) : le lecteur revient en une trentaine de secondes. Après un redémarrage du PC, il manque souvent. Dis que la fin de l'envoi en ligne n'a pas été vue si tu ne l'as pas vue.
+
+**Exécutable Windows.** Prends l'exécutable compilé par la CI, sans recompiler sur le PC, et compare son empreinte SHA-256 à celle de la Release. L'ancienne version part à la corbeille, ses réglages restent. Lance-le par `explorer.exe` (le bureau Claude redirige `%APPDATA%`). Préviens-le de l'avertissement SmartScreen au premier lancement d'un exécutable non signé.
 
 Ne renvoie pas un fichier déjà remis plus tôt dans la conversation.
 
@@ -51,6 +56,7 @@ Un APK dépasse vite la taille qu'une session cloud peut envoyer en pièce joint
 - L'APK doit s'installer **par-dessus** la version précédente. Il faut pour cela la même clé de signature et le même identifiant d'application, toujours. Sinon Android impose de désinstaller, et les données partent avec.
 - Ne change donc jamais la clé, l'`applicationId` ni le type de compilation livré sans l'avoir dit à l'utilisateur et obtenu son accord.
 - N'installe jamais une version de debug sur un téléphone qui porte la version en service : la signature diffère.
+- **Toute version publiée est un APK de release** ; le debug ne sert que pendant la conception : « tout release ce fait en APK native, les debug seront uniquement durant la conception » (2026-11-10). Dis toujours le type de chaque APK que tu lui donnes (debug ou release).
 - Dans un dépôt public, une clé de debug versionnée est publique : n'importe qui peut signer un fichier qui s'installe par-dessus. Elle ne signe jamais une application distribuée.
 - Un APK de debug non réduit peut être bloqué au téléchargement par un antivirus en ligne. Quand le projet livre une version réduite (R8), essaie-la avant de la remettre : la réduction peut casser ce que le debug ne montre pas.
 
@@ -59,6 +65,8 @@ Un APK dépasse vite la taille qu'une session cloud peut envoyer en pièce joint
 - Tout reste privé par défaut : dépôt privé, version d'essai privée.
 - La publication n'a lieu que sur un feu vert explicite, donné pour cette version-là. Un accord ne vaut pas pour la version suivante. Dans le doute : ne publie pas, demande.
 - Avant de publier, vérifie que la version publiée est bien celle que l'utilisateur a essayée.
+- **Essai avant publication** : sur l'émulateur, installe la version publique précédente, crée-y des données, puis installe la nouvelle par-dessus et vérifie que tout est resté. **Après** : télécharge l'APK par le lien public, installe-le par-dessus, essaie la mise à jour que propose l'application. Les fichiers de la release ont la même empreinte SHA-256 et le même certificat que ceux essayés.
+- **Branche de conception privée** dans un dépôt public : un fichier marqueur à la racine (ToolMap : `.conception-privee`, testé par `hashFiles(...) == ''` dans le workflow) fait sauter l'étape de publication sur toute branche qui en part. Pour publier, sur feu vert : un commit sans le marqueur, poussé en avance rapide sur `main`, puis le marqueur remis au commit suivant.
 - Mise à jour intégrée et publication en deux temps (essai privé, puis public) : le moteur `maj-auto-github` de la Library les fournit.
 - Avant une première distribution : clé de signature de publication créée et sauvegardée hors du dépôt, identifiant d'application définitif, licences des projets repris respectées (nom, icône, identifiant, mise à jour intégrée).
 

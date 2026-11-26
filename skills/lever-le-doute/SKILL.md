@@ -21,7 +21,8 @@ Le signal est dans ta propre réflexion. Arrête-toi dès que tu te surprends à
 - « ça peut vouloir dire A ou B » ;
 - « il n'a pas précisé, je prends… » (quel projet, quel écran, quel fichier, quelle version, pour qui) ;
 - « faut-il aussi faire… ? » (jusqu'où va la demande) ;
-- « à quoi verra-t-il que c'est réussi ? » sans réponse dans sa demande.
+- « à quoi verra-t-il que c'est réussi ? » sans réponse dans sa demande ;
+- une phrase de lui qui se lit de deux façons, surtout avant une action qu'on ne reprend pas (publier, envoyer, supprimer). « la partie opération reste en dev et publiée » a été lu dans le mauvais sens le 2026-11-24 : une version est partie, et il a fallu en publier une de plus.
 
 Un seul de ces signaux suffit. Choisir « l'interprétation la plus raisonnable » est interdit : c'est précisément deviner.
 

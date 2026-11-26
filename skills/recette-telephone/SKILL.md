@@ -29,6 +29,8 @@ Dans le message final, trois points au plus, ceux qui ont le plus de chances de 
 
 Ne bloque pas une livraison sur la recette, et ne relance pas à chaque message : il essaie quand il a le temps.
 
+Avant d'ajouter des points, relis les anciens « à essayer » : ceux qu'une version a rendus caducs se ferment (avec la date et la raison), ceux qu'une version a touchés se remontent dans la séance suivante. Les points « à voir sur téléphone » écrits dans les journaux et les messages finals des sessions passées entrent aussi dans la liste : ils s'y perdent sinon.
+
 ## 4. La séance d'essai guidée
 
 Quand la liste est longue, avant une étape importante ou s'il le demande, prépare une page lisible sur le téléphone :

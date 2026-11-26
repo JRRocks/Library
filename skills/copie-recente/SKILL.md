@@ -45,7 +45,7 @@ Le Drive est monté en lecteur par Google Drive pour ordinateur. La lettre se v�
 
 ```powershell
 # Miroir du projet : du PC vers le Drive, jamais l'inverse
-robocopy "<dossier local du projet>" "<lecteur>:\<racine Drive>\<dossier des projets>\<Projet>" /MIR /XD .git .gradle .kotlin build .idea node_modules __pycache__ .pytest_cache .venv venv /XF .env local.properties keystore.properties *.apk /R:1 /W:1
+robocopy "<dossier local du projet>" "<lecteur>:\<racine Drive>\<dossier des projets>\<Projet>" /MIR /XD .git .gradle .kotlin build .idea node_modules __pycache__ .pytest_cache .venv venv /XF .env local.properties keystore.properties *.apk desktop.ini scheduled_tasks.lock /R:1 /W:1
 
 # APK : un seul dossier pour tous les projets, un nom par version
 Copy-Item "<apk compilé>" "<lecteur>:\<racine Drive>\<dossier des projets>\APK release\<NomApp>.<version>.apk"
@@ -53,11 +53,18 @@ Copy-Item "<apk compilé>" "<lecteur>:\<racine Drive>\<dossier des projets>\APK 
 
 - `/MIR` supprime côté Drive ce qui n'existe plus en local : relis la destination avant de lancer.
 - Codes de sortie de robocopy : 0 à 7 = réussi, 8 et plus = échec.
+
+**Un miroir vérifié**, en trois temps :
+
+1. Google Drive pour ordinateur doit tourner : le lecteur existe (`Test-Path`). Sinon, lance `C:\Program Files\Google\Drive File Stream\launch.bat` ; le lecteur revient en une trentaine de secondes.
+2. Simulation d'abord : la même commande avec `/L` ne copie rien et liste ce qui changerait. Rien ne doit être plus récent côté Drive ; relève ce que `/MIR` retirerait.
+3. Après la copie, refais la simulation : elle ne doit plus rien trouver à copier. Les `desktop.ini` que Google Drive pose dans chaque dossier restent comptés en « Extras » malgré `/XF` : c'est sans danger. Pour un APK, compare son empreinte SHA-256 à celle de la release GitHub (`gh release view <balise> --json assets`, champ `digest`).
+
+Le message final dit que la fin de l'envoi en ligne par Google Drive n'a pas été vue, sauf si tu l'as vue. Méthode suivie à chaque miroir de Popote Compagnie, du 2026-11-22 au 2026-11-25.
 - Les APK vont dans `APK release/`, jamais dans le dossier miroir. La version monte à chaque APK, pour qu'aucun n'en écrase un autre.
 - Si le projet a son propre script de miroir, utilise-le : il porte ses garde-fous.
 
 En session cloud, pas de miroir : le connecteur Google Drive ne sait ni envoyer un APK, ni remplacer un fichier existant. Dis dans le message final que le miroir reste à faire à la prochaine session sur le PC.
-
 ## 5. Garder la trace
 
 - Dans le journal du projet : la version de chaque copie relevée, et celle qui faisait référence.

@@ -24,6 +24,13 @@ Regarde sa visibilité avec l'outil GitHub de la session. Dans le doute, traite-
 
 Cela vaut pour les fichiers, les messages de commit, les titres de pull request et les images.
 
+Pour garder le privé à côté du dépôt sans qu'il parte :
+
+- **Consignes propres au PC** (chemin du miroir Drive, dossiers du poste) : dans `CLAUDE.local.md`, ajouté à `.git/info/exclude`. Claude Code le charge comme le `CLAUDE.md`, qui peut alors partir sur GitHub sans chemin privé et servir aux sessions cloud (Mihon, décision du 2026-11-22).
+- **Essais privés** : un dossier `essais-prives/` ignoré par git, vérifié par `git check-ignore -v essais-prives/x`. Le miroir Drive l'exclut aussi : il n'existe que sur le PC, demande-lui où le sauvegarder.
+- **Ajouts par nom** : `git add <fichier>`, jamais `git add -A` dans un dossier qui côtoie des données réelles.
+- **Images** : avant qu'une capture parte (dépôt, APK, page publique), relis-la ou passe-la à l'OCR à la recherche de vrais noms, montants ou lieux. Fige l'horloge et le fuseau des captures de test. Un QR d'exemple se décode pour vérifier qu'il ne mène nulle part.
+
 ## 3. Le contrôle
 
 Lance le script fourni avec ce skill depuis la racine du dépôt :
